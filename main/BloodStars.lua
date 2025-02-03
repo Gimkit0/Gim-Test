@@ -12,8 +12,6 @@ function CommandBar.new()
 	
 	local loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua"))()
 	local ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/ui.lua"))()
-
-	print(true)
 	
 	local services = {
 		UserInputService = game:GetService("UserInputService"),
