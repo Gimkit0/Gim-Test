@@ -12,7 +12,8 @@ function CommandBar.new()
 	
 	local loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua"))()
 	local ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/ui.lua"))()
-	
+
+
 	local services = {
 		UserInputService = game:GetService("UserInputService"),
 		RunService = game:GetService("RunService"),
@@ -124,6 +125,7 @@ function CommandBar.new()
 	
 	self.Commands = {}
 	self.Connections = {}
+	self.Loops = {}
 
 	self.Camera = workspace.CurrentCamera
 	self.LocalPlayer = services.Players.LocalPlayer
@@ -150,6 +152,39 @@ function CommandBar.new()
 		if not debug then
 			task.spawn(pcall, func) else
 			task.spawn(func)
+		end
+	end
+	self.startLoop = function(name, delay, func)
+		self.stopLoop(name)
+
+		local loopTable = {
+			Name = name,
+			Function = function()
+				self:Spawn(func)
+			end,
+			Running = true,
+		}
+
+		table.insert(self.Loops, loopTable)
+
+		if loopTable.Running then
+			self.spawn(function()
+				loopTable.Function()
+				while wait(delay) do
+					if loopTable.Running then
+						loopTable.Function()
+					end
+				end
+			end)
+		end
+	end
+	self.stopLoop = function(name)
+		for i,v in ipairs(self.Loops) do
+			if v.Name == name then
+				v.Running = false
+				v.Name = nil
+				table.remove(self.Loops, i)
+			end
 		end
 	end
 	self.addConn = function(name, conn)
@@ -237,26 +272,195 @@ function CommandBar.new()
 		end
 		return broken
 	end
-	
-	self:AddCommand({
-		Name = "Test",
-		Description = "This kills the [Player]",
-		Level = 1,
-		Aliases = {"TestAlias1", "TestAlias2"},
-		Arguments = {"arg1", "arg2"},
-		Function = function(speaker, args)
-			-- 引数 --
-			local arg1 = args[1]
-			local arg2 = args[2]
+	self.getPlayer = function(speaker, user)
+		local services = {
+			players = game:GetService("Players"),
+			networkServer = game:GetService("NetworkClient"),
+			teams = game:GetService("Teams"),
+		}
 
-			-- 変数 --
+		local stored = {}
+		local isServer = type(speaker) ~= "userdata"
+		local playerServices = services.networkServer or services.players
 
-			-- 関数 --
-			print(arg1)
-			print(arg2)
-		end,
-	})
+		local function getUser(player)
+			if not player then
+				return nil
+			elseif player:IsA("Player") then
+				return player
+			elseif player:IsA("NetworkReplicator") then
+				local foundPlayer = player:GetPlayer()
+				if foundPlayer and foundPlayer:IsA("Player") then
+					return foundPlayer
+				end
+			end
+			return nil
+		end
+
+		local function addUser(user)
+			local player = getUser(user)
+			if player then
+				table.insert(stored, player)
+			end
+		end
+
+		if (not speaker) and (not isServer) then
+			for _, player in ipairs(playerServices:GetChildren()) do
+				addUser(player)
+			end
+		elseif (speaker) and (not user) then
+			addUser(speaker)
+		elseif (user) then
+			for stringArg in string.gmatch(user, "[^,]+") do
+				local arg = string.lower(stringArg)
+
+				if (arg == "me") or (arg == "self") or (arg == "myself") or (arg == "$") or (arg == "@s") then
+					if speaker then addUser(speaker) end
+				elseif (arg == "all") or (arg == "everyone") or (arg == "everybody") or (arg == "*") or (arg == "@e") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						addUser(player)
+					end
+				elseif (arg == "others") or (arg == "^") or (arg == "@o") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						player = getUser(player)
+						if player ~= speaker then
+							addUser(player)
+						end
+					end
+				elseif (arg == "random") then
+					local players = playerServices:GetChildren()
+					local randomPlayer = players[math.random(1, #players)]
+					addUser(randomPlayer)
+				elseif (arg == "friends") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						local user = getUser(player)
+						if user:IsFriendsWith(speaker.UserId) then
+							addUser(player)
+						end
+					end
+				elseif (arg == "nonfriends") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						local user = getUser(player)
+						if not user:IsFriendsWith(speaker.UserId) then
+							addUser(player)
+						end
+					end
+				elseif (arg == "guests") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						local user = getUser(player)
+						local char = user.Character
+
+						if not char then
+							return
+						end
+
+						if char:FindFirstChild("CoolBoyHair") or char:FindFirstChild("LavanderHair") then
+							addUser(player)
+						end
+					end
+				elseif (arg == "baconhairs") or (arg == "bacons") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						local user = getUser(player)
+						local char = user.Character
+
+						if not char then
+							return
+						end
+
+						if char:FindFirstChild("Pal Hair") or char:FindFirstChild("Kate Hair") then
+							addUser(player)
+						end
+					end
+				elseif (arg == "dead") or (arg == "notalive") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						local user = getUser(player)
+						local char = user.Character
+
+						local hum = char:FindFirstChildWhichIsA("Humanoid")
+
+						if (not char) or (not hum) then
+							return
+						end
+
+						if hum.Health <= 0 then
+							addUser(player)
+						end
+					end
+				elseif (arg == "alive") or (arg == "notdead") then
+					for _, player in ipairs(playerServices:GetChildren()) do
+						local user = getUser(player)
+						local char = user.Character
+
+						if not char then
+							return
+						end
+
+						local hum = char:FindFirstChildWhichIsA("Humanoid")
+
+						if (hum) and (hum.Health > 0) then
+							addUser(player)
+						elseif (not hum) then
+							addUser(player)
+						end
+					end
+				elseif (arg:sub(1, 5) == "team-") then
+					local teamName = arg:sub(6)
+					for _, team in ipairs(services.teams:GetTeams()) do
+						if string.lower(team.Name) == teamName then
+							for _, player in ipairs(playerServices:GetChildren()) do
+								player = getUser(player)
+								if player.TeamColor == team.TeamColor then
+									addUser(player)
+								end
+							end
+						end
+					end
+				elseif (arg:sub(1, 6) == "group-") then
+					local groupId = tonumber(arg:sub(7))
+					if groupId then
+						for _, player in ipairs(playerServices:GetChildren()) do
+							player = getUser(player)
+							if player:IsInGroup(groupId) then
+								addUser(player)
+							end
+						end
+					end
+				elseif (arg:sub(1, 7) == "radius-") then
+					local radius = tonumber(arg:sub(8))
+					if not radius then
+						return
+					end
+					for _, player in ipairs(playerServices:GetChildren()) do
+						player = getUser(player)
+						if player ~= speaker and player.Character then
+							if ((speaker.Character) and (speaker.Character:FindFirstChild("Head")))
+								or ((player.Character) and (player.Character:FindFirstChild("Head")))
+							then
+								local distance = (speaker.Character.Head.Position - player.Character.Head.Position).Magnitude
+								if distance <= radius then
+									addUser(player)
+								end
+							end
+						end
+					end
+				else
+					for _, player in ipairs(playerServices:GetChildren()) do
+						player = getUser(player)
+						if string.lower(player.Name):sub(1, #arg) == arg or 
+							string.lower(player.DisplayName):sub(1, #arg) == arg
+							or tostring(player.UserId) == arg
+						then
+							addUser(player)
+						end
+					end
+				end
+			end
+		end
+
+		return stored
+	end
 	
+	self:UniversalCommands()
 	self:ConstructUI()
 
 	return self
@@ -267,6 +471,38 @@ function CommandBar:AddCommand(cmd)
 		return
 	end
 	table.insert(self.Commands, cmd)
+end
+
+function CommandBar:UniversalCommands()
+	self:AddCommand({
+		Name = "View",
+		Description = "Views the [Player]",
+		Level = 1,
+		Aliases = {"Spectate", "Watch"},
+		Arguments = {"Player"},
+		Function = function(speaker, args)
+			-- 引数 --
+			local user = args[1]
+
+			-- 変数 --
+			local users = self.getPlayer(speaker, user)
+
+			-- 関数 --
+			for index, player in users do
+				if player.Character then
+					self.stopLoop("VIEWING_PLAYER")
+					self.startLoop(`VIEWING_PLAYER`, 0, function()
+						if (not player) or (player and not player.Character) then
+							self.stopLoop("VIEWING_PLAYER")
+							self.Camera.CameraSubject = speaker.Character
+							return
+						end
+						self.Camera.CameraSubject = player.Character
+					end)
+				end
+			end
+		end,
+	})
 end
 
 function CommandBar:ConstructUI()
