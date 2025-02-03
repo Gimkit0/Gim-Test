@@ -7,7 +7,7 @@
 local CommandBar = {}
 CommandBar.__index = CommandBar
 
-function CommandBar.new()
+function CommandBar:new()
 	local self = setmetatable({}, CommandBar)
 	
 	local loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua?token=GHSAT0AAAAAAC6I67PU7LVL3DEZA7BCJ4HEZ5AEZQQ"))()
