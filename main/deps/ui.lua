@@ -11,7 +11,7 @@
 local G2L = {};
 
 -- StarterGui.Console
-G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
+G2L["1"] = Instance.new("ScreenGui");
 G2L["1"]["IgnoreGuiInset"] = true;
 G2L["1"]["Enabled"] = false;
 G2L["1"]["ScreenInsets"] = Enum.ScreenInsets.DeviceSafeInsets;
@@ -456,4 +456,4 @@ G2L["2d"]["Text"] = [[OPEN CONSOLE]];
 G2L["2d"]["Name"] = [[Title]];
 
 
-return G2L["1"], require;
+return G2L["1"];
