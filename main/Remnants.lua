@@ -160,7 +160,7 @@ function CommandBar.new()
 		local loopTable = {
 			Name = name,
 			Function = function()
-				self:Spawn(func)
+				self.spawn(func)
 			end,
 			Running = true,
 		}
@@ -490,11 +490,15 @@ function CommandBar:UniversalCommands()
 			-- 関数 --
 			for index, player in users do
 				if player.Character then
-					self.stopLoop("VIEWING_PLAYER")
-					self.startLoop(`VIEWING_PLAYER`, 0, function()
-						if (not player) or (player and not player.Character) then
+					self.startLoop(`VIEWING_PLAYER`, 1, function()
+						if (not player) then
+							if not player.Character then
+								return
+							end
+							
 							self.stopLoop("VIEWING_PLAYER")
 							self.Camera.CameraSubject = speaker.Character
+							
 							return
 						end
 						self.Camera.CameraSubject = player.Character
