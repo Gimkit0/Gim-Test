@@ -477,9 +477,10 @@ function CommandBar:UniversalCommands()
 	self:AddCommand({
 		Name = "View",
 		Description = "Views the [Player]",
-		Level = 1,
+        
 		Aliases = {"Spectate", "Watch"},
 		Arguments = {"Player"},
+        
 		Function = function(speaker, args)
 			-- 引数 --
 			local user = args[1]
@@ -490,7 +491,7 @@ function CommandBar:UniversalCommands()
 			-- 関数 --
 			for index, player in users do
 				if player.Character then
-					self.startLoop(`VIEWING_PLAYER`, 1, function()
+					self.startLoop(`VIEWING_PLAYER`, .5, function()
 						if (not player) then
 							if not player.Character then
 								return
@@ -502,6 +503,7 @@ function CommandBar:UniversalCommands()
 							return
 						end
 						self.Camera.CameraSubject = player.Character
+						print(self.Camera.CameraSubject)
 					end)
 				end
 			end
