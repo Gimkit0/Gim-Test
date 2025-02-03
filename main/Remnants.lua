@@ -477,10 +477,10 @@ function CommandBar:UniversalCommands()
 	self:AddCommand({
 		Name = "View",
 		Description = "Views the [Player]",
-        
+		
 		Aliases = {"Spectate", "Watch"},
 		Arguments = {"Player"},
-        
+		
 		Function = function(speaker, args)
 			-- 引数 --
 			local user = args[1]
@@ -503,7 +503,7 @@ function CommandBar:UniversalCommands()
 							return
 						end
 						self.Camera.CameraSubject = player.Character
-						print(self.Camera.CameraSubject)
+						print(player.Character)
 					end)
 				end
 			end
