@@ -269,7 +269,7 @@ G2L["1a"]["BackgroundTransparency"] = 1;
 G2L["1a"]["RichText"] = true;
 G2L["1a"]["Size"] = UDim2.new(1, 0, 1, 0);
 G2L["1a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1a"]["Text"] = [[Kill | [Player]]];
+G2L["1a"]["Text"] = "";
 G2L["1a"]["Name"] = [[NameLabel]];
 
 -- StarterGui.Console.Main.Content.Templates.Command.NameLabel.UIPadding
@@ -297,7 +297,7 @@ G2L["1d"]["BackgroundTransparency"] = 1;
 G2L["1d"]["RichText"] = true;
 G2L["1d"]["Size"] = UDim2.new(1, 0, 1, 0);
 G2L["1d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1d"]["Text"] = [[This kills the [Player]]];
+G2L["1d"]["Text"] = "";
 G2L["1d"]["Name"] = [[Description]];
 G2L["1d"]["Position"] = UDim2.new(0, 0, 0, 10);
 
