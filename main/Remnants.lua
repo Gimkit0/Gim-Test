@@ -1138,10 +1138,10 @@ function CommandBar:UniversalCommands()
 
 		Function = function(speaker, args)
 			-- 引数 --
-			local radius = args[1]
-			local height = args[2]
-			local speed = args[3]
-			local strength = args[4]
+			local radius = args[1] or 50
+			local height = args[2] or 100
+			local speed = args[3] or 10
+			local strength = args[4] or 1000
 
 			-- 変数 --
 			local Workspace = game:GetService("Workspace")
@@ -1170,7 +1170,7 @@ function CommandBar:UniversalCommands()
 					if typeof(Part) == "Instance" and Part:IsA("BasePart") and Part:IsDescendantOf(Workspace) then
 						table.insert(Network.BaseParts, Part)
 						Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-						Part.CanCollide = false
+						--Part.CanCollide = false
 					end
 				end
 				
@@ -1224,7 +1224,7 @@ function CommandBar:UniversalCommands()
 					end
 
 					Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-					Part.CanCollide = false
+					--Part.CanCollide = false
 					return true
 				end
 				return false
@@ -1232,7 +1232,7 @@ function CommandBar:UniversalCommands()
 
 			local parts = {}
 			local function addPart(part)
-				if RetainPart(part) then
+				if getgenv().Network.RetainPart(part) then
 					if not table.find(parts, part) then
 						table.insert(parts, part)
 					end
