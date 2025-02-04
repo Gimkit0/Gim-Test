@@ -275,24 +275,18 @@ function CommandBar.new()
 	self.getPlayer = function(speaker, user)
 		local services = {
 			players = game:GetService("Players"),
-			networkServer = game:GetService("NetworkClient"),
 			teams = game:GetService("Teams"),
 		}
 
 		local stored = {}
 		local isServer = type(speaker) ~= "userdata"
-		local playerServices = services.networkServer or services.players
+		local playerServices = services.players
 
 		local function getUser(player)
 			if not player then
 				return nil
 			elseif player:IsA("Player") then
 				return player
-			elseif player:IsA("NetworkReplicator") then
-				local foundPlayer = player:GetPlayer()
-				if foundPlayer and foundPlayer:IsA("Player") then
-					return foundPlayer
-				end
 			end
 			return nil
 		end
