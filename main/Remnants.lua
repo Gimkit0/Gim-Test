@@ -129,6 +129,7 @@ function CommandBar.new()
 
 	self.Camera = workspace.CurrentCamera
 	self.LocalPlayer = services.Players.LocalPlayer
+	self.Mouse = self.LocalPlayer:GetMouse()
 	
 	self.UI = ui
 	
@@ -272,186 +273,357 @@ function CommandBar.new()
 		end
 		return broken
 	end
-	self.getPlayer = function(speaker, user)
-		local services = {
-			players = game:GetService("Players"),
-			teams = game:GetService("Teams"),
-		}
-
-		local stored = {}
-		local isServer = type(speaker) ~= "userdata"
-		local playerServices = services.players
-
-		local function getUser(player)
-			if not player then
-				return nil
-			elseif player:IsA("Player") then
-				return player
-			end
-			return nil
+	self.toTokens = function(str)
+		local tokens = {}
+		for op,name in string.gmatch(str,"([+-])([^+-]+)") do
+			table.insert(tokens,{Operator = op,Name = name})
 		end
-
-		local function addUser(user)
-			local player = getUser(user)
-			if player then
-				table.insert(stored, player)
+		return tokens
+	end
+	self.onlyIncludeInTable = function(tab,matches)
+		local matchTable = {}
+		local resultTable = {}
+		for i,v in pairs(matches) do matchTable[v.Name] = true end
+		for i,v in pairs(tab) do if matchTable[v.Name] then table.insert(resultTable,v) end end
+		return resultTable
+	end
+	self.removeTableMatches = function(tab,matches)
+		local matchTable = {}
+		local resultTable = {}
+		for i,v in pairs(matches) do matchTable[v.Name] = true end
+		for i,v in pairs(tab) do if not matchTable[v.Name] then table.insert(resultTable,v) end end
+		return resultTable
+	end
+	self.fetchHrp = function(char)
+		local rootPart = char:FindFirstChild('HumanoidRootPart')
+			or char:FindFirstChild('Torso')
+			or char:FindFirstChild('UpperTorso')
+		
+		return rootPart
+	end
+	self.getPlayersByName = function(name)
+		local name, len, found = string.lower(name),#name,{}
+		for _,v in pairs(self.Services.Players:GetPlayers()) do
+			if name:sub(0,1) == '@' then
+				if string.sub(string.lower(v.Name),1,len-1) == name:sub(2) then
+					table.insert(found,v)
+				end
+			else
+				if string.sub(string.lower(v.Name),1,len) == name or string.sub(string.lower(v.DisplayName),1,len) == name then
+					table.insert(found,v)
+				end
 			end
 		end
-
-		if (not speaker) and (not isServer) then
-			for _, player in ipairs(playerServices:GetChildren()) do
-				addUser(player)
-			end
-		elseif (speaker) and (not user) then
-			addUser(speaker)
-		elseif (user) then
-			for stringArg in string.gmatch(user, "[^,]+") do
-				local arg = string.lower(stringArg)
-
-				if (arg == "me") or (arg == "self") or (arg == "myself") or (arg == "$") or (arg == "@s") then
-					if speaker then addUser(speaker) end
-				elseif (arg == "all") or (arg == "everyone") or (arg == "everybody") or (arg == "*") or (arg == "@e") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						addUser(player)
-					end
-				elseif (arg == "others") or (arg == "^") or (arg == "@o") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						player = getUser(player)
-						if player ~= speaker then
-							addUser(player)
-						end
-					end
-				elseif (arg == "random") then
-					local players = playerServices:GetChildren()
-					local randomPlayer = players[math.random(1, #players)]
-					addUser(randomPlayer)
-				elseif (arg == "friends") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						local user = getUser(player)
-						if user:IsFriendsWith(speaker.UserId) then
-							addUser(player)
-						end
-					end
-				elseif (arg == "nonfriends") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						local user = getUser(player)
-						if not user:IsFriendsWith(speaker.UserId) then
-							addUser(player)
-						end
-					end
-				elseif (arg == "guests") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						local user = getUser(player)
-						local char = user.Character
-
-						if not char then
-							return
-						end
-
-						if char:FindFirstChild("CoolBoyHair") or char:FindFirstChild("LavanderHair") then
-							addUser(player)
-						end
-					end
-				elseif (arg == "baconhairs") or (arg == "bacons") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						local user = getUser(player)
-						local char = user.Character
-
-						if not char then
-							return
-						end
-
-						if char:FindFirstChild("Pal Hair") or char:FindFirstChild("Kate Hair") then
-							addUser(player)
-						end
-					end
-				elseif (arg == "dead") or (arg == "notalive") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						local user = getUser(player)
-						local char = user.Character
-
-						local hum = char:FindFirstChildWhichIsA("Humanoid")
-
-						if (not char) or (not hum) then
-							return
-						end
-
-						if hum.Health <= 0 then
-							addUser(player)
-						end
-					end
-				elseif (arg == "alive") or (arg == "notdead") then
-					for _, player in ipairs(playerServices:GetChildren()) do
-						local user = getUser(player)
-						local char = user.Character
-
-						if not char then
-							return
-						end
-
-						local hum = char:FindFirstChildWhichIsA("Humanoid")
-
-						if (hum) and (hum.Health > 0) then
-							addUser(player)
-						elseif (not hum) then
-							addUser(player)
-						end
-					end
-				elseif (arg:sub(1, 5) == "team-") then
-					local teamName = arg:sub(6)
-					for _, team in ipairs(services.teams:GetTeams()) do
-						if string.lower(team.Name) == teamName then
-							for _, player in ipairs(playerServices:GetChildren()) do
-								player = getUser(player)
-								if player.TeamColor == team.TeamColor then
-									addUser(player)
-								end
-							end
-						end
-					end
-				elseif (arg:sub(1, 6) == "group-") then
-					local groupId = tonumber(arg:sub(7))
-					if groupId then
-						for _, player in ipairs(playerServices:GetChildren()) do
-							player = getUser(player)
-							if player:IsInGroup(groupId) then
-								addUser(player)
-							end
-						end
-					end
-				elseif (arg:sub(1, 7) == "radius-") then
-					local radius = tonumber(arg:sub(8))
-					if not radius then
-						return
-					end
-					for _, player in ipairs(playerServices:GetChildren()) do
-						player = getUser(player)
-						if player ~= speaker and player.Character then
-							if ((speaker.Character) and (speaker.Character:FindFirstChild("Head")))
-								or ((player.Character) and (player.Character:FindFirstChild("Head")))
-							then
-								local distance = (speaker.Character.Head.Position - player.Character.Head.Position).Magnitude
-								if distance <= radius then
-									addUser(player)
-								end
-							end
-						end
-					end
-				else
-					for _, player in ipairs(playerServices:GetChildren()) do
-						player = getUser(player)
-						if string.lower(player.Name):sub(1, #arg) == arg or 
-							string.lower(player.DisplayName):sub(1, #arg) == arg
-							or tostring(player.UserId) == arg
-						then
-							addUser(player)
+		return found
+	end
+	self.worldToScreen = function(Object)
+		local ObjectVector = workspace.CurrentCamera:WorldToScreenPoint(Object.Position)
+		return Vector2.new(ObjectVector.X, ObjectVector.Y)
+	end
+	self.mousePositionToVector2 = function()
+		return Vector2.new(self.Mouse.X, self.Mouse.Y)
+	end
+	self.getClosestPlayerFromCursor = function()
+		local found = nil
+		local ClosestDistance = math.huge
+		for i, v in pairs(self.Services.Players:GetPlayers()) do
+			if v ~= self.LocalPlayer and v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+				for _, x in pairs(v.Character:GetChildren()) do
+					if string.find(x.Name, "Torso") then
+						local Distance = (self.worldToScreen(x) - self.mousePositionToVector2()).Magnitude
+						if Distance < ClosestDistance then
+							ClosestDistance = Distance
+							found = v
 						end
 					end
 				end
 			end
 		end
+		return found
+	end
+	self.getPlayer = function(speaker, user)
+		if not user then
+			return {speaker}
+		end
+		local nameList = self.splitString(user, ",")
+		
+		local playerCases = {
+			["all"] = function(speaker)
+				return self.Services.Players:GetPlayers()
+			end,
+			["others"] = function(speaker)
+				local plrs = {}
+				for i,v in pairs(self.Services.Players:GetPlayers()) do
+					if v ~= speaker then
+						table.insert(plrs,v)
+					end
+				end
+				return plrs
+			end,
+			["me"] = function(speaker)return {speaker} end,
+			["#(%d+)"] = function(speaker,args,currentList)
+				local returns = {}
+				local randAmount = tonumber(args[1])
+				local players = {unpack(currentList)}
+				for i = 1,randAmount do
+					if #players == 0 then break end
+					local randIndex = math.random(1,#players)
+					table.insert(returns,players[randIndex])
+					table.remove(players,randIndex)
+				end
+				return returns
+			end,
+			["random"] = function(speaker,args,currentList)
+				local players = self.Services.Players:GetPlayers()
+				local localplayer = self.LocalPlayer
+				table.remove(players, table.find(players, localplayer))
+				return {players[math.random(1,#players)]}
+			end,
+			["%%(.+)"] = function(speaker,args)
+				local returns = {}
+				local team = args[1]
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Team and string.sub(string.lower(plr.Team.Name),1,#team) == string.lower(team) then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["allies"] = function(speaker)
+				local returns = {}
+				local team = speaker.Team
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Team == team then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["enemies"] = function(speaker)
+				local returns = {}
+				local team = speaker.Team
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Team ~= team then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["team"] = function(speaker)
+				local returns = {}
+				local team = speaker.Team
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Team == team then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["nonteam"] = function(speaker)
+				local returns = {}
+				local team = speaker.Team
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Team ~= team then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["friends"] = function(speaker,args)
+				local returns = {}
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr:IsFriendsWith(speaker.UserId) and plr ~= speaker then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["nonfriends"] = function(speaker,args)
+				local returns = {}
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if not plr:IsFriendsWith(speaker.UserId) and plr ~= speaker then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["guests"] = function(speaker,args)
+				local returns = {}
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Guest then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["bacons"] = function(speaker,args)
+				local returns = {}
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Character:FindFirstChild('Pal Hair') or plr.Character:FindFirstChild('Kate Hair') then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["age(%d+)"] = function(speaker,args)
+				local returns = {}
+				local age = tonumber(args[1])
+				if not (age == nil) then
+					return
+				end
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.AccountAge <= age then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["nearest"] = function(speaker,args,currentList)
+				local speakerChar = speaker.Character
+				if not speakerChar or not self.fetchHrp(speakerChar) then return end
+				local lowest = math.huge
+				local NearestPlayer = nil
+				for _,plr in pairs(currentList) do
+					if plr ~= speaker and plr.Character then
+						local distance = plr:DistanceFromCharacter(self.fetchHrp(speakerChar).Position)
+						if distance < lowest then
+							lowest = distance
+							NearestPlayer = {plr}
+						end
+					end
+				end
+				return NearestPlayer
+			end,
+			["farthest"] = function(speaker,args,currentList)
+				local speakerChar = speaker.Character
+				if not speakerChar or not self.fetchHrp(speakerChar) then return end
+				local highest = 0
+				local Farthest = nil
+				for _,plr in pairs(currentList) do
+					if plr ~= speaker and plr.Character then
+						local distance = plr:DistanceFromCharacter(self.fetchHrp(speakerChar).Position)
+						if distance > highest then
+							highest = distance
+							Farthest = {plr}
+						end
+					end
+				end
+				return Farthest
+			end,
+			["group(%d+)"] = function(speaker,args)
+				local returns = {}
+				local groupID = tonumber(args[1])
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr:IsInGroup(groupID) then  
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["alive"] = function(speaker,args)
+				local returns = {}
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") and plr.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["dead"] = function(speaker,args)
+				local returns = {}
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if (not plr.Character or not plr.Character:FindFirstChildOfClass("Humanoid")) or plr.Character:FindFirstChildOfClass("Humanoid").Health <= 0 then
+						table.insert(returns,plr)
+					end
+				end
+				return returns
+			end,
+			["rad(%d+)"] = function(speaker,args)
+				local returns = {}
+				local radius = tonumber(args[1])
+				local speakerChar = speaker.Character
+				if not speakerChar or not self.fetchHrp(speakerChar) then return end
+				for _,plr in pairs(self.Services.Players:GetPlayers()) do
+					if plr.Character and self.fetchHrp(plr.Character) then
+						local magnitude = (self.fetchHrp(plr.Character).Position-self.fetchHrp(speakerChar).Position).magnitude
+						if magnitude <= radius then table.insert(returns,plr) end
+					end
+				end
+				return returns
+			end,
+			["cursor"] = function(speaker)
+				local plrs = {}
+				local v = self.getClosestPlayerFromCursor()
+				if v ~= nil then table.insert(plrs, v) end
+				return plrs
+			end,
+			["npcs"] = function(speaker,args)
+				local returns = {}
+				for _, v in pairs(workspace:GetDescendants()) do
+					if v:IsA("Model") and self.fetchHrp(v) and v:FindFirstChildWhichIsA("Humanoid") and self.Services.Players:GetPlayerFromCharacter(v) == nil then
+						local clone = Instance.new("Player")
+						clone.Name = v.Name .. " - " .. v:FindFirstChildWhichIsA("Humanoid").DisplayName
+						clone.Character = v
+						table.insert(returns, clone)
+					end
+				end
+				return returns
+			end,
+		}
+		local foundList = {}
+		
+		local function fetchPlayer(name)
+			local player = self.Services.Players:FindFirstChild(name)
+			if player then
+				return player
+			end
+			return nil
+		end
 
-		return stored
+		for _,name in pairs(nameList) do
+			if string.sub(name,1,1) ~= "+" and string.sub(name,1,1) ~= "-" then name = "+"..name end
+			local tokens = self.toTokens(name)
+			local initialPlayers = self.Services.Players:GetPlayers()
+
+			for i,v in pairs(tokens) do
+				if v.Operator == "+" then
+					local tokenContent = v.Name
+					local foundCase = false
+					for regex,case in pairs(playerCases) do
+						local matches = {string.match(tokenContent,"^"..regex.."$")}
+						if #matches > 0 then
+							foundCase = true
+							initialPlayers = self.onlyIncludeInTable(initialPlayers,case(speaker,matches,initialPlayers))
+						end
+					end
+					if not foundCase then
+						initialPlayers = self.onlyIncludeInTable(initialPlayers, self.getPlayersByName(tokenContent))
+					end
+				else
+					local tokenContent = v.Name
+					local foundCase = false
+					for regex, case in pairs(playerCases) do
+						local matches = {string.match(tokenContent,"^"..regex.."$")}
+						if #matches > 0 then
+							foundCase = true
+							initialPlayers = self.removeTableMatches(initialPlayers, case(speaker,matches,initialPlayers))
+						end
+					end
+					if not foundCase then
+						initialPlayers = self.removeTableMatches(initialPlayers, self.getPlayersByName(tokenContent))
+					end
+				end
+			end
+
+			for i,v in pairs(initialPlayers) do table.insert(foundList,v) end
+		end
+
+		local found = {}
+		for i,v in pairs(foundList) do
+			table.insert(found, fetchPlayer(v.Name))
+		end
+
+		return found
 	end
 	
 	self:UniversalCommands()
@@ -642,8 +814,10 @@ function CommandBar:ConstructUI()
 	
 	self.Modules.fade:FadeClose(main, 0)
 	self.Modules.resuponshibu:Set(self.UI, 1500, true)
+	self.closeBar()
 	
 	main.Visible = false
+	content.Tab.Visible = false
 	
 	textbox.PlaceholderText = `Command console`
 	
@@ -859,6 +1033,11 @@ function CommandBar:ConstructUI()
 
 			autofill.Text = table.concat(autofillTexts, ` {self.Config.EXECUTION.BATCH_KEY}`)
 			colorfill.Text = table.concat(colorfillTexts, ` {self.Config.EXECUTION.BATCH_KEY}`)
+			
+			if (self.cleanText(autofill.Text) == self.cleanWhiteSpaces(textbox.Text)) then
+				content.Tab.Visible = false else
+				content.Tab.Visible = true
+			end
 
 			if string.sub(textbox.Text, textbox.CursorPosition - 1) == "	" then
 				if self.Storage.autofillQuery ~= "" and string.lower(textbox.Text) ~= string.lower(autofill.Text) then
