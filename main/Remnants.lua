@@ -1138,10 +1138,10 @@ function CommandBar:UniversalCommands()
 
 		Function = function(speaker, args)
 			-- 引数 --
-			local radius = args[1] or 50
-			local height = args[2] or 100
-			local speed = args[3] or 10
-			local strength = args[4] or 1000
+			local radius = args[1]
+			local height = args[2]
+			local speed = args[3]
+			local strength = args[4]
 
 			-- 変数 --
 			local Workspace = game:GetService("Workspace")
@@ -1154,6 +1154,19 @@ function CommandBar:UniversalCommands()
 			local att1 = Instance.new("Attachment", part)
 
 			-- 関数 --
+			if not radius then
+				radius = 50
+			end
+			if not height then
+				height = 100
+			end
+			if not speed then
+				speed = 10
+			end
+			if not strength then
+				strength = 1000
+			end
+			
 			part.Anchored = true
 			part.CanCollide = false
 			part.Transparency = 1
@@ -1170,7 +1183,7 @@ function CommandBar:UniversalCommands()
 					if typeof(Part) == "Instance" and Part:IsA("BasePart") and Part:IsDescendantOf(Workspace) then
 						table.insert(Network.BaseParts, Part)
 						Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-						--Part.CanCollide = false
+						Part.CanCollide = false
 					end
 				end
 				
@@ -1188,7 +1201,13 @@ function CommandBar:UniversalCommands()
 			end
 			
 			local function forcePart(v)
-				if v:IsA("Part") and not v.Anchored and not v.Parent:FindFirstChild("Humanoid") and not v.Parent:FindFirstChild("Head") and v.Name ~= "Handle" then
+				if (v:IsA("Part"))
+					and (not v.Anchored)
+					and (not v.Parent:FindFirstChild("Humanoid"))
+					and (not v.Parent:FindFirstChild("Head"))
+					and (not v:IsDescendantOf(character))
+					and (v.Name ~= "Handle")
+				then
 					for _, x in next, v:GetChildren() do
 						if x:IsA("BodyAngularVelocity") or x:IsA("BodyForce") or x:IsA("BodyGyro") or x:IsA("BodyPosition") or x:IsA("BodyThrust") or x:IsA("BodyVelocity") or x:IsA("RocketPropulsion") then
 							x:Destroy()
@@ -1218,13 +1237,16 @@ function CommandBar:UniversalCommands()
 			end
 			
 			local function RetainPart(Part)
-				if Part:IsA("BasePart") and not Part.Anchored and Part:IsDescendantOf(workspace) then
+				if (Part:IsA("BasePart"))
+					and (not Part.Anchored)
+					and (Part:IsDescendantOf(workspace))
+				then
 					if Part.Parent == character or Part:IsDescendantOf(character) then
 						return false
 					end
 
 					Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-					--Part.CanCollide = false
+					Part.CanCollide = false
 					return true
 				end
 				return false
@@ -1232,7 +1254,7 @@ function CommandBar:UniversalCommands()
 
 			local parts = {}
 			local function addPart(part)
-				if getgenv().Network.RetainPart(part) then
+				if RetainPart(part) then
 					if not table.find(parts, part) then
 						table.insert(parts, part)
 					end
