@@ -639,43 +639,6 @@ function CommandBar:AddCommand(cmd)
 	table.insert(self.Commands, cmd)
 end
 
-function CommandBar:UniversalCommands()
-	self:AddCommand({
-		Name = "View",
-		Description = "Views the [Player]",
-		
-		Aliases = {"Spectate", "Watch"},
-		Arguments = {"Player"},
-		
-		Function = function(speaker, args)
-			-- 引数 --
-			local user = args[1]
-
-			-- 変数 --
-			local users = self.getPlayer(speaker, user)
-
-			-- 関数 --
-			for index, player in next, users do
-				if player.Character then
-					self.startLoop("VIEWING_PLAYER", .5, function()
-						if not player then
-							if not player.Character then
-								return
-							end
-							
-							self.stopLoop("VIEWING_PLAYER")
-							self.Camera.CameraSubject = speaker.Character
-							
-							return
-						end
-						self.Camera.CameraSubject = player.Character
-					end)
-				end
-			end
-		end,
-	})
-end
-
 function CommandBar:ConstructUI()
 	if self.findFirstChild(self.Services.Lighting, "REMNANTS_CLIENT_BLUR") then
 		self.findFirstChild(self.Services.Lighting, "REMNANTS_CLIENT_BLUR"):Destroy()
@@ -1099,6 +1062,244 @@ function CommandBar:ConstructUI()
 			end
 		end))
 	end
+end
+
+function CommandBar:UniversalCommands()
+	self:AddCommand({
+		Name = "View",
+		Description = "Views the [Player]",
+
+		Aliases = {"Spectate", "Watch"},
+		Arguments = {"Player"},
+
+		Function = function(speaker, args)
+			-- 引数 --
+			local user = args[1]
+
+			-- 変数 --
+			local users = self.getPlayer(speaker, user)
+
+			-- 関数 --
+			for index, player in next, users do
+				if player.Character then
+					self.startLoop("VIEWING_PLAYER", .5, function()
+						local player = self.Services.Players:FindFirstChild(player.Name)
+						if not player then
+							if not player.Character then
+								return
+							end
+
+							self.stopLoop("VIEWING_PLAYER")
+							self.spawn(function()
+								for i = 1, 10 do
+									self.Camera.CameraSubject = speaker.Character
+									task.wait()
+								end
+							end)
+
+							return
+						end
+						self.Camera.CameraSubject = player.Character
+					end)
+				end
+			end
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Unview",
+		Description = "Unviews if you're viewing someone",
+
+		Aliases = {"Unspectate", "Unwatch"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			self.stopLoop("VIEWING_PLAYER")
+			self.spawn(function()
+				for i = 1, 10 do
+					self.Camera.CameraSubject = speaker.Character
+					task.wait()
+				end
+			end)
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Blackhole",
+		Description = "Makes parts get sucked in by you",
+
+		Aliases = {"Singularity", "Tornado"},
+		Arguments = {"Radius", "Height", "Speed", "Strength"},
+
+		Function = function(speaker, args)
+			-- 引数 --
+			local radius = args[1]
+			local height = args[2]
+			local speed = args[3]
+			local strength = args[4]
+
+			-- 変数 --
+			local Workspace = game:GetService("Workspace")
+
+			local character = speaker.Character or speaker.CharacterAdded:Wait()
+			local hrp = self.fetchHrp(character)
+
+			local folder = Instance.new("Folder", Workspace)
+			local part = Instance.new("Part", folder)
+			local att1 = Instance.new("Attachment", part)
+
+			-- 関数 --
+			part.Anchored = true
+			part.CanCollide = false
+			part.Transparency = 1
+			
+			folder.Name = "BLACKHOLE_FOLDER"
+			
+			if not getgenv().Network then
+				getgenv().Network = {
+					BaseParts = {},
+					Velocity = Vector3.new(14.46262424, 14.46262424, 14.46262424)
+				}
+
+				Network.RetainPart = function(Part)
+					if typeof(Part) == "Instance" and Part:IsA("BasePart") and Part:IsDescendantOf(Workspace) then
+						table.insert(Network.BaseParts, Part)
+						Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
+						Part.CanCollide = false
+					end
+				end
+				
+				speaker.ReplicationFocus = Workspace
+				self.startLoop("BLACKHOLE_PART_CONTROL", 0, function()
+					if sethiddenproperty then
+						sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
+					end
+					for _, Part in pairs(Network.BaseParts) do
+						if Part:IsDescendantOf(Workspace) then
+							Part.Velocity = Network.Velocity
+						end
+					end
+				end)
+			end
+			
+			local function forcePart(v)
+				if v:IsA("Part") and not v.Anchored and not v.Parent:FindFirstChild("Humanoid") and not v.Parent:FindFirstChild("Head") and v.Name ~= "Handle" then
+					for _, x in next, v:GetChildren() do
+						if x:IsA("BodyAngularVelocity") or x:IsA("BodyForce") or x:IsA("BodyGyro") or x:IsA("BodyPosition") or x:IsA("BodyThrust") or x:IsA("BodyVelocity") or x:IsA("RocketPropulsion") then
+							x:Destroy()
+						end
+					end
+					if v:FindFirstChild("Attachment") then
+						v:FindFirstChild("Attachment"):Destroy()
+					end
+					if v:FindFirstChild("AlignPosition") then
+						v:FindFirstChild("AlignPosition"):Destroy()
+					end
+					if v:FindFirstChild("Torque") then
+						v:FindFirstChild("Torque"):Destroy()
+					end
+					v.CanCollide = false
+					local Torque = Instance.new("Torque", v)
+					Torque.Torque = Vector3.new(100000, 100000, 100000)
+					local alignPos = Instance.new("AlignPosition", v)
+					local att2 = Instance.new("Attachment", v)
+					Torque.Attachment0 = att2
+					alignPos.MaxForce = 9999999999999999999999999999999
+					alignPos.MaxVelocity = math.huge
+					alignPos.Responsiveness = 200
+					alignPos.Attachment0 = att2
+					alignPos.Attachment1 = att1
+				end
+			end
+			
+			local function RetainPart(Part)
+				if Part:IsA("BasePart") and not Part.Anchored and Part:IsDescendantOf(workspace) then
+					if Part.Parent == character or Part:IsDescendantOf(character) then
+						return false
+					end
+
+					Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
+					Part.CanCollide = false
+					return true
+				end
+				return false
+			end
+
+			local parts = {}
+			local function addPart(part)
+				if RetainPart(part) then
+					if not table.find(parts, part) then
+						table.insert(parts, part)
+					end
+				end
+			end
+
+			local function removePart(part)
+				local index = table.find(parts, part)
+				if index then
+					table.remove(parts, index)
+				end
+			end
+
+			for _, part in pairs(workspace:GetDescendants()) do
+				addPart(part)
+			end
+
+			workspace.DescendantAdded:Connect(addPart)
+			workspace.DescendantRemoving:Connect(removePart)
+			
+			self.startLoop("BLACKHOLE_MAIN", 0, function()
+				local hrp = self.fetchHrp(character)
+				if hrp then
+					local tornadoCenter = hrp.Position
+					for _, part in pairs(parts) do
+						if part.Parent and not part.Anchored then
+							local pos = part.Position
+							local distance = (Vector3.new(pos.X, tornadoCenter.Y, pos.Z) - tornadoCenter).Magnitude
+							local angle = math.atan2(pos.Z - tornadoCenter.Z, pos.X - tornadoCenter.X)
+							local newAngle = angle + math.rad(speed)
+							local targetPos = Vector3.new(
+								tornadoCenter.X + math.cos(newAngle) * math.min(radius, distance),
+								tornadoCenter.Y + (height * (math.abs(math.sin((pos.Y - tornadoCenter.Y) / height)))),
+								tornadoCenter.Z + math.sin(newAngle) * math.min(radius, distance)
+							)
+							local directionToTarget = (targetPos - part.Position).unit
+							part.Velocity = directionToTarget * strength
+						end
+					end
+				end
+			end)
+			
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "StopBlackhole",
+		Description = "Unviews if you're viewing someone",
+
+		Aliases = {"StopTornado", "StopSingularity"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			self.stopLoop("BLACKHOLE_MAIN")
+			self.stopLoop("BLACKHOLE_PART_CONTROL")
+			
+			local folder = workspace:FindFirstChild("BLACKHOLE_FOLDER")
+			if folder then
+				folder:Destroy()
+			end
+		end,
+	})
 end
 
 return CommandBar
