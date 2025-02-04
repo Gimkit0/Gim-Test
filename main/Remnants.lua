@@ -641,10 +641,10 @@ end
 
 function CommandBar:UniversalCommands()
 	self:AddCommand({
-		Name = "TestPlayer",
-		Description = "Tests the [Player]",
+		Name = "View",
+		Description = "Views the [Player]",
 		
-		Aliases = {},
+		Aliases = {"Spectate", "Watch"},
 		Arguments = {"Player"},
 		
 		Function = function(speaker, args)
@@ -656,7 +656,21 @@ function CommandBar:UniversalCommands()
 
 			-- 関数 --
 			for index, player in next, users do
-				print(player.Name)
+				if player.Character then
+					self.startLoop("VIEWING_PLAYER", .5, function()
+						if not player then
+							if not player.Character then
+								return
+							end
+							
+							self.stopLoop("VIEWING_PLAYER")
+							self.Camera.CameraSubject = speaker.Character
+							
+							return
+						end
+						self.Camera.CameraSubject = player.Character
+					end)
+				end
 			end
 		end,
 	})
