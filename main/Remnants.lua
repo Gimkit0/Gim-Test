@@ -786,10 +786,11 @@ function CommandBar:ConstructUI()
 	end
 	self.findPlayer = function(str)
 		local list = {
-			"All", "Everybody", "Everyone", "Others", "Friends",
-			"Nonfriends", "Dead", "NotAlive", "Alive", "Me", "Baconhairs",
-			"Bacons", "Guests", "Random", "Dead", "Team-", "Group-",
-			"Radius-",
+			"All", "Others", "Friends",
+			"Nonfriends", "Dead", "Alive", "Me",
+			"Bacons", "Guests", "Random", "Dead", "Team", "NonTeam", "Group",
+			"Rad", "Cursor", "Npcs", "Farthest", "Nearest", "Enemies", "Allies",
+			"Age",
 		}
 
 		local player = self.getSuggestion(str, self.Services.Players:GetPlayers())
