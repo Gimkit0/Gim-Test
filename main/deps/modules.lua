@@ -466,13 +466,115 @@ function modules.Parser()
 			local commandArguments = command.Args or command.Arguments
 			local arguments = self.getArguments(commandName, #commandArguments, ...)
 
-			self.Client.Modules.Utility:Spawn(function()
+			self.Client.spawn(function()
 				command.Function(speaker, arguments)
 			end)
 		end
 	end
 
 	return Parser
+end
+
+function modules.Core()
+	local Core = {}
+	Core.__index = Core
+
+	function Core.new(client)
+		local self = setmetatable({}, Core)
+
+		self.Client = client
+		
+		self.Storage = {
+			lastFakeGame = 0,
+		}
+
+		return self
+	end
+	
+	function Core:FetchGame()
+		local shortHands = {
+			[185655149] = "Bloxburg",
+		}
+		
+		if table.find(shortHands, game.PlaceId) then
+			return table.find(shortHands, game.PlaceId)
+		end
+		
+		return game.PlaceId
+	end
+
+	function Core:TeleportToServer(placeId, guid)
+		local retries = 0
+		local successful = false
+		repeat
+			local success, err = pcall(function()
+				self.Client.Services.TeleportService:TeleportToPlaceInstance(placeId, guid, self.Client.LocalPlayer)
+			end)
+			if not success then
+				retries += 1
+				warn(`There was an error: {err} retry {retries} / 3`)
+				task.wait(1)
+			else
+				successful = true
+			end
+		until retries < 3 or successful
+	end
+
+	function Core:TeleportToLocation(cframe)
+		local root = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
+		if root then
+			root.CFrame = cframe
+			if self:FetchGame() == "Bloxburg" then
+				local fakeGames = {
+					10949429194040214,
+					8599403013003,
+					959491030313413,
+					9313477575754,
+					4843993134738183,
+					3849138484933134,
+					92939319484313,
+					8449913848138134,
+				}
+				
+				local function getFakeGame()
+					local fakeGame = fakeGames[math.random(1, #fakeGames)]
+					if fakeGame == self.Storage.lastFakeGame then
+						fakeGame = getFakeGame()
+					end
+					return fakeGame
+				end
+				
+				task.wait(1.5)
+				
+				self.Client.Services.TeleportService:Teleport(getFakeGame(), self.Client.Services.Players)
+			end
+		end
+	end
+	
+	function Core:SetJumppower(power)
+		if not power then
+			power = 50
+		end
+
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		if hum then
+			hum.UseJumpPower = true
+			hum.JumpPower = tonumber(power)
+		end
+	end
+	
+	function Core:SetWalkspeed(speed)
+		if not speed then
+			speed = 16
+		end
+
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		if hum then
+			hum.WalkSpeed = tonumber(speed)
+		end
+	end
+
+	return Core
 end
 
 return modules
