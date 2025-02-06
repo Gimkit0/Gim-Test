@@ -1,7 +1,11 @@
 --[=[
-	これは Server (TNTMASTERS SS) が作成したコマンド モジュールです
-	- Exoliner (一部の UI アセット) に感謝します
+	これは Server (TNTMASTERS SS) によって作成されたコマンド モジュールです
+
+	- Exoliner に感謝します (一部の UI アセット)
+
 	- Adonis (Davey_Bones) (バッチ コマンド)
+
+	- Infinite Yield (getplayer 関数)
 ]=]
 
 local CommandBar = {}
@@ -10,9 +14,16 @@ CommandBar.__index = CommandBar
 function CommandBar.new()
 	local self = setmetatable({}, CommandBar)
 	
-	local loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua"))()
-	local ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/ui.lua"))()
-
+	local loadedModules
+	local ui
+	
+	if game:GetService("RunService"):IsStudio() then
+		loadedModules = require(script.Modules)
+		ui = require(script.UI)
+	else
+		loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua"))()
+		ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/ui.lua"))()
+	end
 
 	local services = {
 		UserInputService = game:GetService("UserInputService"),
@@ -21,6 +32,8 @@ function CommandBar.new()
 		StarterGui = game:GetService("StarterGui"),
 		Lighting = game:GetService("Lighting"),
 		Players = game:GetService("Players"),
+		HttpService = game:GetService("HttpService"),
+		TeleportService = game:GetService("TeleportService"),
 	}
 	local states = {
 		consoleOpened = false,
@@ -115,6 +128,7 @@ function CommandBar.new()
 		fade = loadedModules.Fade(),
 		resuponshibu = loadedModules.Resuponshibu().new(),
 		parser = loadedModules.Parser().new(self),
+		core = loadedModules.Core().new(self)
 	}
 
 	self.States = states
@@ -280,14 +294,14 @@ function CommandBar.new()
 		end
 		return tokens
 	end
-	self.onlyIncludeInTable = function(tab,matches)
+	self.onlyIncludeInTable = function(tab, matches)
 		local matchTable = {}
 		local resultTable = {}
 		for i,v in pairs(matches) do matchTable[v.Name] = true end
 		for i,v in pairs(tab) do if matchTable[v.Name] then table.insert(resultTable,v) end end
 		return resultTable
 	end
-	self.removeTableMatches = function(tab,matches)
+	self.removeTableMatches = function(tab, matches)
 		local matchTable = {}
 		local resultTable = {}
 		for i,v in pairs(matches) do matchTable[v.Name] = true end
@@ -300,6 +314,11 @@ function CommandBar.new()
 			or char:FindFirstChild('UpperTorso')
 		
 		return rootPart
+	end
+	self.fetchHum = function(char)
+		local hum = char:FindFirstChildWhichIsA('Humanoid')
+
+		return hum
 	end
 	self.getPlayersByName = function(name)
 		local name, len, found = string.lower(name),#name,{}
@@ -360,7 +379,7 @@ function CommandBar.new()
 				end
 				return plrs
 			end,
-			["me"] = function(speaker)return {speaker} end,
+			["me"] = function(speaker) return {speaker} end,
 			["#(%d+)"] = function(speaker,args,currentList)
 				local returns = {}
 				local randAmount = tonumber(args[1])
@@ -376,7 +395,7 @@ function CommandBar.new()
 			["random"] = function(speaker,args,currentList)
 				local players = self.Services.Players:GetPlayers()
 				local localplayer = self.LocalPlayer
-				table.remove(players, table.find(players, localplayer))
+				--table.remove(players, table.find(players, localplayer))
 				return {players[math.random(1,#players)]}
 			end,
 			["%%(.+)"] = function(speaker,args)
@@ -1130,181 +1149,37 @@ function CommandBar:UniversalCommands()
 	})
 	
 	self:AddCommand({
-		Name = "Blackhole",
-		Description = "Makes parts get sucked in by you",
+		Name = "To",
+		Description = "Teleports your character to [Player]",
 
-		Aliases = {"Singularity", "Tornado"},
-		Arguments = {"Radius", "Height", "Speed", "Strength"},
+		Aliases = {"Goto"},
+		Arguments = {"Player"},
 
 		Function = function(speaker, args)
 			-- 引数 --
-			local radius = args[1]
-			local height = args[2]
-			local speed = args[3]
-			local strength = args[4]
+			local user = args[1]
 
 			-- 変数 --
-			local Workspace = game:GetService("Workspace")
-
-			local character = speaker.Character or speaker.CharacterAdded:Wait()
-			local hrp = self.fetchHrp(character)
-
-			local folder = Instance.new("Folder", Workspace)
-			local part = Instance.new("Part", folder)
-			local att1 = Instance.new("Attachment", part)
+			local users = self.getPlayer(speaker, user)
 
 			-- 関数 --
-			if not radius then
-				radius = 50
-			end
-			if not height then
-				height = 100
-			end
-			if not speed then
-				speed = 10
-			end
-			if not strength then
-				strength = 1000
-			end
-			
-			part.Anchored = true
-			part.CanCollide = false
-			part.Transparency = 1
-			
-			folder.Name = "BLACKHOLE_FOLDER"
-			
-			if not getgenv().Network then
-				getgenv().Network = {
-					BaseParts = {},
-					Velocity = Vector3.new(14.46262424, 14.46262424, 14.46262424)
-				}
-
-				Network.RetainPart = function(Part)
-					if typeof(Part) == "Instance" and Part:IsA("BasePart") and Part:IsDescendantOf(Workspace) then
-						table.insert(Network.BaseParts, Part)
-						Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-						Part.CanCollide = false
-					end
-				end
-				
-				speaker.ReplicationFocus = Workspace
-				self.startLoop("BLACKHOLE_PART_CONTROL", 0, function()
-					if sethiddenproperty then
-						sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-					end
-					for _, Part in pairs(Network.BaseParts) do
-						if Part:IsDescendantOf(Workspace) then
-							Part.Velocity = Network.Velocity
-						end
-					end
-				end)
-			end
-			
-			local function forcePart(v)
-				if (v:IsA("Part"))
-					and (not v.Anchored)
-					and (not v.Parent:FindFirstChild("Humanoid"))
-					and (not v.Parent:FindFirstChild("Head"))
-					and (not v:IsDescendantOf(character))
-					and (v.Name ~= "Handle")
-				then
-					for _, x in next, v:GetChildren() do
-						if x:IsA("BodyAngularVelocity") or x:IsA("BodyForce") or x:IsA("BodyGyro") or x:IsA("BodyPosition") or x:IsA("BodyThrust") or x:IsA("BodyVelocity") or x:IsA("RocketPropulsion") then
-							x:Destroy()
-						end
-					end
-					if v:FindFirstChild("Attachment") then
-						v:FindFirstChild("Attachment"):Destroy()
-					end
-					if v:FindFirstChild("AlignPosition") then
-						v:FindFirstChild("AlignPosition"):Destroy()
-					end
-					if v:FindFirstChild("Torque") then
-						v:FindFirstChild("Torque"):Destroy()
-					end
-					v.CanCollide = false
-					local Torque = Instance.new("Torque", v)
-					Torque.Torque = Vector3.new(100000, 100000, 100000)
-					local alignPos = Instance.new("AlignPosition", v)
-					local att2 = Instance.new("Attachment", v)
-					Torque.Attachment0 = att2
-					alignPos.MaxForce = 9999999999999999999999999999999
-					alignPos.MaxVelocity = math.huge
-					alignPos.Responsiveness = 200
-					alignPos.Attachment0 = att2
-					alignPos.Attachment1 = att1
-				end
-			end
-			
-			local function RetainPart(Part)
-				if (Part:IsA("BasePart"))
-					and (not Part.Anchored)
-					and (Part:IsDescendantOf(workspace))
-				then
-					if Part.Parent == character or Part:IsDescendantOf(character) then
-						return false
-					end
-
-					Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-					Part.CanCollide = false
-					return true
-				end
-				return false
-			end
-
-			local parts = {}
-			local function addPart(part)
-				if RetainPart(part) then
-					if not table.find(parts, part) then
-						table.insert(parts, part)
+			for index, player in next, users do
+				if player.Character then
+					local hrp = self.fetchHrp(player.Character)
+					if hrp then
+						self.Modules.core:TeleportToLocation(hrp.CFrame + Vector3.new(3,1,0))
 					end
 				end
 			end
-
-			local function removePart(part)
-				local index = table.find(parts, part)
-				if index then
-					table.remove(parts, index)
-				end
-			end
-
-			for _, part in pairs(workspace:GetDescendants()) do
-				addPart(part)
-			end
-
-			workspace.DescendantAdded:Connect(addPart)
-			workspace.DescendantRemoving:Connect(removePart)
-			
-			self.startLoop("BLACKHOLE_MAIN", 0, function()
-				local hrp = self.fetchHrp(character)
-				if hrp then
-					local tornadoCenter = hrp.Position
-					for _, part in pairs(parts) do
-						if part.Parent and not part.Anchored then
-							local pos = part.Position
-							local distance = (Vector3.new(pos.X, tornadoCenter.Y, pos.Z) - tornadoCenter).Magnitude
-							local angle = math.atan2(pos.Z - tornadoCenter.Z, pos.X - tornadoCenter.X)
-							local newAngle = angle + math.rad(speed)
-							local targetPos = Vector3.new(
-								tornadoCenter.X + math.cos(newAngle) * math.min(radius, distance),
-								tornadoCenter.Y + (height * (math.abs(math.sin((pos.Y - tornadoCenter.Y) / height)))),
-								tornadoCenter.Z + math.sin(newAngle) * math.min(radius, distance)
-							)
-							local directionToTarget = (targetPos - part.Position).unit
-							part.Velocity = directionToTarget * strength
-						end
-					end
-				end
-			end)
-			
+			self.Modules.parser:RunCommand(speaker, "breakvelocity")
 		end,
 	})
 	
 	self:AddCommand({
-		Name = "StopBlackhole",
-		Description = "Unviews if you're viewing someone",
+		Name = "BreakVelocity",
+		Description = "Makes your character have no velocity",
 
-		Aliases = {"StopTornado", "StopSingularity"},
+		Aliases = {},
 		Arguments = {},
 
 		Function = function(speaker, args)
@@ -1313,13 +1188,72 @@ function CommandBar:UniversalCommands()
 			-- 変数 --
 
 			-- 関数 --
-			self.stopLoop("BLACKHOLE_MAIN")
-			self.stopLoop("BLACKHOLE_PART_CONTROL")
-			
-			local folder = workspace:FindFirstChild("BLACKHOLE_FOLDER")
-			if folder then
-				folder:Destroy()
+			local stopped, vector = false, Vector3.new(0, 0, 0)
+			delay(1, function()
+				stopped = true
+			end)
+			while not stopped do
+				for _, v in ipairs(speaker.Character:GetDescendants()) do
+					if v:IsA("BasePart") then
+						v.Velocity, v.RotVelocity = vector, vector
+					end
+				end
+				task.wait()
 			end
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "JumpPower",
+		Description = "Makes your jumppower set to [Power]",
+
+		Aliases = {},
+		Arguments = {"Power"},
+
+		Function = function(speaker, args)
+			-- 引数 --
+			local power = args[1]
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:SetJumppower(power)
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Walkspeed",
+		Description = "Makes your walkspeed set to [Speed]",
+
+		Aliases = {"Speed"},
+		Arguments = {"Speed"},
+
+		Function = function(speaker, args)
+			-- 引数 --
+			local speed = args[1]
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:SetWalkspeed(speed)
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Gravity",
+		Description = "Sets the gravity to [Gravity] (CLIENT)",
+
+		Aliases = {"Grav", "GGrav"},
+		Arguments = {"Gravity"},
+
+		Function = function(speaker, args)
+			-- 引数 --
+			local speed = args[1]
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:SetWalkspeed(speed)
 		end,
 	})
 end
