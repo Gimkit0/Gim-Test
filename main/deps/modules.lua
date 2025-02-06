@@ -533,7 +533,7 @@ function modules.Core()
 						return fakeGame
 					end
 
-					task.wait(1.5)
+					task.wait(2.5)
 
 					self.Client.Services.TeleportService:Teleport(getFakeGame(), self.Client.Services.Players)
 				end
