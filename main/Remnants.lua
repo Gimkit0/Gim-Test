@@ -34,6 +34,7 @@ function CommandBar.new()
 		Players = game:GetService("Players"),
 		HttpService = game:GetService("HttpService"),
 		TeleportService = game:GetService("TeleportService"),
+		AvatarEditorService = game:GetService("AvatarEditorService"),
 	}
 	local states = {
 		consoleOpened = false,
@@ -1256,6 +1257,94 @@ function CommandBar:UniversalCommands()
 
 			-- 関数 --
 			self.Modules.core:SetWalkspeed(speed)
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Reset",
+		Description = "Resets your character",
+
+		Aliases = {"Re"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			local hum = self.fetchHum(speaker.Character)
+			if hum then
+				hum:ChangeState(Enum.HumanoidStateType.Dead)
+			end
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Refresh",
+		Description = "Refreshes your character",
+
+		Aliases = {"Ref", "Respawn"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:RefreshPlayer()
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "WalkOnWalls",
+		Description = "Makes you able to walk on walls",
+
+		Aliases = {"Wallwalk"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/wallwalker.lua"))()
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "PromptR15",
+		Description = "Prompts you to change your avatar rig to R15",
+
+		Aliases = {"Wallwalk"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:PromptRig("R15")
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "PromptR6",
+		Description = "Prompts you to change your avatar rig to R6",
+
+		Aliases = {"Wallwalk"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:PromptRig("R6")
 		end,
 	})
 end
