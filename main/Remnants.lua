@@ -1165,8 +1165,10 @@ function CommandBar:UniversalCommands()
 			-- 関数 --
 			for index, player in next, users do
 				if player.Character then
+					print(player.Character)
 					local hrp = self.fetchHrp(player.Character)
 					if hrp then
+						print(hrp)
 						self.Modules.core:TeleportToLocation(hrp.CFrame + Vector3.new(3,1,0))
 					end
 				end
