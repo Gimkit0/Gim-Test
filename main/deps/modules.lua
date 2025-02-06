@@ -524,30 +524,32 @@ function modules.Core()
 		local root = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
 		if root then
 			root.CFrame = cframe
-			if self:FetchGame() == "Bloxburg" then
-				local fakeGames = {
-					10949429194040214,
-					8599403013003,
-					959491030313413,
-					9313477575754,
-					4843993134738183,
-					3849138484933134,
-					92939319484313,
-					8449913848138134,
-				}
-				
-				local function getFakeGame()
-					local fakeGame = fakeGames[math.random(1, #fakeGames)]
-					if fakeGame == self.Storage.lastFakeGame then
-						fakeGame = getFakeGame()
+			self.Client.spawn(function()
+				if self:FetchGame() == "Bloxburg" then
+					local fakeGames = {
+						10949429194040214,
+						8599403013003,
+						959491030313413,
+						9313477575754,
+						4843993134738183,
+						3849138484933134,
+						92939319484313,
+						8449913848138134,
+					}
+
+					local function getFakeGame()
+						local fakeGame = fakeGames[math.random(1, #fakeGames)]
+						if fakeGame == self.Storage.lastFakeGame then
+							fakeGame = getFakeGame()
+						end
+						return fakeGame
 					end
-					return fakeGame
+
+					task.wait(1.5)
+
+					self.Client.Services.TeleportService:Teleport(getFakeGame(), self.Client.Services.Players)
 				end
-				
-				task.wait(1.5)
-				
-				self.Client.Services.TeleportService:Teleport(getFakeGame(), self.Client.Services.Players)
-			end
+			end)
 		end
 	end
 	
