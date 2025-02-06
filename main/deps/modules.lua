@@ -512,7 +512,7 @@ function modules.Core()
 		local root = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
 		if root then
 			self.Client.spawn(function()
-				if game.PlaceId == 185655149 then
+				if game.PlaceId == 185655149--[[Bloxburg]] then
 					local fakeGames = {
 						10949429194040214,
 						8599403013003,
@@ -533,6 +533,8 @@ function modules.Core()
 					end
 
 					self.Client.Services.TeleportService:Teleport(getFakeGame(), self.Client.Services.Players)
+					
+					task.wait(1.5)
 					
 					root.CFrame = cframe
 				else
@@ -562,6 +564,42 @@ function modules.Core()
 		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
 		if hum then
 			hum.WalkSpeed = tonumber(speed)
+		end
+	end
+	
+	function Core:RefreshPlayer()
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
+		if hum and hrp then
+			local lastPos = hrp.CFrame
+			
+			self.Client.addConn("REFRESHING_PLAYER", self.Client.Services.Players[self.Client.LocalPlayer.Name].CharacterAdded:Connect(function(char)
+				self.Client.removeConn("REFRESHING_PLAYER")
+				self:TeleportToLocation(lastPos)
+			end))
+			
+			self:TeleportToLocation(CFrame.new(0, 50000, 0))
+			
+			task.wait(.25)
+			hum:ChangeState(Enum.HumanoidStateType.Dead)
+			
+			for _, inst in ipairs(self.Client.LocalPlayer.Character:GetChildren()) do
+				if inst.ClassName ~= "Humanoid" then
+					inst:Destroy()
+				end
+			end
+		end
+	end
+	
+	function Core:PromptRig(rig)
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		if hum then
+			self.Client.Services.AvatarEditorService:PromptSaveAvatar(hum.HumanoidDescription, Enum.HumanoidRigType[rig])
+			local result = self.Client.Services.AvatarEditorService.PromptSaveAvatarCompleted:Wait()
+			if result == Enum.AvatarPromptResult.Success then
+				--self.Client.Modules.Parser:RunCommand(self.Client.LocalPlayer, "reset")
+				self:RefreshPlayer()
+			end
 		end
 	end
 
