@@ -490,18 +490,6 @@ function modules.Core()
 
 		return self
 	end
-	
-	function Core:FetchGame()
-		local shortHands = {
-			[185655149] = "Bloxburg",
-		}
-		
-		if table.find(shortHands, game.PlaceId) then
-			return table.find(shortHands, game.PlaceId)
-		end
-		
-		return game.PlaceId
-	end
 
 	function Core:TeleportToServer(placeId, guid)
 		local retries = 0
@@ -525,7 +513,7 @@ function modules.Core()
 		if root then
 			root.CFrame = cframe
 			self.Client.spawn(function()
-				if self:FetchGame() == "Bloxburg" then
+				if game.PlaceId == 185655149 then
 					local fakeGames = {
 						10949429194040214,
 						8599403013003,
