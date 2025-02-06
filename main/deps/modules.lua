@@ -511,7 +511,6 @@ function modules.Core()
 	function Core:TeleportToLocation(cframe)
 		local root = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
 		if root then
-			root.CFrame = cframe
 			self.Client.spawn(function()
 				if game.PlaceId == 185655149 then
 					local fakeGames = {
@@ -533,9 +532,11 @@ function modules.Core()
 						return fakeGame
 					end
 
-					task.wait(.5)
-
 					self.Client.Services.TeleportService:Teleport(getFakeGame(), self.Client.Services.Players)
+					
+					root.CFrame = cframe
+				else
+					root.CFrame = cframe
 				end
 			end)
 		end
