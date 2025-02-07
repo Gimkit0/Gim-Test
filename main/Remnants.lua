@@ -11,11 +11,15 @@
 local CommandBar = {}
 CommandBar.__index = CommandBar
 
-function CommandBar.new()
+function CommandBar.new(config)
 	local self = setmetatable({}, CommandBar)
 	
 	local loadedModules
 	local ui
+	
+	if _G.REMNANTS_COMMAND_BAR then
+		_G.REMNANTS_COMMAND_BAR:Destroy()
+	end
 	
 	if game:GetService("RunService"):IsStudio() then
 		loadedModules = require(script.Modules)
@@ -42,7 +46,7 @@ function CommandBar.new()
 		changingFOV = false,
 		changeFOV = false,
 	}
-	local config = {
+	local defaultConfig = {
 		FOCUSED = {
 			FOV = {
 				ENABLED = false,
@@ -287,6 +291,14 @@ function CommandBar.new()
 			table.insert(broken, match)
 		end
 		return broken
+	end
+	self.validateConfig = function(default, newConfig)
+		for i, v in pairs(default) do
+			if newConfig[i] == nil then
+				newConfig[i] = v
+			end
+		end
+		return newConfig
 	end
 	self.toTokens = function(str)
 		local tokens = {}
@@ -645,6 +657,10 @@ function CommandBar.new()
 
 		return found
 	end
+	
+	self.Config = self.validateConfig(defaultConfig, config or {})
+	
+	_G.REMNANTS_COMMAND_BAR = self
 	
 	self:UniversalCommands()
 	self:ConstructUI()
@@ -1256,7 +1272,7 @@ function CommandBar:UniversalCommands()
 			-- 変数 --
 
 			-- 関数 --
-			self.Modules.core:SetWalkspeed(speed)
+			workspace.Gravity = tonumber(args[1])
 		end,
 	})
 	
@@ -1347,6 +1363,90 @@ function CommandBar:UniversalCommands()
 			self.Modules.core:PromptRig("R6")
 		end,
 	})
+	
+	self:AddCommand({
+		Name = "Fly",
+		Description = "Makes your character fly with the speed of [Speed]",
+
+		Aliases = {"Bird", "Flight"},
+		Arguments = {"Speed"},
+
+		Function = function(speaker, args)
+			-- 引数 --
+			local speed = args[1]
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:Fly(false, speed)
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "VFly",
+		Description = "Makes your character fly even with vehicles with the speed of [Speed]",
+
+		Aliases = {"VehicleFly"},
+		Arguments = {"Speed"},
+
+		Function = function(speaker, args)
+			-- 引数 --
+			local speed = args[1]
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:Fly(true, speed)
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Unfly",
+		Description = "Unflies your character",
+
+		Aliases = {"Unvfly", "Unvehiclefly", "Unbird", "Unflight"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			self.Modules.core:Unfly()
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "Rejoin",
+		Description = "Makes you rejoin the server",
+
+		Aliases = {"RJ", "RJoin"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			if #self.Services.Players <= 1 then
+				self.Services.TeleportService:Teleport(game.PlaceId, speaker)
+			else
+				self.Services.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, speaker)
+			end
+		end,
+	})
+end
+
+function CommandBar:Destroy()
+	self.UI:Destroy()
+	self.UI = nil
+	
+	for _, conn in pairs(self.Connections) do
+		conn:Disconnect()
+	end
+	self.Connections = nil
 end
 
 return CommandBar
