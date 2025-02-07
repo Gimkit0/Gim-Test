@@ -582,12 +582,6 @@ function modules.Core()
 			
 			task.wait(.25)
 			hum:ChangeState(Enum.HumanoidStateType.Dead)
-			
-			for _, inst in ipairs(self.Client.LocalPlayer.Character:GetChildren()) do
-				if inst.ClassName ~= "Humanoid" then
-					inst:Destroy()
-				end
-			end
 		end
 	end
 	
