@@ -1101,6 +1101,18 @@ function CommandBar:ConstructUI()
 end
 
 function CommandBar:UniversalCommands()
+	local sethidden
+	local gethidden
+	local queueteleport
+	local httprequest
+	
+	if not self.Services.RunService:IsStudio() then
+		sethidden = sethiddenproperty or set_hidden_property or set_hidden_prop
+		gethidden = gethiddenproperty or get_hidden_property or get_hidden_prop
+		queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
+		httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+	end
+	
 	self:AddCommand({
 		Name = "View",
 		Description = "Views the [Player]",
@@ -1434,6 +1446,43 @@ function CommandBar:UniversalCommands()
 				self.Services.TeleportService:Teleport(game.PlaceId, speaker)
 			else
 				self.Services.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, speaker)
+			end
+		end,
+	})
+	
+	self:AddCommand({
+		Name = "ServerHop",
+		Description = "Makes you join a different server",
+
+		Aliases = {"SerHop"},
+		Arguments = {},
+
+		Function = function(speaker, args)
+			-- 引数 --
+
+			-- 変数 --
+
+			-- 関数 --
+			if httprequest then
+				local servers = {}
+				local req = httprequest({Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", game.PlaceId)})
+				local body = self.Services.HttpService:JSONDecode(req.Body)
+				
+				if body and body.data then
+					for i, v in next, body.data do
+						if type(v) == "table" and tonumber(v.playing)
+							and tonumber(v.maxPlayers)
+							and v.playing < v.maxPlayers
+							and v.id ~= game.JobId
+						then
+							table.insert(servers, 1, v.id)
+						end
+					end
+				end
+				
+				if #servers > 0 then
+					self.Modules.core:TeleportToServer(game.PlaceId, servers[math.random(1, #servers)])
+				end
 			end
 		end,
 	})
