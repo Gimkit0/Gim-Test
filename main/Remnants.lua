@@ -152,8 +152,6 @@ function CommandBar.new(config)
 	
 	self.UI = ui
 	
-	self.Theme = self.Config.UI.THEMES[self.Config.UI.DEFAULT_THEME]
-	
 	self.findFirstChild = function(location, name)
 		for _,v in next, location:GetChildren() do
 			if v.Name == name then return v end
@@ -659,6 +657,8 @@ function CommandBar.new(config)
 	end
 	
 	self.Config = self.validateConfig(defaultConfig, config or {})
+	
+	self.Theme = self.Config.UI.THEMES[self.Config.UI.DEFAULT_THEME]
 	
 	_G.REMNANTS_COMMAND_BAR = self
 	
