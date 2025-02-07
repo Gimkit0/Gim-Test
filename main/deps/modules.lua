@@ -486,6 +486,25 @@ function modules.Core()
 		
 		self.Storage = {
 			lastFakeGame = 0,
+			
+			checkPoints = {},
+			connections = {
+				flyKeyDown = nil,
+				flyKeyUp = nil,
+				
+				mfly1 = nil,
+				mfly2 = nil,
+			},
+			
+			values = {
+				flying = false,
+				
+				vfly_speed = 2,
+				fly_speed = 2,
+				
+				m_fly_name1 = "",
+				m_fly_name2 = "",
+			},
 		}
 
 		return self
@@ -494,6 +513,7 @@ function modules.Core()
 	function Core:TeleportToServer(placeId, guid)
 		local retries = 0
 		local successful = false
+		
 		repeat
 			local success, err = pcall(function()
 				self.Client.Services.TeleportService:TeleportToPlaceInstance(placeId, guid, self.Client.LocalPlayer)
@@ -595,6 +615,235 @@ function modules.Core()
 				self:RefreshPlayer()
 			end
 		end
+	end
+	
+	function Core:Fly(isVfly, speed)
+		local QEfly = true
+		
+		self:Unfly()
+		
+		if speed then
+			if isVfly then
+				self.Storage.values.vfly_speed = speed else
+				self.Storage.values.fly_speed = speed
+			end
+		end
+		
+		if self.Client.Services.UserInputService.TouchEnabled then
+			self:MobileFly(isVfly)
+			return
+		end
+		
+		repeat wait() until self.Client.LocalPlayer and self.Client.LocalPlayer.Character
+			and self.Client.fetchHrp(self.Client.LocalPlayer.Character)
+			and self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		repeat wait() until self.Client.Mouse
+
+		local T = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
+		local CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+		local lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+		local SPEED = 0
+		
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+
+		local function FLY()
+			self.Storage.values.flying = true
+			local BG = Instance.new('BodyGyro')
+			local BV = Instance.new('BodyVelocity')
+			BG.P = 9e4
+			BG.Parent = T
+			BV.Parent = T
+			BG.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+			BG.cframe = T.CFrame
+			BV.velocity = Vector3.new(0, 0, 0)
+			BV.maxForce = Vector3.new(9e9, 9e9, 9e9)
+			task.spawn(function()
+				repeat wait()
+					if not isVfly and hum then
+						hum.PlatformStand = true
+					end
+					if CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0 then
+						SPEED = 50
+					elseif not (CONTROL.L + CONTROL.R ~= 0 or CONTROL.F + CONTROL.B ~= 0 or CONTROL.Q + CONTROL.E ~= 0) and SPEED ~= 0 then
+						SPEED = 0
+					end
+					if (CONTROL.L + CONTROL.R) ~= 0 or (CONTROL.F + CONTROL.B) ~= 0 or (CONTROL.Q + CONTROL.E) ~= 0 then
+						BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (CONTROL.F + CONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(CONTROL.L + CONTROL.R, (CONTROL.F + CONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+						lCONTROL = {F = CONTROL.F, B = CONTROL.B, L = CONTROL.L, R = CONTROL.R}
+					elseif (CONTROL.L + CONTROL.R) == 0 and (CONTROL.F + CONTROL.B) == 0 and (CONTROL.Q + CONTROL.E) == 0 and SPEED ~= 0 then
+						BV.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lCONTROL.F + lCONTROL.B)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lCONTROL.L + lCONTROL.R, (lCONTROL.F + lCONTROL.B + CONTROL.Q + CONTROL.E) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * SPEED
+					else
+						BV.velocity = Vector3.new(0, 0, 0)
+					end
+					BG.cframe = workspace.CurrentCamera.CoordinateFrame
+				until not self.Storage.values.flying
+				CONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+				lCONTROL = {F = 0, B = 0, L = 0, R = 0, Q = 0, E = 0}
+				SPEED = 0
+				BG:Destroy()
+				BV:Destroy()
+				if hum then
+					hum.PlatformStand = false
+				end
+			end)
+		end
+		self.Storage.connections.flyKeyDown = self.Client.Mouse.KeyDown:Connect(function(KEY)
+			if KEY:lower() == 'w' then
+				CONTROL.F = (isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed)
+			elseif KEY:lower() == 's' then
+				CONTROL.B = - (isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed)
+			elseif KEY:lower() == 'a' then
+				CONTROL.L = - (isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed)
+			elseif KEY:lower() == 'd' then 
+				CONTROL.R = (isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed)
+			elseif QEfly and KEY:lower() == 'e' then
+				CONTROL.Q = (isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed)*2
+			elseif QEfly and KEY:lower() == 'q' then
+				CONTROL.E = -(isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed)*2
+			end
+			pcall(function() workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+		end)
+		self.Storage.connections.flyKeyUp = self.Client.Mouse.KeyUp:Connect(function(KEY)
+			if KEY:lower() == 'w' then
+				CONTROL.F = 0
+			elseif KEY:lower() == 's' then
+				CONTROL.B = 0
+			elseif KEY:lower() == 'a' then
+				CONTROL.L = 0
+			elseif KEY:lower() == 'd' then
+				CONTROL.R = 0
+			elseif KEY:lower() == 'e' then
+				CONTROL.Q = 0
+			elseif KEY:lower() == 'q' then
+				CONTROL.E = 0
+			end
+		end)
+		FLY()
+	end
+	
+	function Core:MobileFly(isVfly)
+		self:Unfly()
+		self.Storage.values.flying = true
+		
+		self.Storage.values.m_fly_name1 = self:RandomString()
+		self.Storage.values.m_fly_name2 = self:RandomString()
+
+		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		
+		local camera = workspace.CurrentCamera
+		local v3none = Vector3.new()
+		local v3zero = Vector3.new(0, 0, 0)
+		local v3inf = Vector3.new(9e9, 9e9, 9e9)
+
+		local controlModule = require(self.Client.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
+		local bv = Instance.new("BodyVelocity")
+		bv.Name = self.Storage.values.m_fly_name1
+		bv.Parent = hrp
+		bv.MaxForce = v3zero
+		bv.Velocity = v3zero
+
+		local bg = Instance.new("BodyGyro")
+		bg.Name = self.Storage.values.m_fly_name2
+		bg.Parent = hrp
+		bg.MaxTorque = v3inf
+		bg.P = 1000
+		bg.D = 50
+
+		self.Storage.connections.mfly1 = self.Client.LocalPlayer.CharacterAdded:Connect(function()
+			local bv = Instance.new("BodyVelocity")
+			bv.Name = self.Storage.values.m_fly_name1
+			bv.Parent = hrp
+			bv.MaxForce = v3zero
+			bv.Velocity = v3zero
+
+			local bg = Instance.new("BodyGyro")
+			bg.Name = self.Storage.values.m_fly_name2
+			bg.Parent = hrp
+			bg.MaxTorque = v3inf
+			bg.P = 1000
+			bg.D = 50
+		end)
+
+		self.Storage.connections.mfly2 = self.Client.Services.RunService.RenderStepped:Connect(function()
+			hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
+			camera = workspace.CurrentCamera
+			if hum and hrp
+				and hrp:FindFirstChild(self.Storage.values.m_fly_name1)
+				and hrp:FindFirstChild(self.Storage.values.m_fly_name2)
+			then
+				local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+				local VelocityHandler = hrp:FindFirstChild(self.Storage.values.m_fly_name1)
+				local GyroHandler = hrp:FindFirstChild(self.Storage.values.m_fly_name2)
+
+				VelocityHandler.MaxForce = v3inf
+				GyroHandler.MaxTorque = v3inf
+				
+				if not isVfly then
+					hum.PlatformStand = true
+				end
+				
+				GyroHandler.CFrame = camera.CoordinateFrame
+				VelocityHandler.Velocity = v3none
+
+				local direction = controlModule:GetMoveVector()
+				if direction.X > 0 then
+					VelocityHandler.Velocity = VelocityHandler.Velocity + camera.CFrame.RightVector * (direction.X * ((isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed) * 50))
+				end
+				if direction.X < 0 then
+					VelocityHandler.Velocity = VelocityHandler.Velocity + camera.CFrame.RightVector * (direction.X * ((isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed) * 50))
+				end
+				if direction.Z > 0 then
+					VelocityHandler.Velocity = VelocityHandler.Velocity - camera.CFrame.LookVector * (direction.Z * ((isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed) * 50))
+				end
+				if direction.Z < 0 then
+					VelocityHandler.Velocity = VelocityHandler.Velocity - camera.CFrame.LookVector * (direction.Z * ((isVfly and self.Storage.values.vfly_speed or self.Storage.values.fly_speed) * 50))
+				end
+			end
+		end)
+	end
+	
+	function Core:Unfly()
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
+		
+		self.Storage.values.flying = false
+		
+		if self.Storage.connections.flyKeyDown or self.Storage.connections.flyKeyUp then
+			self.Storage.connections.flyKeyDown:Disconnect()
+			self.Storage.connections.flyKeyUp:Disconnect()
+			
+			self.Storage.connections.flyKeyDown = nil
+			self.Storage.connections.flyKeyUp = nil
+		end
+		
+		if self.Storage.connections.mfly1 or self.Storage.connections.mfly2 then
+			self.Storage.connections.mfly1:Disconnect()
+			self.Storage.connections.mfly2:Disconnect()
+
+			self.Storage.connections.mfly1 = nil
+			self.Storage.connections.mfly2 = nil
+		end
+		
+		if hrp:FindFirstChild(self.Storage.values.m_fly_name1) then
+			hrp[self.Storage.values.m_fly_name1]:Destroy()
+		end
+		if hrp:FindFirstChild(self.Storage.values.m_fly_name2) then
+			hrp[self.Storage.values.m_fly_name2]:Destroy()
+		end
+		
+		self.Client.spawn(function()
+			workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+		end)
+	end
+	
+	function Core:RandomString()
+		local length = math.random(10,20)
+		local array = {}
+		for i = 1, length do
+			array[i] = string.char(math.random(32, 126))
+		end
+		return table.concat(array)
 	end
 
 	return Core
