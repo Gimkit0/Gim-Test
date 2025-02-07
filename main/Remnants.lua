@@ -658,7 +658,7 @@ function CommandBar.new(config)
 	
 	self.Config = self.validateConfig(defaultConfig, config or {})
 	
-	self.Theme = self.Config.UI.THEMES[self.Config.UI.DEFAULT_THEME]
+	--self.Theme = self.Config.UI.THEMES[self.Config.UI.DEFAULT_THEME]
 	
 	_G.REMNANTS_COMMAND_BAR = self
 	
