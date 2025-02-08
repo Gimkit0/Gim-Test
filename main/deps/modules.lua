@@ -1389,7 +1389,7 @@ function modules.UniversalCommands()
 						self.removeConn("VIEW_CHANGED")
 
 						self.Camera.CameraSubject = player.Character
-						--self.addConn("VIEW_DIED", player.CharacterAdded:Connect(function()
+						self.addConn("VIEW_DIED", player.CharacterAdded:Connect(function()
 							repeat task.wait() until player.Character ~= nil and self.fetchHrp(player.Character)
 							self.Camera.CameraSubject = player.Character
 						end))
