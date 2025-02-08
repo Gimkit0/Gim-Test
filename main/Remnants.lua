@@ -15,18 +15,17 @@ function CommandBar.new(config)
 	local self = setmetatable({}, CommandBar)
 	
 	local loadedModules
-	local ui
 	
-	if _G.REMNANTS_COMMAND_BAR then
-		_G.REMNANTS_COMMAND_BAR:Destroy()
+	local globalName = "REMNANTS_COMMAND_BAR_V1.0"
+	
+	if _G[globalName] then
+		_G[globalName]:Destroy()
 	end
 	
 	if game:GetService("RunService"):IsStudio() then
 		loadedModules = require(script.Modules)
-		ui = require(script.UI)
 	else
 		loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua"))()
-		ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/ui.lua"))()
 	end
 
 	local services = {
@@ -74,6 +73,11 @@ function CommandBar.new(config)
 			PC_OPEN_KEY = Enum.KeyCode.Semicolon,
 
 			XBOX_OPEN_KEY = Enum.KeyCode.DPadUp,
+		},
+		
+		COMMANDS = {
+			UNIVERSAL_COMMANDS = true,
+			AUTOMATIC_BACKDOOR_SCAN = false,
 		},
 		
 		UI = {
@@ -127,13 +131,16 @@ function CommandBar.new(config)
 		
 		numCommands = 0,
 		lastFov = 0,
+		
+		onThemeChangeConns = {},
 	}
 	local modules = {
 		autocomplete = loadedModules.Autocomplete(),
 		fade = loadedModules.Fade(),
+		universalCommands = loadedModules.UniversalCommands(),
 		resuponshibu = loadedModules.Resuponshibu().new(),
 		parser = loadedModules.Parser().new(self),
-		core = loadedModules.Core().new(self)
+		core = loadedModules.Core().new(self),
 	}
 
 	self.States = states
@@ -150,7 +157,7 @@ function CommandBar.new(config)
 	self.LocalPlayer = services.Players.LocalPlayer
 	self.Mouse = self.LocalPlayer:GetMouse()
 	
-	self.UI = ui
+	self.UI = loadedModules.ConsoleInterface()
 	
 	self.findFirstChild = function(location, name)
 		for _,v in next, location:GetChildren() do
@@ -171,6 +178,20 @@ function CommandBar.new(config)
 			task.spawn(pcall, func) else
 			task.spawn(func)
 		end
+	end
+	self.changeTheme = function(themeName)
+		self.Theme = self.Config.UI.THEMES[themeName]
+		for _, themeConn in pairs(self.Storage.onThemeChangeConns) do
+			themeConn(self.Theme)
+		end
+	end
+	self.onThemeChange = function(func)
+		if type(func) ~= "function" then
+			return
+		end
+		table.insert(self.Storage.onThemeChangeConns, function(theme)
+			func(theme)
+		end)
 	end
 	self.startLoop = function(name, delay, func)
 		self.stopLoop(name)
@@ -282,6 +303,13 @@ function CommandBar.new(config)
 		end
 		return int
 	end
+	self.getTableLength = function(table)
+		local count = 0
+		for _ in pairs(table) do
+			count = count + 1
+		end
+		return count
+	end
 	self.splitString = function(str, delimeter)
 		local broken = {}
 		if delimeter == nil then delimeter = "," end
@@ -355,14 +383,14 @@ function CommandBar.new(config)
 	end
 	self.getClosestPlayerFromCursor = function()
 		local found = nil
-		local ClosestDistance = math.huge
+		local closestDistance = math.huge
 		for i, v in pairs(self.Services.Players:GetPlayers()) do
 			if v ~= self.LocalPlayer and v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
 				for _, x in pairs(v.Character:GetChildren()) do
 					if string.find(x.Name, "Torso") then
-						local Distance = (self.worldToScreen(x) - self.mousePositionToVector2()).Magnitude
-						if Distance < ClosestDistance then
-							ClosestDistance = Distance
+						local distance = (self.worldToScreen(x) - self.mousePositionToVector2()).Magnitude
+						if distance < closestDistance then
+							closestDistance = distance
 							found = v
 						end
 					end
@@ -406,7 +434,9 @@ function CommandBar.new(config)
 			["random"] = function(speaker,args,currentList)
 				local players = self.Services.Players:GetPlayers()
 				local localplayer = self.LocalPlayer
-				--table.remove(players, table.find(players, localplayer))
+				if #players > 1 then
+					table.remove(players, table.find(players, localplayer))
+				end
 				return {players[math.random(1,#players)]}
 			end,
 			["%%(.+)"] = function(speaker,args)
@@ -658,12 +688,17 @@ function CommandBar.new(config)
 	
 	self.Config = self.validateConfig(defaultConfig, config or {})
 	
-	self.Theme = self.Config.UI.THEMES[self.Config.UI.DEFAULT_THEME]
+	self.floatName = self.Modules.core:RandomString()
 	
-	_G.REMNANTS_COMMAND_BAR = self
+	if self.Config.COMMANDS.UNIVERSAL_COMMANDS then
+		self.Modules.universalCommands.new(self)
+	end
 	
-	self:UniversalCommands()
 	self:ConstructUI()
+	
+	self.changeTheme(self.Config.UI.DEFAULT_THEME)
+	
+	_G[globalName] = self
 
 	return self
 end
@@ -839,10 +874,6 @@ function CommandBar:ConstructUI()
 		self.addConn("TEXTBOX_FOCUSED", textbox.Focused:Connect(function()
 			if (not self.States.changingFOV) and (self.Config.FOCUSED.FOV.ENABLED) then
 				self.Storage.lastFov = self.Camera.FieldOfView
-			end
-			local ChatOpened = self.Services.StarterGui:GetCore("ChatActive")
-			if ChatOpened then
-				self.Services.StarterGui:SetCore("ChatActive", false)
 			end
 			task.wait()
 			self.States.consoleOpened = true
@@ -1098,394 +1129,6 @@ function CommandBar:ConstructUI()
 			end
 		end))
 	end
-end
-
-function CommandBar:UniversalCommands()
-	local sethidden
-	local gethidden
-	local queueteleport
-	local httprequest
-	
-	if not self.Services.RunService:IsStudio() then
-		sethidden = sethiddenproperty or set_hidden_property or set_hidden_prop
-		gethidden = gethiddenproperty or get_hidden_property or get_hidden_prop
-		queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
-		httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
-	end
-	
-	self:AddCommand({
-		Name = "View",
-		Description = "Views the [Player]",
-
-		Aliases = {"Spectate", "Watch"},
-		Arguments = {"Player"},
-
-		Function = function(speaker, args)
-			-- 引数 --
-			local user = args[1]
-
-			-- 変数 --
-			local users = self.getPlayer(speaker, user)
-
-			-- 関数 --
-			for index, player in next, users do
-				if player.Character then
-					self.startLoop("VIEWING_PLAYER", .5, function()
-						local player = self.Services.Players:FindFirstChild(player.Name)
-						if not player then
-							if not player.Character then
-								return
-							end
-
-							self.stopLoop("VIEWING_PLAYER")
-							self.spawn(function()
-								for i = 1, 10 do
-									self.Camera.CameraSubject = speaker.Character
-									task.wait()
-								end
-							end)
-
-							return
-						end
-						self.Camera.CameraSubject = player.Character
-					end)
-				end
-			end
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Unview",
-		Description = "Unviews if you're viewing someone",
-
-		Aliases = {"Unspectate", "Unwatch"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			self.stopLoop("VIEWING_PLAYER")
-			self.spawn(function()
-				for i = 1, 10 do
-					self.Camera.CameraSubject = speaker.Character
-					task.wait()
-				end
-			end)
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "To",
-		Description = "Teleports your character to [Player]",
-
-		Aliases = {"Goto"},
-		Arguments = {"Player"},
-
-		Function = function(speaker, args)
-			-- 引数 --
-			local user = args[1]
-
-			-- 変数 --
-			local users = self.getPlayer(speaker, user)
-
-			-- 関数 --
-			for index, player in next, users do
-				if player.Character then
-					print(player.Character)
-					local hrp = self.fetchHrp(player.Character)
-					if hrp then
-						print(hrp)
-						self.Modules.core:TeleportToLocation(hrp.CFrame + Vector3.new(3,1,0))
-					end
-				end
-			end
-			self.Modules.parser:RunCommand(speaker, "breakvelocity")
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "BreakVelocity",
-		Description = "Makes your character have no velocity",
-
-		Aliases = {},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			local stopped, vector = false, Vector3.new(0, 0, 0)
-			delay(1, function()
-				stopped = true
-			end)
-			while not stopped do
-				for _, v in ipairs(speaker.Character:GetDescendants()) do
-					if v:IsA("BasePart") then
-						v.Velocity, v.RotVelocity = vector, vector
-					end
-				end
-				task.wait()
-			end
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "JumpPower",
-		Description = "Makes your jumppower set to [Power]",
-
-		Aliases = {},
-		Arguments = {"Power"},
-
-		Function = function(speaker, args)
-			-- 引数 --
-			local power = args[1]
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:SetJumppower(power)
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Walkspeed",
-		Description = "Makes your walkspeed set to [Speed]",
-
-		Aliases = {"Speed"},
-		Arguments = {"Speed"},
-
-		Function = function(speaker, args)
-			-- 引数 --
-			local speed = args[1]
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:SetWalkspeed(speed)
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Gravity",
-		Description = "Sets the gravity to [Gravity] (CLIENT)",
-
-		Aliases = {"Grav", "GGrav"},
-		Arguments = {"Gravity"},
-
-		Function = function(speaker, args)
-			-- 引数 --
-			local speed = args[1]
-
-			-- 変数 --
-
-			-- 関数 --
-			workspace.Gravity = tonumber(args[1])
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Reset",
-		Description = "Resets your character",
-
-		Aliases = {"Re"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			local hum = self.fetchHum(speaker.Character)
-			if hum then
-				hum:ChangeState(Enum.HumanoidStateType.Dead)
-			end
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Refresh",
-		Description = "Refreshes your character",
-
-		Aliases = {"Ref", "Respawn"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:RefreshPlayer()
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "WalkOnWalls",
-		Description = "Makes you able to walk on walls",
-
-		Aliases = {"Wallwalk"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/wallwalker.lua"))()
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "PromptR15",
-		Description = "Prompts you to change your avatar rig to R15",
-
-		Aliases = {"Wallwalk"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:PromptRig("R15")
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "PromptR6",
-		Description = "Prompts you to change your avatar rig to R6",
-
-		Aliases = {"Wallwalk"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:PromptRig("R6")
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Fly",
-		Description = "Makes your character fly with the speed of [Speed]",
-
-		Aliases = {"Bird", "Flight"},
-		Arguments = {"Speed"},
-
-		Function = function(speaker, args)
-			-- 引数 --
-			local speed = args[1]
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:Fly(false, speed)
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "VFly",
-		Description = "Makes your character fly even with vehicles with the speed of [Speed]",
-
-		Aliases = {"VehicleFly"},
-		Arguments = {"Speed"},
-
-		Function = function(speaker, args)
-			-- 引数 --
-			local speed = args[1]
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:Fly(true, speed)
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Unfly",
-		Description = "Unflies your character",
-
-		Aliases = {"Unvfly", "Unvehiclefly", "Unbird", "Unflight"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			self.Modules.core:Unfly()
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "Rejoin",
-		Description = "Makes you rejoin the server",
-
-		Aliases = {"RJ", "RJoin"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			if #self.Services.Players <= 1 then
-				self.Services.TeleportService:Teleport(game.PlaceId, speaker)
-			else
-				self.Services.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, speaker)
-			end
-		end,
-	})
-	
-	self:AddCommand({
-		Name = "ServerHop",
-		Description = "Makes you join a different server",
-
-		Aliases = {"SerHop"},
-		Arguments = {},
-
-		Function = function(speaker, args)
-			-- 引数 --
-
-			-- 変数 --
-
-			-- 関数 --
-			if httprequest then
-				local servers = {}
-				local req = httprequest({Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", game.PlaceId)})
-				local body = self.Services.HttpService:JSONDecode(req.Body)
-				
-				if body and body.data then
-					for i, v in next, body.data do
-						if type(v) == "table" and tonumber(v.playing)
-							and tonumber(v.maxPlayers)
-							and v.playing < v.maxPlayers
-							and v.id ~= game.JobId
-						then
-							table.insert(servers, 1, v.id)
-						end
-					end
-				end
-				
-				if #servers > 0 then
-					self.Modules.core:TeleportToServer(game.PlaceId, servers[math.random(1, #servers)])
-				end
-			end
-		end,
-	})
 end
 
 function CommandBar:Destroy()
