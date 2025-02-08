@@ -1,11 +1,11 @@
 --[=[
-	これは Server (TNTMASTERS SS) によって作成されたコマンド モジュールです
-
-	- Exoliner に感謝します (一部の UI アセット)
-
-	- Adonis (Davey_Bones) (バッチ コマンド)
-
-	- Infinite Yield (getplayer 関数)
+	Remnants Admin Console, Made by ._.l5 at discord AKA Server
+	
+	- * - Credits - * -
+	  - Exoliner: Some gui assets
+	  - Infinite Yield: Most of the commands and getplayer function
+	  - Adonis (Davey_Bones): Batch commands
+	  - And you: For making this possible 😘
 ]=]
 
 local CommandBar = {}
@@ -16,7 +16,7 @@ function CommandBar.new(config)
 	
 	local loadedModules
 	
-	local globalName = "REMNANTS_COMMAND_BAR_V1.0"
+	local globalName = "サーバー管理者コンソール"
 	
 	if _G[globalName] then
 		_G[globalName]:Destroy()
@@ -93,7 +93,7 @@ function CommandBar.new(config)
 					BACKGROUND_IMAGE_TRANSPARENCY = .2,
 					BACKGROUND_IMAGE_COLOR = Color3.fromRGB(255, 255, 255),
 					DROPSHADOW = Color3.fromRGB(20, 20, 20),
-					DROPSHADOW_TRANSPARENCY = .2,
+					DROPSHADOW_TRANSPARENCY = .5,
 
 					REGULAR_TEXT = Color3.fromRGB(235, 235, 235),
 					SHADED_TEXT = Color3.fromRGB(150, 150, 150),
@@ -181,17 +181,31 @@ function CommandBar.new(config)
 	end
 	self.changeTheme = function(themeName)
 		self.Theme = self.Config.UI.THEMES[themeName]
+		
+		local function themeChangeTween(obj, goal)
+			self.tween(obj, TweenInfo.new(.25, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
+		end
+		
 		for _, themeConn in pairs(self.Storage.onThemeChangeConns) do
-			themeConn(self.Theme)
+			themeConn(self.Theme, themeChangeTween)
 		end
 	end
 	self.onThemeChange = function(func)
 		if type(func) ~= "function" then
 			return
 		end
-		table.insert(self.Storage.onThemeChangeConns, function(theme)
-			func(theme)
+		
+		local function themeChangeTween(obj, goal)
+			self.tween(obj, TweenInfo.new(.25, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
+		end
+		
+		table.insert(self.Storage.onThemeChangeConns, function(theme, themeTween)
+			func(theme, themeTween)
 		end)
+		self.spawn(function()
+			repeat task.wait() until self.Theme
+			func(self.Theme, themeChangeTween)
+		end, true)
 	end
 	self.startLoop = function(name, delay, func)
 		self.stopLoop(name)
@@ -731,6 +745,23 @@ function CommandBar:ConstructUI()
 	local autofill = textbox.Autofill
 	local colorfill = textbox.Colorfill
 	
+	self.onThemeChange(function(theme, tween)
+		tween(main.Background, {BackgroundColor3 = theme.BACKGROUND})
+		tween(main.Background.UIStroke, {Color = theme.OUTLINE})
+		tween(main.Background.DropShadow1, {ImageColor3 = theme.DROPSHADOW})
+		tween(main.Background.DropShadow2, {ImageColor3 = theme.DROPSHADOW})
+		tween(textbox, {TextColor3 = theme.REGULAR_TEXT})
+		tween(textbox, {PlaceholderColor3 = theme.SHADED_TEXT})
+		tween(autofill, {TextColor3 = theme.SHADED_TEXT})
+		tween(commandsFrame, {BackgroundColor3 = theme.LIGHT_BACKGROUND})
+		tween(commandsFrame.Background, {ImageColor3 = theme.BACKGROUND_IMAGE_COLOR})
+		tween(commandsFrame.Background, {ImageTransparency = theme.BACKGROUND_IMAGE_TRANSPARENCY})
+		tween(content.Tab, {TextColor3 = theme.REGULAR_TEXT})
+		tween(content.Tab, {BackgroundColor3 = theme.LIGHT_BACKGROUND})
+		
+		commandsFrame.Background.Image = `rbxassetid://{theme.BACKGROUND_IMAGE}`
+	end)
+	
 	self.openBar = function()
 		self.spawn(function()
 			if self.States.consoleOpened then
@@ -767,6 +798,9 @@ function CommandBar:ConstructUI()
 				task.wait(.3)
 				self.Modules.fade:FadeOpen(main.Content.ScrollingFrame, .5)
 			end)
+			
+			self.tween(main.Background.DropShadow1, TweenInfo.new(1), {ImageTransparency = self.Theme.DROPSHADOW_TRANSPARENCY})
+			self.tween(main.Background.DropShadow2, TweenInfo.new(1), {ImageTransparency = self.Theme.DROPSHADOW_TRANSPARENCY})
 
 			self.States.currentlyOpened = true
 		end)
