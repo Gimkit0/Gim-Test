@@ -90,7 +90,7 @@ function CommandBar.new(config)
 					LIGHT_BACKGROUND = Color3.fromRGB(50, 50, 50),
 					BACKGROUND_TRANSPARENCY = .1,
 					BACKGROUND_IMAGE = 16255699706,
-					BACKGROUND_IMAGE_TRANSPARENCY = .2,
+					BACKGROUND_IMAGE_TRANSPARENCY = .9,
 					BACKGROUND_IMAGE_COLOR = Color3.fromRGB(255, 255, 255),
 					DROPSHADOW = Color3.fromRGB(20, 20, 20),
 					DROPSHADOW_TRANSPARENCY = .5,
@@ -121,6 +121,10 @@ function CommandBar.new(config)
 					PLAYER_COLOR = Color3.fromRGB(255, 0, 0),
 					STRING_COLOR = Color3.fromRGB(136, 255, 39),
 					UTILITY_COLOR = Color3.fromRGB(255, 199, 57),
+					
+					SUCCESS = Color3.fromRGB(115, 255, 0),
+					ERROR = Color3.fromRGB(255, 0, 0),
+					INFO = Color3.fromRGB(5, 138, 255),
 				},
 			},
 		},
@@ -141,6 +145,8 @@ function CommandBar.new(config)
 		resuponshibu = loadedModules.Resuponshibu().new(),
 		parser = loadedModules.Parser().new(self),
 		core = loadedModules.Core().new(self),
+		
+		notifcationTemp = loadedModules.NotifyUI(),
 	}
 
 	self.States = states
@@ -1063,6 +1069,7 @@ function CommandBar:ConstructUI()
 					end
 					if index == 1 then
 						temp.Select.Visible = true
+						temp.Select.BackgroundColor3 = self.Theme.THEME_COLOR
 					end
 					pcall(function()
 						if index > 8 then
@@ -1162,7 +1169,196 @@ function CommandBar:ConstructUI()
 				open.Visible = false
 			end
 		end))
+		
+		self:Notify("Server's Admin", "Welcome to Server's Admin! Press ';' for command bar.", "SUCCESS", function()
+			
+		end, 15)
 	end
+end
+
+function CommandBar:Notify(name, desc, ntype, clickFunc, duration)
+	local notifyFrame = self.UI:FindFirstChild("NotifyFrame")
+	if not notifyFrame then
+		notifyFrame = Instance.new("ScrollingFrame", self.UI)
+		notifyFrame.Name = "NotifyFrame"
+		notifyFrame.BackgroundTransparency = 1
+		notifyFrame.Active = false
+		notifyFrame.CanvasSize = UDim2.new(0,0,0,0)
+		notifyFrame.Size = UDim2.new(0, 300, 1, 0)
+		notifyFrame.AnchorPoint = Vector2.new(1,1)
+		notifyFrame.Position = UDim2.new(1,0,1,0)
+		notifyFrame.ScrollingEnabled = false
+		notifyFrame.ClipsDescendants = false
+		
+		local list = Instance.new("UIListLayout", notifyFrame)
+		list.Padding = UDim.new(0, 15)
+		list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		list.VerticalAlignment = Enum.VerticalAlignment.Bottom
+		
+		local padding = Instance.new("UIPadding", notifyFrame)
+		padding.PaddingBottom = UDim.new(0,20)
+		padding.PaddingLeft = UDim.new(0,20)
+		padding.PaddingRight = UDim.new(0,20)
+		padding.PaddingTop = UDim.new(0,20)
+	end
+	
+	local frame = self.Modules.notifcationTemp:Clone()
+	frame.Parent = notifyFrame
+	
+	frame.Settings.NameString.Value = name
+	frame.Settings.DescriptionString.Value = desc
+	frame.Settings.DurationNumber.Value = duration
+	
+	self.onThemeChange(function(theme, tween)
+		tween(frame.Graphical.Background, {BackgroundColor3 = theme.BACKGROUND})
+		tween(frame.Graphical.Background.DropShadow1, {ImageColor3 = theme.DROPSHADOW})
+		tween(frame.Graphical.Background.DropShadow2, {ImageColor3 = theme.DROPSHADOW})
+		tween(frame.Graphical.Background.Background, {ImageColor3 = theme.BACKGROUND_IMAGE_COLOR})
+		tween(frame.Graphical.Background.Background, {ImageTransparency = theme.BACKGROUND_IMAGE_TRANSPARENCY})
+		tween(frame.Graphical.Top.Underline, {BackgroundColor3 = theme.UNDERLINE})
+		tween(frame.Graphical.Top.Icon, {ImageColor3 = theme[ntype]})
+		tween(frame.Graphical.Top.Title, {TextColor3 = theme.REGULAR_TEXT})
+		tween(frame.Graphical.Content.Bottom.Fill, {BackgroundColor3 = theme[ntype]})
+		tween(frame.Graphical.Content.Scroll.Description, {BackgroundColor3 = theme.SHADED_TEXT})
+		
+		frame.Graphical.Background.Background.Image = `rbxassetid://{theme.BACKGROUND_IMAGE}`
+	end)
+	
+	local function C_19()
+		local script = frame.Scripts.Core;
+
+		local client = {}
+
+		function client:init()
+			self._scripts = script.Parent
+			self._frame = self._scripts.Parent
+
+			self._graphical = self._frame.Graphical
+			self._settings = self._frame.Settings
+			self._intro = self._frame.Intro
+
+			self._services = {
+				RunService = game:GetService("RunService"),
+				TweenService = game:GetService("TweenService"),
+			}
+			self._connections = {}
+
+			self._durationTicks = 0
+
+			self._closed = false
+
+			self.tween = function(object, info, goal)
+				local tween = self._services.TweenService:Create(object, info, goal)
+				tween:Play()
+				return tween
+			end
+
+			self.addConnection = function(name, connection)
+				table.insert(self._connections, {Name = name, Connection = connection})
+			end
+
+			self.removeConnection = function(name)
+				for index, connection in pairs(self._connections) do
+					if connection.Name == name then
+						connection.Connection:Disconnect()
+						table.remove(self._connections, index)
+					end
+				end
+			end
+
+			self.removeAllConnections = function()
+				for index, connection in pairs(self._connections) do
+					connection.Connection:Disconnect()
+					table.remove(self._connections, index)
+				end
+			end
+
+			self.ringAnimation = function(icon)
+				local TIME = .25
+				local EASING_STYLE = Enum.EasingStyle.Quart
+				local EASING_DIRECTION = Enum.EasingDirection.Out
+
+				task.spawn(function()
+					self.tween(icon, TweenInfo.new(TIME, EASING_STYLE, EASING_DIRECTION), {Rotation = 45})
+					task.wait(TIME)
+					self.tween(icon, TweenInfo.new(TIME, EASING_STYLE, EASING_DIRECTION), {Rotation = -45})
+					task.wait(TIME)
+					self.tween(icon, TweenInfo.new(TIME, EASING_STYLE, EASING_DIRECTION), {Rotation = 0})
+				end)
+			end
+
+			self.openAnimation = function()
+				local lastSize = self._frame.Size
+				self._frame.Size = UDim2.new(1,0,0,0)
+				self._frame:TweenSize(lastSize, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .15, true, nil)
+				self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+				task.wait(.20)
+				for index, object in ipairs(self._graphical:GetChildren()) do
+					if object:IsA("Frame") then
+						object.Visible = true
+					end
+				end
+				self.ringAnimation(self._graphical.Top.Icon)
+				self._intro.Line:TweenPosition(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+			end
+
+			self.closeAnimation = function()
+				self._closed = true
+				self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+				task.wait(.20)
+				for index, object in ipairs(self._graphical:GetChildren()) do
+					if object:IsA("Frame") then
+						object.Visible = false
+					end
+				end
+				self._intro.Line:TweenPosition(UDim2.new(-1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+				task.wait(.20)
+				self._intro.Line.Visible = false
+				self._frame:TweenSize(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .3, true, nil)
+				task.wait(.3)
+				self._frame:Destroy()
+			end
+
+			self.addConnection("Rendering", self._services.RunService.RenderStepped:Connect(function()
+				pcall(function()
+					self._graphical.Content.Scroll.Description.Text = self._settings.DescriptionString.Value
+					self._graphical.Content.Scroll.Description.TextWrapped = true
+					self._graphical.Top.Title.Text = '<font color="#969696">('..self._settings.DurationNumber.Value-self._durationTicks.."s)</font> " .. self._settings.NameString.Value
+				end)
+			end))
+
+			self.addConnection("CloseOnClick", self._graphical.Button.Activated:Connect(function()
+				if type(clickFunc) == "function" then
+					clickFunc()
+				end
+				self.closeAnimation()
+			end))
+
+			self.tween(self._frame.Graphical.Content.Bottom.Fill, TweenInfo.new(self._settings.DurationNumber.Value), {Size = UDim2.new(1,0,1,10)})
+
+			self.openAnimation()
+
+			while true do
+				wait(1)
+				self._durationTicks = self._durationTicks + 1
+				if self._durationTicks >= self._settings.DurationNumber.Value then
+					self.closeAnimation()
+					self.removeAllConnections()
+					break
+				end
+				if self._closed then
+					self.removeAllConnections()
+					break
+				end
+			end
+
+		end
+
+		client:init()
+
+		return client
+	end;
+	task.spawn(C_19);
 end
 
 function CommandBar:Destroy()
