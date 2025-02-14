@@ -937,11 +937,6 @@ function modules.ConsoleInterface()
 	G2L["4"] = Instance.new("UICorner", G2L["3"]);
 	G2L["4"]["CornerRadius"] = UDim.new(0, 10);
 
-	-- StarterGui.Console.Main.Background.UIStroke
-	G2L["5"] = Instance.new("UIStroke", G2L["3"]);
-	G2L["5"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
-	G2L["5"]["Color"] = Color3.fromRGB(41, 41, 41);
-
 	-- StarterGui.Console.Main.Background.DropShadow2
 	G2L["6"] = Instance.new("ImageLabel", G2L["3"]);
 	G2L["6"]["ZIndex"] = -6;
@@ -1294,12 +1289,6 @@ function modules.ConsoleInterface()
 	G2L["28"] = Instance.new("UICorner", G2L["27"]);
 	G2L["28"]["CornerRadius"] = UDim.new(0, 10);
 
-	-- StarterGui.Console.Open.Background.TopGradient
-	G2L["29"] = Instance.new("UIGradient", G2L["27"]);
-	G2L["29"]["Rotation"] = 90;
-	G2L["29"]["Name"] = [[TopGradient]];
-	G2L["29"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(255, 255, 255)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(127, 127, 127))};
-
 	-- StarterGui.Console.Open.Background.UIStroke
 	G2L["2a"] = Instance.new("UIStroke", G2L["27"]);
 	G2L["2a"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
@@ -1347,6 +1336,11 @@ function modules.ConsoleInterface()
 	G2L["2d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 	G2L["2d"]["Text"] = [[OPEN CONSOLE]];
 	G2L["2d"]["Name"] = [[Title]];
+	
+	-- StarterGui.Console.Main.Background.UIStroke
+	G2L["5"] = Instance.new("UIStroke", G2L["e"]);
+	G2L["5"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
+	G2L["5"]["Color"] = Color3.fromRGB(41, 41, 41);
 
 	return G2L["1"];
 end
@@ -1412,12 +1406,6 @@ function modules.NotifyUI()
 	-- Attributes
 	G2L["7"]:SetAttribute([[InitialBackgroundTransparency]], 1);
 	G2L["7"]:SetAttribute([[InitialImageTransparency]], 0.4);
-
-	-- StarterGui.ScreenGui.Notification.Graphical.Background.TopGradient
-	G2L["8"] = Instance.new("UIGradient", G2L["4"]);
-	G2L["8"]["Rotation"] = 90;
-	G2L["8"]["Name"] = [[TopGradient]];
-	G2L["8"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(255, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(127, 127, 127))};
 
 	-- StarterGui.ScreenGui.Notification.Graphical.Background.Background
 	G2L["9"] = Instance.new("ImageLabel", G2L["4"]);
@@ -1678,10 +1666,11 @@ function modules.UniversalCommands()
 							self.Camera.CameraSubject = player.Character
 						end))
 						self.addConn("VIEW_PLAYER_REMOVED", self.Services.Players.PlayerRemoving:Connect(function(leftplayer)
-							if leftplayer == player then
+							if leftplayer.Name == player.Name then
 								self.Camera.CameraSubject = speaker.Character
 							end
 						end))
+						self:Notify(self.Config.SYSTEM.NAME, `Viewing {player.Name} (@{player.DisplayName})`, "INFO", nil, 5)
 					end
 				end
 			end,
@@ -1728,6 +1717,7 @@ function modules.UniversalCommands()
 						local hrp = self.fetchHrp(player.Character)
 						if hrp then
 							self.Modules.core:TeleportToLocation(hrp.CFrame + Vector3.new(3,1,0))
+							self:Notify(self.Config.SYSTEM.NAME, `Teleported to {player.Name} (@{player.DisplayName})`, "INFO", nil, 5)
 						end
 					end
 				end
@@ -2144,6 +2134,24 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "ChangeTheme",
+			Description = "Changes the theme to [Theme]",
+
+			Aliases = {"CTheme", "Theme"},
+			Arguments = {"Theme"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local theme = args[1]
+				
+				-- 変数 --
+
+				-- 関数 --
+				self.changeTheme(theme)
 			end,
 		})
 	end
