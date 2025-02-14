@@ -46,6 +46,12 @@ function CommandBar.new(config)
 		changeFOV = false,
 	}
 	local defaultConfig = {
+		SYSTEM = {
+			NAME = "Server's Admin",
+			
+			VERSION = 1.0,
+		},
+		
 		FOCUSED = {
 			FOV = {
 				ENABLED = false,
@@ -81,7 +87,7 @@ function CommandBar.new(config)
 		},
 		
 		UI = {
-			DEFAULT_THEME = "Dark",
+			DEFAULT_THEME = "Mocha",
 			THEMES = {
 				Dark = {
 					THEME_COLOR = Color3.fromRGB(255, 0, 0),
@@ -94,6 +100,8 @@ function CommandBar.new(config)
 					BACKGROUND_IMAGE_COLOR = Color3.fromRGB(255, 255, 255),
 					DROPSHADOW = Color3.fromRGB(20, 20, 20),
 					DROPSHADOW_TRANSPARENCY = .5,
+					
+					BLUR_BACKGROUND = Color3.fromRGB(0, 0, 0),
 
 					REGULAR_TEXT = Color3.fromRGB(235, 235, 235),
 					SHADED_TEXT = Color3.fromRGB(150, 150, 150),
@@ -125,6 +133,96 @@ function CommandBar.new(config)
 					SUCCESS = Color3.fromRGB(115, 255, 0),
 					ERROR = Color3.fromRGB(255, 0, 0),
 					INFO = Color3.fromRGB(5, 138, 255),
+				},
+				Light = {
+					THEME_COLOR = Color3.fromRGB(30, 131, 255),
+
+					BACKGROUND = Color3.fromRGB(240, 240, 240),
+					LIGHT_BACKGROUND = Color3.fromRGB(255, 255, 255),
+					BACKGROUND_TRANSPARENCY = .1,
+					BACKGROUND_IMAGE = 16255699706,
+					BACKGROUND_IMAGE_TRANSPARENCY = .9,
+					BACKGROUND_IMAGE_COLOR = Color3.fromRGB(255, 255, 255),
+					DROPSHADOW = Color3.fromRGB(165, 165, 165),
+					DROPSHADOW_TRANSPARENCY = .5,
+
+					BLUR_BACKGROUND = Color3.fromRGB(255, 255, 255),
+
+					REGULAR_TEXT = Color3.fromRGB(50, 50, 50),
+					SHADED_TEXT = Color3.fromRGB(100, 100, 100),
+					THEME_FILL_TEXT = Color3.fromRGB(255, 255, 255),
+
+					OUTLINE = Color3.fromRGB(180, 180, 180),
+					UNDERLINE = Color3.fromRGB(180, 180, 180),
+
+					SUGGESTION_TRANSPAENCY = .2,
+
+					REGULAR_BUTTON_TRANSPARENCY = 1,
+					REGULAR_BUTTON_HOVER_TRANSPARENCY = .9,
+					REGULAR_BUTTON_CLICK_TRANSPARENCY = .5,
+
+					RIPPLE_COLOR = Color3.fromRGB(0, 122, 255),
+					RIPPLE_TRANSPARENCY = .95,
+					RIPPLE_CLICK_TRANSPARENCY = .8,
+
+					HEADER_SHADOW = Color3.fromRGB(200, 200, 200),
+					HEADER_SHADOW_TRANSPARENCY = .7,
+					HEADER_SHADOW_INFO_TRANSPARENCY = .8,
+					HEADER_SHAODW_BOTTOM_TRANSPARENCY = .1,
+					HEADER_TRANSPARENCY = .5,
+
+					PLAYER_COLOR = Color3.fromRGB(0, 122, 255),
+					STRING_COLOR = Color3.fromRGB(136, 136, 136),
+					UTILITY_COLOR = Color3.fromRGB(255, 199, 57),
+
+					SUCCESS = Color3.fromRGB(116, 227, 154),
+					ERROR = Color3.fromRGB(255, 0, 0),
+					INFO = Color3.fromRGB(5, 138, 255),
+				},
+				Mocha = {
+					THEME_COLOR = Color3.fromRGB(231, 130, 132), -- Rosewater
+
+					BACKGROUND = Color3.fromRGB(30, 30, 46), -- Base
+					LIGHT_BACKGROUND = Color3.fromRGB(49, 50, 68), -- Mantle
+					BACKGROUND_TRANSPARENCY = .1,
+					BACKGROUND_IMAGE = 16255699706,
+					BACKGROUND_IMAGE_TRANSPARENCY = .9,
+					BACKGROUND_IMAGE_COLOR = Color3.fromRGB(205, 214, 244), -- Text
+					DROPSHADOW = Color3.fromRGB(20, 20, 30), 
+					DROPSHADOW_TRANSPARENCY = .5,
+
+					BLUR_BACKGROUND = Color3.fromRGB(24, 24, 37), -- Surface0
+
+					REGULAR_TEXT = Color3.fromRGB(205, 214, 244), -- Text
+					SHADED_TEXT = Color3.fromRGB(166, 173, 200), -- Subtext1
+					THEME_FILL_TEXT = Color3.fromRGB(30, 30, 46), -- Base
+
+					OUTLINE = Color3.fromRGB(88, 91, 112), -- Surface2
+					UNDERLINE = Color3.fromRGB(108, 112, 134), -- Surface1
+
+					SUGGESTION_TRANSPAENCY = .2,
+
+					REGULAR_BUTTON_TRANSPARENCY = 1,
+					REGULAR_BUTTON_HOVER_TRANSPARENCY = .9,
+					REGULAR_BUTTON_CLICK_TRANSPARENCY = .5,
+
+					RIPPLE_COLOR = Color3.fromRGB(231, 130, 132), -- Rosewater
+					RIPPLE_TRANSPARENCY = .95,
+					RIPPLE_CLICK_TRANSPARENCY = .8,
+
+					HEADER_SHADOW = Color3.fromRGB(30, 30, 46), 
+					HEADER_SHADOW_TRANSPARENCY = .7,
+					HEADER_SHADOW_INFO_TRANSPARENCY = .8,
+					HEADER_SHAODW_BOTTOM_TRANSPARENCY = .1,
+					HEADER_TRANSPARENCY = .5,
+
+					PLAYER_COLOR = Color3.fromRGB(137, 180, 250), -- Blue
+					STRING_COLOR = Color3.fromRGB(166, 218, 149), -- Green
+					UTILITY_COLOR = Color3.fromRGB(250, 179, 135), -- Peach
+
+					SUCCESS = Color3.fromRGB(166, 218, 149), -- Green
+					ERROR = Color3.fromRGB(243, 139, 168), -- Red
+					INFO = Color3.fromRGB(137, 180, 250), -- Blue
 				},
 			},
 		},
@@ -188,13 +286,15 @@ function CommandBar.new(config)
 	self.changeTheme = function(themeName)
 		self.Theme = self.Config.UI.THEMES[themeName]
 		
-		local function themeChangeTween(obj, goal)
-			self.tween(obj, TweenInfo.new(.25, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
-		end
-		
-		for _, themeConn in pairs(self.Storage.onThemeChangeConns) do
-			themeConn(self.Theme, themeChangeTween)
-		end
+		self.spawn(function()
+			local function themeChangeTween(obj, goal)
+				self.tween(obj, TweenInfo.new(.25, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
+			end
+
+			for _, themeConn in pairs(self.Storage.onThemeChangeConns) do
+				themeConn(self.Theme, themeChangeTween)
+			end
+		end)
 	end
 	self.onThemeChange = function(func)
 		if type(func) ~= "function" then
@@ -753,7 +853,7 @@ function CommandBar:ConstructUI()
 	
 	self.onThemeChange(function(theme, tween)
 		tween(main.Background, {BackgroundColor3 = theme.BACKGROUND})
-		tween(main.Background.UIStroke, {Color = theme.OUTLINE})
+		tween(commandsFrame.UIStroke, {Color = theme.OUTLINE})
 		tween(main.Background.DropShadow1, {ImageColor3 = theme.DROPSHADOW})
 		tween(main.Background.DropShadow2, {ImageColor3 = theme.DROPSHADOW})
 		tween(textbox, {TextColor3 = theme.REGULAR_TEXT})
@@ -764,6 +864,17 @@ function CommandBar:ConstructUI()
 		tween(commandsFrame.Background, {ImageTransparency = theme.BACKGROUND_IMAGE_TRANSPARENCY})
 		tween(content.Tab, {TextColor3 = theme.REGULAR_TEXT})
 		tween(content.Tab, {BackgroundColor3 = theme.LIGHT_BACKGROUND})
+		tween(blurUI.Frame, {BackgroundColor3 = theme.BLUR_BACKGROUND})
+		tween(content.Icon, {ImageColor3 = theme.THEME_FILL_TEXT})
+		tween(content.Icon.Background, {BackgroundColor3 = theme.THEME_COLOR})
+		tween(content.Effects.EnterEffect, {ImageColor3 = theme.THEME_COLOR})
+		tween(open.Title, {TextColor3 = theme.REGULAR_TEXT})
+		tween(open.Background, {BackgroundColor3 = theme.BACKGROUND})
+		tween(open.Background.UIStroke, {Color = theme.OUTLINE})
+		tween(open.Background.DropShadow1, {ImageColor3 = theme.DROPSHADOW})
+		tween(open.Background.DropShadow2, {ImageColor3 = theme.DROPSHADOW})
+		tween(open.Background.DropShadow1, {ImageTransparency = theme.DROPSHADOW_TRANSPARENCY})
+		tween(open.Background.DropShadow2, {ImageTransparency = theme.DROPSHADOW_TRANSPARENCY})
 		
 		commandsFrame.Background.Image = `rbxassetid://{theme.BACKGROUND_IMAGE}`
 	end)
@@ -942,7 +1053,7 @@ function CommandBar:ConstructUI()
 
 				self.clearText()
 
-				self.tween(content.Effects.EnterEffect, TweenInfo.new(.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), {Size = UDim2.new(0,2000,0,2000)})
+				self.tween(content.Effects.EnterEffect, TweenInfo.new(.2, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), {Size = UDim2.new(0,2000,0,2000)})
 				self.tween(content.Effects.EnterEffect, TweenInfo.new(.5, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), {ImageTransparency = .9})
 				task.spawn(function()
 					task.wait(.15)
@@ -1048,11 +1159,14 @@ function CommandBar:ConstructUI()
 						end
 					end
 
-					temp.NameLabel.Text = foundCmd.Name..cmdAliases.."<font color='#afafaf'>"..cmdArgsStr.."</font>"
+					temp.NameLabel.Text = foundCmd.Name..cmdAliases..`<font color='#{self.Theme.SHADED_TEXT:ToHex()}'>`..cmdArgsStr..`</font>`
 					temp.Name = foundCmd.Name
 					temp.Description.Text = foundCmd.Description
 					temp.Parent = commandsFrame
 					temp.Visible = true
+					
+					temp.NameLabel.TextColor3 = self.Theme.REGULAR_TEXT
+					temp.Description.TextColor3 = self.Theme.SHADED_TEXT
 
 					self.Storage.numCommands += 1
 
@@ -1170,9 +1284,9 @@ function CommandBar:ConstructUI()
 			end
 		end))
 		
-		self:Notify("Server's Admin", "Welcome to Server's Admin! Press ';' for command bar.", "SUCCESS", function()
-			
-		end, 15)
+		open.Title.Text = `Open {self.Config.SYSTEM.NAME}`
+		
+		self:Notify(self.Config.SYSTEM.NAME, "Welcome to Server's Admin! Press ';' for command bar.", "SUCCESS", nil, 15)
 	end
 end
 
@@ -1220,6 +1334,7 @@ function CommandBar:Notify(name, desc, ntype, clickFunc, duration)
 		tween(frame.Graphical.Top.Title, {TextColor3 = theme.REGULAR_TEXT})
 		tween(frame.Graphical.Content.Bottom.Fill, {BackgroundColor3 = theme[ntype]})
 		tween(frame.Graphical.Content.Scroll.Description, {BackgroundColor3 = theme.SHADED_TEXT})
+		tween(frame.Intro.Line, {BackgroundColor3 = theme.THEME_COLOR})
 		
 		frame.Graphical.Background.Background.Image = `rbxassetid://{theme.BACKGROUND_IMAGE}`
 	end)
@@ -1323,7 +1438,16 @@ function CommandBar:Notify(name, desc, ntype, clickFunc, duration)
 				pcall(function()
 					self._graphical.Content.Scroll.Description.Text = self._settings.DescriptionString.Value
 					self._graphical.Content.Scroll.Description.TextWrapped = true
-					self._graphical.Top.Title.Text = '<font color="#969696">('..self._settings.DurationNumber.Value-self._durationTicks.."s)</font> " .. self._settings.NameString.Value
+					
+					self._graphical.Top.Title.Text = self._settings.NameString.Value
+					
+					if ntype == "SUCCESS" then
+						self._graphical.Top.Icon.Image = `rbxassetid://17829956110`
+					elseif ntype == "ERROR" then
+						self._graphical.Top.Icon.Image = `rbxassetid://17829927053`
+					elseif ntype == "INFO" then
+						self._graphical.Top.Icon.Image = `rbxassetid://11780939099`
+					end
 				end)
 			end))
 
@@ -1337,20 +1461,22 @@ function CommandBar:Notify(name, desc, ntype, clickFunc, duration)
 			self.tween(self._frame.Graphical.Content.Bottom.Fill, TweenInfo.new(self._settings.DurationNumber.Value), {Size = UDim2.new(1,0,1,10)})
 
 			self.openAnimation()
-
-			while true do
-				wait(1)
-				self._durationTicks = self._durationTicks + 1
-				if self._durationTicks >= self._settings.DurationNumber.Value then
-					self.closeAnimation()
-					self.removeAllConnections()
-					break
+			
+			pcall(function()
+				while true do
+					wait(1)
+					self._durationTicks = self._durationTicks + 1
+					if self._durationTicks >= self._settings.DurationNumber.Value then
+						self.closeAnimation()
+						self.removeAllConnections()
+						break
+					end
+					if self._closed then
+						self.removeAllConnections()
+						break
+					end
 				end
-				if self._closed then
-					self.removeAllConnections()
-					break
-				end
-			end
+			end)
 
 		end
 
