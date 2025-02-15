@@ -38,6 +38,7 @@ function CommandBar.new(config)
 		HttpService = game:GetService("HttpService"),
 		TeleportService = game:GetService("TeleportService"),
 		AvatarEditorService = game:GetService("AvatarEditorService"),
+		ReplicatedStorage = game:GetService("ReplicatedStorage"),
 	}
 	local states = {
 		consoleOpened = false,
@@ -59,7 +60,7 @@ function CommandBar.new(config)
 			},
 			BLUR = {
 				ENABLED = true,
-				AMOUNT = 8,
+				AMOUNT = 10,
 			},
 		},
 		
@@ -88,6 +89,9 @@ function CommandBar.new(config)
 		
 		UI = {
 			DEFAULT_THEME = "Mocha",
+			
+			THEME_CHANGE_SPEED = .5,
+			
 			THEMES = {
 				Dark = {
 					THEME_COLOR = Color3.fromRGB(255, 0, 0),
@@ -224,6 +228,51 @@ function CommandBar.new(config)
 					ERROR = Color3.fromRGB(243, 139, 168), -- Red
 					INFO = Color3.fromRGB(137, 180, 250), -- Blue
 				},
+				Frappe = {
+					THEME_COLOR = Color3.fromRGB(198, 160, 246), -- Lavender
+
+					BACKGROUND = Color3.fromRGB(41, 42, 60), -- Base
+					LIGHT_BACKGROUND = Color3.fromRGB(61, 64, 89), -- Mantle
+					BACKGROUND_TRANSPARENCY = .1,
+					BACKGROUND_IMAGE = 16255699706,
+					BACKGROUND_IMAGE_TRANSPARENCY = .9,
+					BACKGROUND_IMAGE_COLOR = Color3.fromRGB(202, 211, 245), -- Text
+					DROPSHADOW = Color3.fromRGB(35, 38, 59), -- Slightly darker shadow
+					DROPSHADOW_TRANSPARENCY = .5,
+
+					BLUR_BACKGROUND = Color3.fromRGB(48, 52, 70), -- Surface0
+
+					REGULAR_TEXT = Color3.fromRGB(202, 211, 245), -- Text
+					SHADED_TEXT = Color3.fromRGB(175, 181, 205), -- Subtext1
+					THEME_FILL_TEXT = Color3.fromRGB(41, 42, 60), -- Base
+
+					OUTLINE = Color3.fromRGB(98, 104, 128), -- Surface2
+					UNDERLINE = Color3.fromRGB(116, 122, 152), -- Surface1
+
+					SUGGESTION_TRANSPAENCY = .2,
+
+					REGULAR_BUTTON_TRANSPARENCY = 1,
+					REGULAR_BUTTON_HOVER_TRANSPARENCY = .9,
+					REGULAR_BUTTON_CLICK_TRANSPARENCY = .5,
+
+					RIPPLE_COLOR = Color3.fromRGB(198, 160, 246), -- Lavender
+					RIPPLE_TRANSPARENCY = .95,
+					RIPPLE_CLICK_TRANSPARENCY = .8,
+
+					HEADER_SHADOW = Color3.fromRGB(41, 42, 60),
+					HEADER_SHADOW_TRANSPARENCY = .7,
+					HEADER_SHADOW_INFO_TRANSPARENCY = .8,
+					HEADER_SHAODW_BOTTOM_TRANSPARENCY = .1,
+					HEADER_TRANSPARENCY = .5,
+
+					PLAYER_COLOR = Color3.fromRGB(140, 170, 238), -- Blue
+					STRING_COLOR = Color3.fromRGB(166, 209, 137), -- Green
+					UTILITY_COLOR = Color3.fromRGB(238, 212, 159), -- Peach
+
+					SUCCESS = Color3.fromRGB(166, 209, 137), -- Green
+					ERROR = Color3.fromRGB(237, 135, 150), -- Red
+					INFO = Color3.fromRGB(140, 170, 238), -- Blue
+				},
 			},
 		},
 	}
@@ -288,7 +337,7 @@ function CommandBar.new(config)
 		
 		self.spawn(function()
 			local function themeChangeTween(obj, goal)
-				self.tween(obj, TweenInfo.new(.25, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
+				self.tween(obj, TweenInfo.new(self.Config.UI.THEME_CHANGE_SPEED, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
 			end
 
 			for _, themeConn in pairs(self.Storage.onThemeChangeConns) do
@@ -302,7 +351,7 @@ function CommandBar.new(config)
 		end
 		
 		local function themeChangeTween(obj, goal)
-			self.tween(obj, TweenInfo.new(.25, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
+			self.tween(obj, TweenInfo.new(0, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
 		end
 		
 		table.insert(self.Storage.onThemeChangeConns, function(theme, themeTween)
@@ -760,7 +809,7 @@ function CommandBar.new(config)
 			return nil
 		end
 
-		for _,name in pairs(nameList) do
+		for _, name in pairs(nameList) do
 			if string.sub(name,1,1) ~= "+" and string.sub(name,1,1) ~= "-" then name = "+"..name end
 			local tokens = self.toTokens(name)
 			local initialPlayers = self.Services.Players:GetPlayers()
@@ -773,7 +822,7 @@ function CommandBar.new(config)
 						local matches = {string.match(tokenContent,"^"..regex.."$")}
 						if #matches > 0 then
 							foundCase = true
-							initialPlayers = self.onlyIncludeInTable(initialPlayers,case(speaker,matches,initialPlayers))
+							initialPlayers = self.onlyIncludeInTable(initialPlayers, case(speaker,matches,initialPlayers))
 						end
 					end
 					if not foundCase then
