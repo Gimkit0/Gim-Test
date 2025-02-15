@@ -2542,6 +2542,10 @@ function modules.UniversalCommands()
 				local aimPart = "Head"
 				
 				-- 関数 --
+				if not epipath then
+					epipath = .187
+				end
+				
 				instances.fov_circle = Drawing.new("Circle")
 				
 				local circle = instances.fov_circle
