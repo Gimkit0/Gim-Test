@@ -2594,7 +2594,7 @@ function modules.UniversalCommands()
 							local root = char[aimPart]
 							local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
-							if visible and isTargetVisible(root) then
+							if visible then
 								local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
 								if magnitude < dist and magnitude < circle.Radius then
 									dist = magnitude
@@ -2610,13 +2610,15 @@ function modules.UniversalCommands()
 					if input.UserInputType == Enum.UserInputType.MouseButton2 then
 						holdingMouse = true
 						if holdingMouse then
-							local target = findNearest()
 							while holdingMouse do
-								if holdingMouse and target ~= nil then
-									local hrp = self.fetchHrp(target)
-									local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
-									self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
-									self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+								if holdingMouse then
+									local target = findNearest()
+									if target ~= nil then
+										local hrp = self.fetchHrp(target)
+										local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
+										self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
+										self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+									end
 								end
 								task.wait()
 							end
