@@ -1719,6 +1719,7 @@ function modules.UniversalCommands()
 									end
 								end
 							end
+							task.wait()
 						end
 						
 					end
