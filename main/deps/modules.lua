@@ -2539,6 +2539,8 @@ function modules.UniversalCommands()
 				local circleFilled = false
 				local circleVisible = true
 				
+				local aimPart = "Head"
+				
 				-- 関数 --
 				instances.fov_circle = Drawing.new("Circle")
 				
@@ -2550,7 +2552,7 @@ function modules.UniversalCommands()
 				circle.Visible = circleVisible
 				circle.Transparency = circleTransparency
 				circle.NumSides = circleSides
-				circle.Thickness = circleSides
+				circle.Thickness = circleThickness
 				
 				local function isTargetVisible(targetPart)
 					local origin = self.Camera.CFrame.Position
@@ -2582,10 +2584,10 @@ function modules.UniversalCommands()
 							and v.Character
 							and hum
 							and hum.Health > 0
-							and v.Character:FindFirstChild(_G.AimPart)
+							and v.Character:FindFirstChild(aimPart)
 						then
 							local char = v.Character
-							local root = char[_G.AimPart]
+							local root = char[aimPart]
 							local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
 							if visible and isTargetVisible(root) then
