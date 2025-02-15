@@ -1335,7 +1335,7 @@ function CommandBar:ConstructUI()
 		
 		open.Title.Text = `Open {self.Config.SYSTEM.NAME}`
 		
-		self:Notify(self.Config.SYSTEM.NAME, "Welcome to Server's Admin! Press ';' for command bar.", "SUCCESS", nil, 15)
+		self:Notify(self.Config.SYSTEM.NAME, `Welcome to <b>{self.Config.SYSTEM.NAME}</b>! Press <b>';'</b> for command bar.`, "SUCCESS", nil, 15)
 	end
 end
 
