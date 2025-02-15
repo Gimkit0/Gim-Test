@@ -1673,6 +1673,9 @@ function modules.UniversalCommands()
 			-- Evade --
 			evade_ticket_farming = false,
 			break_bots = false,
+			
+			-- others --
+			aimlock_holding_mouse = false,
 		}
 		
 		local instances = {
@@ -2530,8 +2533,6 @@ function modules.UniversalCommands()
 				-- 変数 --
 				local headOffset = Vector3.new(0, .1, 0)
 				
-				local holdingMouse = false
-				
 				local circleSides = 64
 				local circleRadius = 100
 				local circleThickness = 1
@@ -2558,25 +2559,29 @@ function modules.UniversalCommands()
 				circle.NumSides = circleSides
 				circle.Thickness = circleThickness
 				
-				local function isTargetVisible(targetPart)
+				local function isTargetVisible(targetCharacter)
 					local origin = self.Camera.CFrame.Position
-					local direction = (targetPart.Position - origin).Unit * (targetPart.Position - origin).Magnitude
 					local rayParams = RaycastParams.new()
 					rayParams.FilterType = Enum.RaycastFilterType.Exclude
 					rayParams.FilterDescendantsInstances = {speaker.Character}
 
-					local result = workspace:Raycast(origin, direction, rayParams)
+					for _, part in ipairs(targetCharacter:GetChildren()) do
+						if part:IsA("BasePart") or part:IsA("MeshPart") then
+							local direction = (part.Position - origin).Unit * (part.Position - origin).Magnitude
+							local result = workspace:Raycast(origin, direction, rayParams)
 
-					if result then
-						local hitPart = result.Instance
-						if hitPart and hitPart.Transparency > 0.05 then
-							return true
-						else
-							return false
+							if result then
+								local hitPart = result.Instance
+								
+								if hitPart and hitPart.Transparency > 0.05 then
+									return true
+								end
+							else
+								return true
+							end
 						end
-					else
-						return true
 					end
+					return false
 				end
 				
 				local function findNearest()
@@ -2608,29 +2613,46 @@ function modules.UniversalCommands()
 				
 				self.addConn("AIMLOCK_INPUT_BEGAN", self.Services.UserInputService.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton2 then
-						holdingMouse = true
-						if holdingMouse then
-							while holdingMouse do
-								if holdingMouse then
-									local target = findNearest()
-									if target ~= nil then
-										local hrp = self.fetchHrp(target)
-										local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
-										self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
-										self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
-									end
+						universalValues.aimlock_holding_mouse = true
+						while universalValues.aimlock_holding_mouse do
+							if universalValues.aimlock_holding_mouse then
+								local target = findNearest()
+								if target ~= nil then
+									local hrp = self.fetchHrp(target)
+									local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
+									self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
+									self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 								end
-								task.wait()
 							end
+							task.wait()
 						end
 					end
 				end))
 				self.addConn("AIMLOCK_INPUT_ENDED", self.Services.UserInputService.InputEnded:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton2 then
-						holdingMouse = false
+						universalValues.aimlock_holding_mouse = false
 						self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 					end
 				end))
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unaimlock",
+			Description = "Stops the aimlock",
+
+			Aliases = {"CTheme", "Theme"},
+			Arguments = {"Theme"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.removeConn("AIMLOCK_INPUT_BEGAN")
+				self.removeConn("AIMLOCK_INPUT_ENDED")
+				universalValues.aimlock_holding_mouse = false
 			end,
 		})
 	end
