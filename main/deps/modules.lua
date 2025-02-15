@@ -2543,6 +2543,8 @@ function modules.UniversalCommands()
 				local aimPart = "Head"
 				
 				-- 関数 --
+				self.Modules.parser:RunCommand(speaker, "Unaimlock")
+				task.wait()
 				if not epipath then
 					epipath = .187
 				end
@@ -2634,6 +2636,9 @@ function modules.UniversalCommands()
 						self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 					end
 				end))
+				self.addConn("AIMLOCK_CIRCLE_MOVE", self.Services.RunService.RenderStepped:Connect(function()
+					circle.Position = Vector2.new(self.Mouse.X, self.Mouse.Y)
+				end))
 			end,
 		})
 		
@@ -2652,7 +2657,10 @@ function modules.UniversalCommands()
 				-- 関数 --
 				self.removeConn("AIMLOCK_INPUT_BEGAN")
 				self.removeConn("AIMLOCK_INPUT_ENDED")
+				self.removeConn("AIMLOCK_CIRCLE_MOVE")
+				
 				universalValues.aimlock_holding_mouse = false
+				instances.fov_circle:Destroy()
 			end,
 		})
 	end
