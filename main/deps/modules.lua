@@ -2625,7 +2625,7 @@ function modules.UniversalCommands()
 				end))
 				self.addConn("AIMLOCK_INPUT_ENDED", self.Services.UserInputService.InputEnded:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton2 then
-						holdingMouse = true
+						holdingMouse = false
 						self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.Default
 					end
 				end))
