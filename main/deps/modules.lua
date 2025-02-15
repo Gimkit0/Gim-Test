@@ -2615,7 +2615,7 @@ function modules.UniversalCommands()
 								if holdingMouse and target ~= nil then
 									local hrp = self.fetchHrp(target)
 									local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
-									self.Camera.CFrame = CFrame.lookAt(self.Camera.Position, future.Position)
+									self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
 									self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 								end
 								task.wait()
