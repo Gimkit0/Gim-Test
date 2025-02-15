@@ -1672,6 +1672,7 @@ function modules.UniversalCommands()
 		local universalValues = {
 			-- Evade --
 			evade_ticket_farming = false,
+			break_bots = false,
 		}
 
 		if not self.Services.RunService:IsStudio() then
@@ -1681,8 +1682,15 @@ function modules.UniversalCommands()
 			httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 		end
 		
+		local function gameDetectedNotify()
+			self.spawn(function()
+				task.wait(1)
+				self:Notify(self.Config.SYSTEM.NAME, `Game detected: {game.Name}`, "INFO", nil, 5)
+			end)
+		end
+		
 		if game.PlaceId == 9872472334--[[Evade]] then
-			self:Notify(self.Config.SYSTEM.NAME, `Game detected: Evade`, "INFO", nil, 5)
+			gameDetectedNotify()
 			
 			self:AddCommand({
 				Name = "EventGrind",
@@ -1706,11 +1714,74 @@ function modules.UniversalCommands()
 						while universalValues.evade_ticket_farming do
 							local hrp = self.fetchHrp(speaker.Character)
 							
+							tickets = workspace:FindFirstChild("Game")
+								and workspace.Game:FindFirstChild("Effects")
+								and workspace.Game.Effects:FindFirstChild("Tickets")
+							
+							if tickets then
+								if speaker.Character then
+									if speaker.Character:GetAttribute("Downed") then
+										self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
+									end
+
+									for _, ticket in ipairs(tickets:GetChildren()) do
+										local ticketPart = ticket:FindFirstChild("HumanoidRootPart")
+										if ticketPart then
+											self.Modules.core:TeleportToLocation(ticketPart.CFrame)
+											task.wait(0.1)
+										end
+									end
+								end
+							end
+							task.wait()
+						end
+						
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "StopEventGrind",
+				Description = "Stops you from grinding tickets",
+
+				Aliases = {"StopEGrind", "StopTicketGrind"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					universalValues.evade_ticket_farming = false
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "GrabAllTickets",
+				Description = "Collects all of the tickets in the map",
+
+				Aliases = {"CollectAllTickets"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local tickets = workspace:FindFirstChild("Game")
+						and workspace.Game:FindFirstChild("Effects")
+						and workspace.Game.Effects:FindFirstChild("Tickets")
+
+					-- 関数 --
+					if tickets then
+						while #tickets:GetChildren() >= 1 do
+							local hrp = self.fetchHrp(speaker.Character)
+
 							if speaker.Character then
 								if speaker.Character:GetAttribute("Downed") then
 									self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
 								end
-								
+
 								for _, ticket in ipairs(tickets:GetChildren()) do
 									local ticketPart = ticket:FindFirstChild("HumanoidRootPart")
 									if ticketPart then
@@ -1721,7 +1792,6 @@ function modules.UniversalCommands()
 							end
 							task.wait()
 						end
-						
 					end
 				end,
 			})
@@ -1743,7 +1813,137 @@ function modules.UniversalCommands()
 					workspace.Game.Settings:SetAttribute("ReviveTime", 2.25)
 				end,
 			})
+			
+			self:AddCommand({
+				Name = "Respawn",
+				Description = "Respawns your character",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+
+					-- 関数 --
+					if speaker.Character:GetAttribute("Downed") then
+						self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "NoWaterDamage",
+				Description = "Disables water damaging",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local hrp = self.fetchHrp(speaker.Character)
+
+					-- 関数 --
+					hrp.CanTouch = false
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "RemoveBarriers",
+				Description = "Removes the invisible walls around the map",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					workspace.Game.Map.InvisParts:ClearAllChildren()
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "TeleportToObjectives",
+				Description = "Disables water damaging",
+
+				Aliases = {"ToObjectives"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local hrp = self.fetchHrp(speaker.Character)
+
+					-- 関数 --
+					if workspace.Game.Map.Parts:FindFirstChild("Objectives") then
+						for i, v in next, workspace.Game.Map.Parts.Objectives:GetChildren() do
+							if v.IsA(v, "Model") then
+								self.Modules.core:TeleportToLocation(CFrame.new(v:FindFirstChildWhichIsA("BasePart").Position))
+							end
+						end
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "AutofarmWins",
+				Description = "Makes you win the game everytime",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					universalValues.break_bots = true
+					while universalValues.break_bots do
+						local n = math.random(1, 10000000)
+						local z = math.random(200, 8000)
+						local x = math.random(1, 10000000)
+						if not universalValues.break_bots then
+							break
+						end
+						if game:GetService("Workspace").Game:WaitForChild('Map'):WaitForChild('Parts'):FindFirstChild("KillBricks") then
+							game:GetService("Workspace").Game:WaitForChild('Map').KillBricks:Destroy()
+						end
+						task.wait()
+						game.Workspace.Game.Players:WaitForChild(game.Players.LocalPlayer.Name):WaitForChild("HumanoidRootPart").CFrame = CFrame.new(0, z, 0)
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "StopAutofarmWins",
+				Description = "Disables auto winning",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					universalValues.break_bots = false
+				end,
+			})
 		end
+		
+		--------------------------------------------------------------------
+		--[[							END								]]--
+		--------------------------------------------------------------------
 
 		self:AddCommand({
 			Name = "View",
@@ -2002,6 +2202,39 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/walkwalk.lua"))()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "God",
+			Description = "Unkillable in most games",
+
+			Aliases = {"GodMode", "AntiKill"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if game.PlaceId == 9872472334--[[Evade]] then
+					self.spawn(function()
+						for i, v in next, workspace.Game.Players:GetDescendants() do
+							if v.IsA(v, "BindableEvent") and string.lower(v.Name) == "force" then
+								v:Destroy()
+							end
+						end
+						workspace.Game.Players.DescendantAdded:Connect(function(v)
+							task.wait()
+							if v.IsA(v, "BindableEvent") and string.lower(v.Name) == "force" then
+								v:Destroy()
+							end
+						end)
+					end)
+				else
+					loadstring(game:HttpGet("https://pastebin.com/raw/NdaKWSRG"))()
+				end
 			end,
 		})
 
