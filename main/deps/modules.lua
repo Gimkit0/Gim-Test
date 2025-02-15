@@ -2637,7 +2637,7 @@ function modules.UniversalCommands()
 					end
 				end))
 				self.addConn("AIMLOCK_CIRCLE_MOVE", self.Services.RunService.RenderStepped:Connect(function()
-					circle.Position = Vector2.new(self.Mouse.X, self.Mouse.Y)
+					circle.Position = Vector2.new(self.Mouse.X, self.Mouse.Y*1.5)
 				end))
 			end,
 		})
