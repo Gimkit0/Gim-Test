@@ -2609,7 +2609,8 @@ function modules.UniversalCommands()
 							local target = findNearest()
 							while holdingMouse do
 								if holdingMouse and target ~= nil then
-									local future = target.HumanoidRootPart.CFrame + (target.HumanoidRootPart.Velocity * epipath + headOffset)
+									local hrp = self.fetchHrp(target)
+									local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
 									self.Camera.CFrame = CFrame.lookAt(self.Camera.Position, future.Position)
 									self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 								end
