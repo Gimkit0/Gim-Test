@@ -1391,7 +1391,7 @@ function modules.NotifyUI()
 	G2L["2"] = Instance.new("Frame");
 	G2L["2"]["BorderSizePixel"] = 0;
 	G2L["2"]["BackgroundColor3"] = Color3.fromRGB(41, 41, 41);
-	G2L["2"]["Size"] = UDim2.new(1, 0, 0.3, 0);
+	G2L["2"]["Size"] = UDim2.new(1, 0, 0, 150);
 	G2L["2"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 	G2L["2"]["Name"] = [[Notification]];
 	G2L["2"]["BackgroundTransparency"] = 1;
