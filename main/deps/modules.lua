@@ -2533,7 +2533,7 @@ function modules.UniversalCommands()
 				local holdingMouse = false
 				
 				local circleSides = 64
-				local circleRadius = 200
+				local circleRadius = 100
 				local circleThickness = 1
 				local circleTransparency = .5
 				local circleFilled = false
@@ -2583,7 +2583,7 @@ function modules.UniversalCommands()
 					local dist = math.huge
 					local Target = nil
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
-						local hum = self.fetchHum(speaker.Character)
+						local hum = self.fetchHum(v.Character)
 						if v ~= speaker
 							and v.Character
 							and hum
