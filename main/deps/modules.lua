@@ -1674,6 +1674,10 @@ function modules.UniversalCommands()
 			evade_ticket_farming = false,
 			break_bots = false,
 		}
+		
+		local instances = {
+			fov_circle = nil,
+		}
 
 		if not self.Services.RunService:IsStudio() then
 			sethidden = sethiddenproperty or set_hidden_property or set_hidden_prop
@@ -1682,15 +1686,15 @@ function modules.UniversalCommands()
 			httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 		end
 		
-		local function gameDetectedNotify()
+		local function gameDetectedNotify(gameName)
 			self.spawn(function()
 				task.wait(1)
-				self:Notify(self.Config.SYSTEM.NAME, `Game detected: {game.Name}`, "INFO", nil, 5)
+				self:Notify(self.Config.SYSTEM.NAME, `Game detected: <b>{gameName}</b> new commands loaded or modified`, "INFO", nil, 5)
 			end)
 		end
 		
 		if game.PlaceId == 9872472334--[[Evade]] then
-			gameDetectedNotify()
+			gameDetectedNotify("Evade")
 			
 			self:AddCommand({
 				Name = "EventGrind",
@@ -1816,7 +1820,7 @@ function modules.UniversalCommands()
 			
 			self:AddCommand({
 				Name = "Respawn",
-				Description = "Respawns your character",
+				Description = "Respawns your character back into the game",
 
 				Aliases = {},
 				Arguments = {},
@@ -1828,27 +1832,7 @@ function modules.UniversalCommands()
 
 
 					-- 関数 --
-					if speaker.Character:GetAttribute("Downed") then
-						self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
-					end
-				end,
-			})
-			
-			self:AddCommand({
-				Name = "NoWaterDamage",
-				Description = "Disables water damaging",
-
-				Aliases = {},
-				Arguments = {},
-
-				Function = function(speaker, args)
-					-- 引数 --
-
-					-- 変数 --
-					local hrp = self.fetchHrp(speaker.Character)
-
-					-- 関数 --
-					hrp.CanTouch = false
+					self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
 				end,
 			})
 			
@@ -1979,7 +1963,7 @@ function modules.UniversalCommands()
 								self.Camera.CameraSubject = speaker.Character
 							end
 						end))
-						self:Notify(self.Config.SYSTEM.NAME, `Viewing {player.Name} (@{player.DisplayName})`, "INFO", nil, 5)
+						self:Notify(self.Config.SYSTEM.NAME, `Viewing <b>{player.Name}</b> (@{player.DisplayName})`, "INFO", nil, 5)
 					end
 				end
 			end,
@@ -2026,7 +2010,7 @@ function modules.UniversalCommands()
 						local hrp = self.fetchHrp(player.Character)
 						if hrp then
 							self.Modules.core:TeleportToLocation(hrp.CFrame + Vector3.new(3,1,0))
-							self:Notify(self.Config.SYSTEM.NAME, `Teleported to {player.Name} (@{player.DisplayName})`, "INFO", nil, 5)
+							self:Notify(self.Config.SYSTEM.NAME, `Teleported to <b>{player.Name}</b> (@{player.DisplayName})`, "INFO", nil, 5)
 						end
 					end
 				end
@@ -2529,6 +2513,115 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				self.changeTheme(theme)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Aimlock",
+			Description = "Have god tier aim. [Epitaph] is prediction of where the bullet will land",
+
+			Aliases = {},
+			Arguments = {"Epitaph"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local epipath = args[1]
+				
+				-- 変数 --
+				local headOffset = Vector3.new(0, .1, 0)
+				
+				local holdingMouse = false
+				
+				local circleSides = 64
+				local circleRadius = 200
+				local circleThickness = 1
+				local circleTransparency = .5
+				local circleFilled = false
+				local circleVisible = true
+				
+				-- 関数 --
+				instances.fov_circle = Drawing.new("Circle")
+				
+				local circle = instances.fov_circle
+				circle.Position = Vector2.new(self.Camera.ViewportSize.X / 2, self.Camera.ViewportSize.Y / 2)
+				circle.Radius = circleRadius
+				circle.Filled = circleFilled
+				circle.Color = self.Theme.THEME_COLOR
+				circle.Visible = circleVisible
+				circle.Transparency = circleTransparency
+				circle.NumSides = circleSides
+				circle.Thickness = circleSides
+				
+				local function isTargetVisible(targetPart)
+					local origin = self.Camera.CFrame.Position
+					local direction = (targetPart.Position - origin).Unit * (targetPart.Position - origin).Magnitude
+					local rayParams = RaycastParams.new()
+					rayParams.FilterType = Enum.RaycastFilterType.Exclude
+					rayParams.FilterDescendantsInstances = {speaker.Character}
+
+					local result = workspace:Raycast(origin, direction, rayParams)
+
+					if result then
+						local hitPart = result.Instance
+						if hitPart and hitPart.Transparency > 0.05 then
+							return true
+						else
+							return false
+						end
+					else
+						return true
+					end
+				end
+				
+				local function findNearest()
+					local dist = math.huge
+					local Target = nil
+					for _, v in pairs(self.Services.Players:GetPlayers()) do
+						local hum = self.fetchHum(speaker.Character)
+						if v ~= speaker
+							and v.Character
+							and hum
+							and hum.Health > 0
+							and v.Character:FindFirstChild(_G.AimPart)
+						then
+							local char = v.Character
+							local root = char[_G.AimPart]
+							local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
+
+							if visible and isTargetVisible(root) then
+								local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+								if magnitude < dist and magnitude < circle.Radius then
+									dist = magnitude
+									Target = char
+								end
+							end
+						end
+					end
+					return Target
+				end
+				
+				self.addConn("AIMLOCK_INPUT_BEGAN", self.Services.UserInputService.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton2 then
+						holdingMouse = true
+						if holdingMouse then
+							local target = findNearest()
+							while holdingMouse do
+								if holdingMouse and target ~= nil then
+									local future = target.HumanoidRootPart.CFrame + (target.HumanoidRootPart.Velocity * epipath + headOffset)
+									self.Camera.CFrame = CFrame.lookAt(self.Camera.Position, future.Position)
+									self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+								end
+								task.wait()
+							end
+						end
+					end
+				end))
+				self.addConn("AIMLOCK_INPUT_ENDED", self.Services.UserInputService.InputEnded:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton2 then
+						holdingMouse = true
+						self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+					end
+				end))
 			end,
 		})
 	end
