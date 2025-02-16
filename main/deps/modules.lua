@@ -2545,7 +2545,7 @@ function modules.UniversalCommands()
 				
 				local circleEnabled = false
 				local circleSides = 64
-				local circleRadius = 100
+				local circleRadius = 200
 				local circleThickness = 1
 				local circleTransparency = .5
 				local circleFilled = false
@@ -2611,6 +2611,10 @@ function modules.UniversalCommands()
 								and hum.Health > 0
 								and v.Character:FindFirstChild(aimPart)
 							then
+								if teamCheck and v.Team == speaker.Team then
+									continue
+								end
+								
 								local char = v.Character
 								local root = char[aimPart]
 								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
@@ -2618,10 +2622,8 @@ function modules.UniversalCommands()
 								if visible and isTargetVisible(char) then
 									local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
 									if (magnitude < dist and magnitude < circleRadius) then
-										if (not teamCheck and v.Team ~= speaker.Team) then
-											dist = magnitude
-											Target = char
-										end
+										dist = magnitude
+										Target = char
 									end
 								end
 							end
