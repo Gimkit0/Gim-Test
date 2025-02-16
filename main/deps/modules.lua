@@ -2523,8 +2523,8 @@ function modules.UniversalCommands()
 			Name = "Aimlock",
 			Description = "Have god tier aim. [Epitaph] is prediction of where the bullet will land",
 
-			Aliases = {},
-			Arguments = {"Epitaph"},
+			Aliases = {"GodAim"},
+			Arguments = {"Epitaph", "HeadOffset"},
 
 			Function = function(speaker, args)
 				-- 引数 --
@@ -2533,7 +2533,7 @@ function modules.UniversalCommands()
 				
 				-- 変数 --
 				if not offsetY then
-					offsetY = 10
+					offsetY = 20
 				end
 				
 				local headOffset = Vector3.new(0, offsetY/20, 0)
@@ -2552,7 +2552,7 @@ function modules.UniversalCommands()
 				self.Modules.parser:RunCommand(speaker, "Unaimlock")
 				task.wait()
 				if not epipath then
-					epipath = .187
+					epipath = .15
 				end
 				
 				if circleEnabled then
