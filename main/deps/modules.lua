@@ -2533,6 +2533,7 @@ function modules.UniversalCommands()
 				-- 変数 --
 				local headOffset = Vector3.new(0, .1, 0)
 				
+				local circleEnabled = false
 				local circleSides = 64
 				local circleRadius = 100
 				local circleThickness = 1
@@ -2549,17 +2550,19 @@ function modules.UniversalCommands()
 					epipath = .187
 				end
 				
-				instances.fov_circle = Drawing.new("Circle")
-				
-				local circle = instances.fov_circle
-				circle.Position = Vector2.new(self.Camera.ViewportSize.X / 2, self.Camera.ViewportSize.Y / 2)
-				circle.Radius = circleRadius
-				circle.Filled = circleFilled
-				circle.Color = self.Theme.THEME_COLOR
-				circle.Visible = circleVisible
-				circle.Transparency = circleTransparency
-				circle.NumSides = circleSides
-				circle.Thickness = circleThickness
+				if circleEnabled then
+					instances.fov_circle = Drawing.new("Circle")
+
+					local circle = instances.fov_circle
+					circle.Position = Vector2.new(self.Camera.ViewportSize.X / 2, self.Camera.ViewportSize.Y / 2)
+					circle.Radius = circleRadius
+					circle.Filled = circleFilled
+					circle.Color = self.Theme.THEME_COLOR
+					circle.Visible = circleVisible
+					circle.Transparency = circleTransparency
+					circle.NumSides = circleSides
+					circle.Thickness = circleThickness
+				end
 				
 				local function isTargetVisible(targetCharacter)
 					local origin = self.Camera.CFrame.Position
@@ -2603,7 +2606,7 @@ function modules.UniversalCommands()
 
 							if visible and isTargetVisible(char) then
 								local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-								if magnitude < dist and magnitude < circle.Radius then
+								if magnitude < dist and magnitude < circleRadius then
 									dist = magnitude
 									Target = char
 								end
@@ -2637,7 +2640,7 @@ function modules.UniversalCommands()
 					end
 				end))
 				self.addConn("AIMLOCK_CIRCLE_MOVE", self.Services.RunService.RenderStepped:Connect(function()
-					circle.Position = Vector2.new(self.Mouse.X, self.Mouse.Y*1.5)
+					instances.fov_circle.Position = Vector2.new(self.Mouse.X, self.Mouse.Y*1.5)
 				end))
 			end,
 		})
@@ -2660,7 +2663,10 @@ function modules.UniversalCommands()
 				self.removeConn("AIMLOCK_CIRCLE_MOVE")
 				
 				universalValues.aimlock_holding_mouse = false
-				instances.fov_circle:Destroy()
+				
+				if instances.fov_circle then
+					instances.fov_circle:Destroy()
+				end
 			end,
 		})
 	end
