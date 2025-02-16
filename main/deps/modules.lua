@@ -2616,9 +2616,9 @@ function modules.UniversalCommands()
 				self.addConn("AIMLOCK_INPUT_BEGAN", self.Services.UserInputService.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton2 then
 						universalValues.aimlock_holding_mouse = true
+						local target = findNearest()
 						while universalValues.aimlock_holding_mouse do
 							if universalValues.aimlock_holding_mouse then
-								local target = findNearest()
 								if target ~= nil then
 									local hrp = self.fetchHrp(target)
 									local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
