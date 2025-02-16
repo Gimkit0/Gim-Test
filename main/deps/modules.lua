@@ -1822,24 +1822,6 @@ function modules.UniversalCommands()
 			})
 			
 			self:AddCommand({
-				Name = "Respawn",
-				Description = "Respawns your character back into the game",
-
-				Aliases = {},
-				Arguments = {},
-
-				Function = function(speaker, args)
-					-- 引数 --
-
-					-- 変数 --
-
-
-					-- 関数 --
-					self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
-				end,
-			})
-			
-			self:AddCommand({
 				Name = "RemoveBarriers",
 				Description = "Removes the invisible walls around the map",
 
@@ -1924,6 +1906,133 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					universalValues.break_bots = false
+				end,
+			})
+		elseif game.PlaceId == 662417684--[[Lucky block battle grounds]] then
+			gameDetectedNotify("Luckyblock Battlegrounds")
+			
+			self:AddCommand({
+				Name = "GiveLuckyBlock",
+				Description = "Gives you [Amount] of lucky blocks",
+
+				Aliases = {},
+				Arguments = {"Amount"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local amount = args[1]
+
+					-- 変数 --
+					local blockName = "LuckyBlock"
+
+					-- 関数 --
+					if not amount then
+						amount = 1
+					end
+					
+					for i = 1, tonumber(amount) do
+						self.Services.ReplicatedStorage[`Spawn{blockName}`]:FireServer()
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "GiveSuperLuckyBlock",
+				Description = "Gives you [Amount] of super lucky blocks",
+
+				Aliases = {},
+				Arguments = {"Amount"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local amount = args[1]
+
+					-- 変数 --
+					local blockName = "SuperBlock"
+
+					-- 関数 --
+					if not amount then
+						amount = 1
+					end
+
+					for i = 1, tonumber(amount) do
+						self.Services.ReplicatedStorage[`Spawn{blockName}`]:FireServer()
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "GiveDiamondLuckyBlock",
+				Description = "Gives you [Amount] of diamond lucky blocks",
+
+				Aliases = {},
+				Arguments = {"Amount"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local amount = args[1]
+
+					-- 変数 --
+					local blockName = "DiamondBlock"
+
+					-- 関数 --
+					if not amount then
+						amount = 1
+					end
+
+					for i = 1, tonumber(amount) do
+						self.Services.ReplicatedStorage[`Spawn{blockName}`]:FireServer()
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "GiveRainbowLuckyBlock",
+				Description = "Gives you [Amount] of rainbow lucky blocks",
+
+				Aliases = {},
+				Arguments = {"Amount"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local amount = args[1]
+
+					-- 変数 --
+					local blockName = "RainbowBlock"
+
+					-- 関数 --
+					if not amount then
+						amount = 1
+					end
+
+					for i = 1, tonumber(amount) do
+						self.Services.ReplicatedStorage[`Spawn{blockName}`]:FireServer()
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "GiveGalaxyLuckyBlock",
+				Description = "Gives you [Amount] of galaxy lucky blocks",
+
+				Aliases = {},
+				Arguments = {"Amount"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local amount = args[1]
+
+					-- 変数 --
+					local blockName = "GalaxyBlock"
+
+					-- 関数 --
+					if not amount then
+						amount = 1
+					end
+
+					for i = 1, tonumber(amount) do
+						self.Services.ReplicatedStorage[`Spawn{blockName}`]:FireServer()
+					end
 				end,
 			})
 		end
@@ -2142,7 +2251,7 @@ function modules.UniversalCommands()
 			Name = "Reset",
 			Description = "Resets your character",
 
-			Aliases = {"Re"},
+			Aliases = {"Re", "Respawn"},
 			Arguments = {},
 
 			Function = function(speaker, args)
@@ -2151,9 +2260,13 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				local hum = self.fetchHum(speaker.Character)
-				if hum then
-					hum:ChangeState(Enum.HumanoidStateType.Dead)
+				if game.PlaceId == 9872472334--[[Evade]] then
+					self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
+				else
+					local hum = self.fetchHum(speaker.Character)
+					if hum then
+						hum:ChangeState(Enum.HumanoidStateType.Dead)
+					end
 				end
 			end,
 		})
@@ -2162,7 +2275,7 @@ function modules.UniversalCommands()
 			Name = "Refresh",
 			Description = "Refreshes your character",
 
-			Aliases = {"Ref", "Respawn"},
+			Aliases = {"Ref"},
 			Arguments = {},
 
 			Function = function(speaker, args)
