@@ -2529,9 +2529,14 @@ function modules.UniversalCommands()
 			Function = function(speaker, args)
 				-- 引数 --
 				local epipath = args[1]
+				local offsetY = args[1]
 				
 				-- 変数 --
-				local headOffset = Vector3.new(0, .1, 0)
+				if not offsetY then
+					offsetY = 10
+				end
+				
+				local headOffset = Vector3.new(0, offsetY/20, 0)
 				
 				local circleEnabled = false
 				local circleSides = 64
