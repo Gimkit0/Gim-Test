@@ -2616,14 +2616,12 @@ function modules.UniversalCommands()
 								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
 								if visible and isTargetVisible(char) then
-									if (not teamCheck) and (v.Team == speaker.Team) then
-										return
-									end
-									
 									local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-									if magnitude < dist and magnitude < circleRadius then
-										dist = magnitude
-										Target = char
+									if (magnitude < dist and magnitude < circleRadius) then
+										if (not teamCheck and v.Team ~= speaker.Team) then
+											dist = magnitude
+											Target = char
+										end
 									end
 								end
 							end
