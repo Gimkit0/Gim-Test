@@ -2524,16 +2524,21 @@ function modules.UniversalCommands()
 			Description = "Have god tier aim. [Epitaph] is prediction of where the bullet will land",
 
 			Aliases = {"GodAim"},
-			Arguments = {"Epitaph", "HeadOffset"},
+			Arguments = {"Epitaph", "HeadOffset", "TeamCheck"},
 
 			Function = function(speaker, args)
 				-- 引数 --
 				local epipath = args[1]
-				local offsetY = args[1]
+				local offsetY = args[2]
+				local teamCheck = args[3]
 				
 				-- 変数 --
 				if not offsetY then
-					offsetY = 20
+					offsetY = 25
+				end
+				if teamCheck == "yes" or teamCheck == "true" then
+					teamCheck = true else
+					teamCheck = false
 				end
 				
 				local headOffset = Vector3.new(0, offsetY/20, 0)
@@ -2606,6 +2611,10 @@ function modules.UniversalCommands()
 								and hum.Health > 0
 								and v.Character:FindFirstChild(aimPart)
 							then
+								if teamCheck and v.Team == speaker.Team then
+									continue
+								end
+								
 								local char = v.Character
 								local root = char[aimPart]
 								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
