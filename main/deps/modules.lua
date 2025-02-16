@@ -2593,22 +2593,24 @@ function modules.UniversalCommands()
 					local dist = math.huge
 					local Target = nil
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
-						local hum = self.fetchHum(v.Character)
-						if v ~= speaker
-							and v.Character
-							and hum
-							and hum.Health > 0
-							and v.Character:FindFirstChild(aimPart)
-						then
-							local char = v.Character
-							local root = char[aimPart]
-							local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
+						if v.Character then
+							local hum = self.fetchHum(v.Character)
+							if v ~= speaker
+								and v.Character
+								and hum
+								and hum.Health > 0
+								and v.Character:FindFirstChild(aimPart)
+							then
+								local char = v.Character
+								local root = char[aimPart]
+								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
-							if visible and isTargetVisible(char) then
-								local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-								if magnitude < dist and magnitude < circleRadius then
-									dist = magnitude
-									Target = char
+								if visible and isTargetVisible(char) then
+									local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+									if magnitude < dist and magnitude < circleRadius then
+										dist = magnitude
+										Target = char
+									end
 								end
 							end
 						end
