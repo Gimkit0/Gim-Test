@@ -2611,15 +2611,15 @@ function modules.UniversalCommands()
 								and hum.Health > 0
 								and v.Character:FindFirstChild(aimPart)
 							then
-								if teamCheck and v.Team == speaker.Team then
-									continue
-								end
-								
 								local char = v.Character
 								local root = char[aimPart]
 								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
 								if visible and isTargetVisible(char) then
+									if (not teamCheck) and (v.Team == speaker.Team) then
+										return
+									end
+									
 									local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
 									if magnitude < dist and magnitude < circleRadius then
 										dist = magnitude
