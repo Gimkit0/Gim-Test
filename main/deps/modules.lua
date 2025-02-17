@@ -2940,7 +2940,7 @@ function modules.UniversalCommands()
 				
 				self.Modules.parser:RunCommand(speaker, "Unblackhole")
 				self.Modules.parser:RunCommand(speaker, "Noclip")
-				task.wait()
+				task.wait(.5)
 				
 				if not radius then
 					radius = 50
@@ -2960,50 +2960,6 @@ function modules.UniversalCommands()
 				part.Transparency = 1
 				
 				speaker.ReplicationFocus = workspace
-				
-				local function forcePart(inst)
-					if inst:IsA("Part")
-						and not inst.Anchored
-						and not inst.Parent:FindFirstChild("Humanoid")
-						and not inst.Parent:FindFirstChild("Head")
-						and inst.Name ~= "Handle"
-					then
-						for _, x in next, inst:GetChildren() do
-							if x:IsA("BodyAngularVelocity")
-								or x:IsA("BodyForce")
-								or x:IsA("BodyGyro")
-								or x:IsA("BodyPosition")
-								or x:IsA("BodyThrust")
-								or x:IsA("BodyVelocity")
-								or x:IsA("RocketPropulsion")
-							then
-								x:Destroy()
-							end
-						end
-						if inst:FindFirstChild("Attachment") then
-							inst:FindFirstChild("Attachment"):Destroy()
-						end
-						if inst:FindFirstChild("AlignPosition") then
-							inst:FindFirstChild("AlignPosition"):Destroy()
-						end
-						if inst:FindFirstChild("Torque") then
-							inst:FindFirstChild("Torque"):Destroy()
-						end
-						inst.CanCollide = false
-						local torque = Instance.new("Torque", inst)
-						torque.Torque = Vector3.new(100000, 100000, 100000)
-						
-						local alignPos = Instance.new("AlignPosition", inst)
-						
-						local att2 = Instance.new("Attachment", inst)
-						torque.Attachment0 = att2
-						alignPos.MaxForce = 9999999999999999999999999999999
-						alignPos.MaxVelocity = math.huge
-						alignPos.Responsiveness = 200
-						alignPos.Attachment0 = att2
-						alignPos.Attachment1 = att1
-					end
-				end
 				
 				local function retainPart(inst)
 					if inst:IsA("BasePart") and not inst.Anchored and inst:IsDescendantOf(workspace) then
@@ -3046,6 +3002,13 @@ function modules.UniversalCommands()
 					end
 				end))
 				
+				for _, part in pairs(workspace:GetDescendants()) do
+					addPart(part)
+				end
+
+				self.addConn("BLACKHOLE_DESCENDANT_ADDED", workspace.DescendantAdded:Connect(addPart))
+				self.addConn("BLACKHOLE_DESCENDANT_REMOVED", workspace.DescendantRemoving:Connect(removePart))
+				
 				self.addConn("SINGULARITY", self.Services.RunService.Heartbeat:Connect(function()
 					local hrp = self.fetchHrp(speaker.Character)
 					if hrp then
@@ -3067,13 +3030,6 @@ function modules.UniversalCommands()
 						end
 					end
 				end))
-				
-				for _, part in pairs(workspace:GetDescendants()) do
-					addPart(part)
-				end
-				
-				self.addConn("BLACKHOLE_DESCENDANT_ADDED", workspace.DescendantAdded:Connect(addPart))
-				self.addConn("BLACKHOLE_DESCENDANT_REMOVED", workspace.DescendantRemoving:Connect(removePart))
 			end,
 		})
 		
@@ -3092,6 +3048,8 @@ function modules.UniversalCommands()
 				-- 関数 --
 				self.removeConn("PART_CONTROL")
 				self.removeConn("SINGULARITY")
+				self.removeConn("BLACKHOLE_DESCENDANT_ADDED")
+				self.removeConn("BLACKHOLE_DESCENDANT_REMOVED")
 			end,
 		})
 	end
