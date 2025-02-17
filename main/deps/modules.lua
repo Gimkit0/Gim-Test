@@ -2481,6 +2481,8 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				if #self.Services.Players <= 1 then
+					speaker:Kick("REJOINING\n")
+					wait()
 					self.Services.TeleportService:Teleport(game.PlaceId, speaker)
 				else
 					self.Services.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, speaker)
@@ -2908,6 +2910,187 @@ function modules.UniversalCommands()
 				-- 関数 --
 				self:Notify(self.Config.SYSTEM.NAME, `Loading dex, hold on a sec!`, "INFO", nil, 5)
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/newdex.lua"))()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Blackhole",
+			Description = "Unanchored parts will start to fly around you",
+
+			Aliases = {"Singularity", "Tornado"},
+			Arguments = {"Radius", "Height", "RotationSpeed", "Strength"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local radius = args[1]
+				local height = args[2]
+				local rotSpeed = args[3]
+				local strength = args[4]
+
+				-- 変数 --
+				local folder = self.createDep("BLACKHOLE_FOLDER_DEP", "Folder", workspace)
+				local part = self.createDep("ATTRACTION_PART", "Part", folder)
+				local att1 = self.createDep("ATTRACTION_ATTACHMENT", "Attachment", part)
+
+				-- 関数 --
+				local network = {
+					parts = {},
+					velocity = Vector3.new(14.46262424, 14.46262424, 14.46262424),
+				}
+				
+				self.Modules.parser:RunCommand(speaker, "Unblackhole")
+				self.Modules.parser:RunCommand(speaker, "Noclip")
+				task.wait()
+				
+				if not radius then
+					radius = 50
+				end
+				if not height then
+					height = 100
+				end
+				if not rotSpeed then
+					rotSpeed = 10
+				end
+				if not strength then
+					strength = 1000
+				end
+				
+				part.Anchored = true
+				part.CanCollide = false
+				part.Transparency = 1
+				
+				speaker.ReplicationFocus = workspace
+				
+				local function forcePart(inst)
+					if inst:IsA("Part")
+						and not inst.Anchored
+						and not inst.Parent:FindFirstChild("Humanoid")
+						and not inst.Parent:FindFirstChild("Head")
+						and inst.Name ~= "Handle"
+					then
+						for _, x in next, inst:GetChildren() do
+							if x:IsA("BodyAngularVelocity")
+								or x:IsA("BodyForce")
+								or x:IsA("BodyGyro")
+								or x:IsA("BodyPosition")
+								or x:IsA("BodyThrust")
+								or x:IsA("BodyVelocity")
+								or x:IsA("RocketPropulsion")
+							then
+								x:Destroy()
+							end
+						end
+						if inst:FindFirstChild("Attachment") then
+							inst:FindFirstChild("Attachment"):Destroy()
+						end
+						if inst:FindFirstChild("AlignPosition") then
+							inst:FindFirstChild("AlignPosition"):Destroy()
+						end
+						if inst:FindFirstChild("Torque") then
+							inst:FindFirstChild("Torque"):Destroy()
+						end
+						inst.CanCollide = false
+						local torque = Instance.new("Torque", inst)
+						torque.Torque = Vector3.new(100000, 100000, 100000)
+						
+						local alignPos = Instance.new("AlignPosition", inst)
+						
+						local att2 = Instance.new("Attachment", inst)
+						torque.Attachment0 = att2
+						alignPos.MaxForce = 9999999999999999999999999999999
+						alignPos.MaxVelocity = math.huge
+						alignPos.Responsiveness = 200
+						alignPos.Attachment0 = att2
+						alignPos.Attachment1 = att1
+					end
+				end
+				
+				local function retainPart(inst)
+					if inst:IsA("BasePart") and not inst.Anchored and inst:IsDescendantOf(workspace) then
+						if inst.Parent == speaker.Character or inst:IsDescendantOf(speaker.Character) then
+							return false
+						end
+
+						inst.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
+						inst.CanCollide = false
+						return true
+					end
+					return false
+				end
+				
+				local function addPart(inst)
+					if retainPart(part) then
+						if not table.find(network.parts, part) then
+							table.insert(network.parts, part)
+						end
+					end
+				end
+				
+				local function removePart(inst)
+					local index = table.find(network.parts, inst)
+					if index then
+						table.remove(network.parts, index)
+					end
+				end
+				
+				self.addConn("PART_CONTROL", self.Services.RunService.Heartbeat:Connect(function()
+					if sethidden then
+						sethidden(speaker, "SimulationRadius", math.huge)
+					end
+					
+					for _, inst in pairs(network.parts) do
+						if inst:IsDescendantOf(workspace) then
+							inst.Velocity = network.velocity
+						end
+					end
+				end))
+				
+				self.addConn("SINGULARITY", self.Services.RunService.Heartbeat:Connect(function()
+					local hrp = self.fetchHrp(speaker.Character)
+					if hrp then
+						local tornadoCenter = hrp.Position
+						for _, part in pairs(network.parts) do
+							if part.Parent and not part.Anchored then
+								local pos = part.Position
+								local distance = (Vector3.new(pos.X, tornadoCenter.Y, pos.Z) - tornadoCenter).Magnitude
+								local angle = math.atan2(pos.Z - tornadoCenter.Z, pos.X - tornadoCenter.X)
+								local newAngle = angle + math.rad(rotSpeed)
+								local targetPos = Vector3.new(
+									tornadoCenter.X + math.cos(newAngle) * math.min(radius, distance),
+									tornadoCenter.Y + (height * (math.abs(math.sin((pos.Y - tornadoCenter.Y) / height)))),
+									tornadoCenter.Z + math.sin(newAngle) * math.min(radius, distance)
+								)
+								local directionToTarget = (targetPos - part.Position).unit
+								part.Velocity = directionToTarget * strength
+							end
+						end
+					end
+				end))
+				
+				for _, part in pairs(workspace:GetDescendants()) do
+					addPart(part)
+				end
+				
+				self.addConn("BLACKHOLE_DESCENDANT_ADDED", workspace.DescendantAdded:Connect(addPart))
+				self.addConn("BLACKHOLE_DESCENDANT_REMOVED", workspace.DescendantRemoving:Connect(removePart))
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unblackhole",
+			Description = "Stops attracting parts to you",
+
+			Aliases = {"StopBlackhole", "StopSingularity", "StopTornado", "Untornado", "Unsingularity"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.removeConn("PART_CONTROL")
+				self.removeConn("SINGULARITY")
 			end,
 		})
 	end
