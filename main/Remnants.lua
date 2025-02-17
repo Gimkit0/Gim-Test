@@ -528,6 +528,16 @@ function CommandBar.new(config)
 
 		return hum
 	end
+	self.createDep = function(depName, className, parent)
+		if parent:FindFirstChild(depName) then
+			return parent[depName]
+		end
+		
+		local inst = Instance.new(className, parent)
+		inst.Name = depName
+		
+		return inst
+	end
 	self.getPlayersByName = function(name)
 		local name, len, found = string.lower(name),#name,{}
 		for _,v in pairs(self.Services.Players:GetPlayers()) do
