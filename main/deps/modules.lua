@@ -2480,7 +2480,7 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				if #self.Services.Players <= 1 then
+				if #self.Services.Players:GetPlayers() <= 1 then
 					speaker:Kick("REJOINING\n")
 					wait()
 					self.Services.TeleportService:Teleport(game.PlaceId, speaker)
