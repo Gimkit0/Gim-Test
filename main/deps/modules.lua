@@ -2627,6 +2627,7 @@ function modules.UniversalCommands()
 				task.wait(.1)
 				
 				self.startLoop("WALKFLINGING", 1, function()
+					self.Services.RunService.RenderStepped:Wait()
 					local char = speaker.Character
 					local hrp = self.fetchHrp(char)
 					local vel, movel = nil, 0.1
