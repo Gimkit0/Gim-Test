@@ -1677,6 +1677,7 @@ function modules.UniversalCommands()
 			
 			-- others --
 			aimlock_holding_mouse = false,
+			walkflinging = false,
 		}
 		
 		local instances = {
@@ -2574,8 +2575,7 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				self.stopLoop("NOCLIPPING")
-				self.startLoop("NOCLIPPING", .1, function()
+				self.startLoop("NOCLIPPING", 0, function()
 					for _, child in pairs(speaker.Character:GetDescendants()) do
 						if child:IsA("BasePart") and child.CanCollide == true and child.Name ~= self.floatName then
 							child.CanCollide = false
@@ -2624,34 +2624,35 @@ function modules.UniversalCommands()
 				end
 				
 				self.Modules.parser:RunCommand(speaker, "noclip")
-				task.wait(.1)
+				task.wait()
 				
-				self.startLoop("WALKFLINGING", 1, function()
-					self.Services.RunService.RenderStepped:Wait()
+				universalValues.walkflinging = true
+				
+				repeat self.Services.RunService.Heartbeat:Wait()
 					local char = speaker.Character
-					local hrp = self.fetchHrp(char)
+					local root = self.fetchHrp(char)
 					local vel, movel = nil, 0.1
 
-					while not (char and char.Parent and hrp and hrp.Parent) do
+					while not (char and char.Parent and root and root.Parent) do
 						self.Services.RunService.Heartbeat:Wait()
 						char = speaker.Character
-						hrp = self.fetchHrp(char)
+						root = self.fetchHrp(char)
 					end
 
-					vel = hrp.Velocity
-					hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+					vel = root.Velocity
+					root.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
 
 					self.Services.RunService.RenderStepped:Wait()
-					if char and char.Parent and hrp and hrp.Parent then
-						hrp.Velocity = vel
+					if char and char.Parent and root and root.Parent then
+						root.Velocity = vel
 					end
 
 					self.Services.RunService.Stepped:Wait()
-					if char and char.Parent and hrp and hrp.Parent then
-						hrp.Velocity = vel + Vector3.new(0, movel, 0)
+					if char and char.Parent and root and root.Parent then
+						root.Velocity = vel + Vector3.new(0, movel, 0)
 						movel = movel * -1
 					end
-				end)
+				until universalValues.walkflinging == false
 			end,
 		})
 		
@@ -2668,7 +2669,7 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				self.stopLoop("WALKFLINGING")
+				universalValues.walkflinging = false
 			end,
 		})
 		
