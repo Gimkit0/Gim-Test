@@ -1668,6 +1668,7 @@ function modules.UniversalCommands()
 		local gethidden
 		local queueteleport
 		local httprequest
+		local getconnections
 		
 		local universalValues = {
 			-- Evade --
@@ -1687,6 +1688,7 @@ function modules.UniversalCommands()
 			gethidden = gethiddenproperty or get_hidden_property or get_hidden_prop
 			queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
 			httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+			getconnections = getconnections or get_signal_cons
 		end
 		
 		local function gameDetectedNotify(gameName)
@@ -1817,7 +1819,7 @@ function modules.UniversalCommands()
 					
 
 					-- 関数 --
-					workspace.Game.Settings:SetAttribute("ReviveTime", 2.25)
+					workspace.Game.Settings:SetAttribute("ReviveTime", 2.2)
 				end,
 			})
 			
@@ -1905,7 +1907,10 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					universalValues.break_bots = false
+					if universalValues.break_bots then
+						universalValues.break_bots = false
+						self.Services.ReplicatedStorage.Events.Player.ChangePlayerMode:FireServer(true)
+					end
 				end,
 			})
 		elseif game.PlaceId == 662417684--[[Lucky block battle grounds]] then
@@ -2773,6 +2778,8 @@ function modules.UniversalCommands()
 						instances.fov_circle.Position = Vector2.new(self.Mouse.X, self.Mouse.Y*1.5)
 					end
 				end))
+				
+				self:Notify(self.Config.SYSTEM.NAME, `To enable aimlock, press your <b>right mouse button</b>!`, "INFO", nil, 10)
 			end,
 		})
 		
@@ -2780,8 +2787,8 @@ function modules.UniversalCommands()
 			Name = "Unaimlock",
 			Description = "Stops the aimlock",
 
-			Aliases = {"CTheme", "Theme"},
-			Arguments = {"Theme"},
+			Aliases = {},
+			Arguments = {},
 
 			Function = function(speaker, args)
 				-- 引数 --
@@ -2797,6 +2804,37 @@ function modules.UniversalCommands()
 				
 				if instances.fov_circle then
 					instances.fov_circle:Destroy()
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Anti-Afk",
+			Description = "Disables the 20 minute afk kick message",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if getconnections then
+					for i,v in pairs(getconnections(speaker.Idled)) do
+						if v["Disable"] then
+							v["Disable"](v)
+						elseif v["Disconnect"] then
+							v["Disconnect"](v)
+						end
+					end
+				else
+					speaker.Idled:Connect(function()
+						local VirtualUser = game:GetService("VirtualUser")
+						VirtualUser:CaptureController()
+						VirtualUser:ClickButton2(Vector2.new())
+					end)
 				end
 			end,
 		})
