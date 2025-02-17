@@ -3018,18 +3018,19 @@ function modules.UniversalCommands()
 					return false
 				end
 				
+				local parts = {}
 				local function addPart(inst)
 					if retainPart(part) then
-						if not table.find(network.parts, part) then
-							table.insert(network.parts, part)
+						if not table.find(parts, part) then
+							table.insert(parts, part)
 						end
 					end
 				end
 				
 				local function removePart(inst)
-					local index = table.find(network.parts, inst)
+					local index = table.find(parts, inst)
 					if index then
-						table.remove(network.parts, index)
+						table.remove(parts, index)
 					end
 				end
 				
@@ -3049,7 +3050,7 @@ function modules.UniversalCommands()
 					local hrp = self.fetchHrp(speaker.Character)
 					if hrp then
 						local tornadoCenter = hrp.Position
-						for _, part in pairs(network.parts) do
+						for _, part in pairs(parts) do
 							if part.Parent and not part.Anchored then
 								local pos = part.Position
 								local distance = (Vector3.new(pos.X, tornadoCenter.Y, pos.Z) - tornadoCenter).Magnitude
