@@ -2613,9 +2613,61 @@ function modules.UniversalCommands()
 				-- 引数 --
 
 				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+				
+				-- 関数 --
+				self.Modules.parser:RunCommand(speaker, "unwalkfling")
+				if hum then
+					hum.Died:Connect(function()
+						self.Modules.parser:RunCommand(speaker, "unwalkfling")
+					end)
+				end
+				
+				self.Modules.parser:RunCommand(speaker, "noclip")
+				task.wait(.1)
+				
+				self.startLoop("WALKFLINGING", 1, function()
+					local char = speaker.Character
+					local hrp = self.fetchHrp(char)
+					local vel, movel = nil, 0.1
+
+					while not (char and char.Parent and hrp and hrp.Parent) do
+						self.Services.RunService.Heartbeat:Wait()
+						char = speaker.Character
+						hrp = self.fetchHrp(char)
+					end
+
+					vel = hrp.Velocity
+					hrp.Velocity = vel * 10000 + Vector3.new(0, 10000, 0)
+
+					self.Services.RunService.RenderStepped:Wait()
+					if char and char.Parent and hrp and hrp.Parent then
+						hrp.Velocity = vel
+					end
+
+					self.Services.RunService.Stepped:Wait()
+					if char and char.Parent and hrp and hrp.Parent then
+						hrp.Velocity = vel + Vector3.new(0, movel, 0)
+						movel = movel * -1
+					end
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "UnwalkFling",
+			Description = "Disables walkflinging",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
 
 				-- 関数 --
-				
+				self.stopLoop("WALKFLINGING")
 			end,
 		})
 		
@@ -2836,6 +2888,24 @@ function modules.UniversalCommands()
 						VirtualUser:ClickButton2(Vector2.new())
 					end)
 				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Dex",
+			Description = "Loads Dex's explorer",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self:Notify(self.Config.SYSTEM.NAME, `Loading dex, hold on a sec!`, "INFO", nil, 5)
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/newdex.lua"))()
 			end,
 		})
 	end
