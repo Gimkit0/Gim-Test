@@ -2794,7 +2794,7 @@ function modules.UniversalCommands()
 								if root then
 									local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
-									if visible --[[and isTargetVisible(char)]] then
+									if visible and isTargetVisible(char) then
 										local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
 										if (magnitude < dist and magnitude < circleRadius) then
 											dist = magnitude
