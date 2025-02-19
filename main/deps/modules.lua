@@ -2725,7 +2725,6 @@ function modules.UniversalCommands()
 				local circleFilled = false
 				local circleVisible = true
 				
-				local aimPart = "Head"
 				
 				-- 関数 --
 				self.Modules.parser:RunCommand(speaker, "Unaimlock")
@@ -2776,6 +2775,7 @@ function modules.UniversalCommands()
 				local function findNearest()
 					local dist = math.huge
 					local Target = nil
+					
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
 						if v.Character then
 							local hum = self.fetchHum(v.Character)
@@ -2783,26 +2783,30 @@ function modules.UniversalCommands()
 								and v.Character
 								and hum
 								and hum.Health > 0
-								and v.Character:FindFirstChild(aimPart)
 							then
 								if teamCheck and v.Team == speaker.Team then
 									continue
 								end
-								
-								local char = v.Character
-								local root = char[aimPart]
-								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
-								if visible --[[and isTargetVisible(char)]] then
-									local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-									if (magnitude < dist and magnitude < circleRadius) then
-										dist = magnitude
-										Target = char
+								local char = v.Character
+								local root = self.fetchHrp(char)
+								
+								if root then
+									local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
+
+									if visible --[[and isTargetVisible(char)]] then
+										local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+										if (magnitude < dist and magnitude < circleRadius) then
+											dist = magnitude
+											Target = char
+										end
 									end
 								end
 							end
 						end
 					end
+					
+					task.wait()
 					return Target
 				end
 				
