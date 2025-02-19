@@ -2719,7 +2719,7 @@ function modules.UniversalCommands()
 				
 				local circleEnabled = false
 				local circleSides = 64
-				local circleRadius = 50
+				local circleRadius = 100
 				local circleThickness = 1
 				local circleTransparency = .5
 				local circleFilled = false
