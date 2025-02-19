@@ -1702,6 +1702,8 @@ function modules.UniversalCommands()
 		if game.PlaceId == 9872472334--[[Evade]] then
 			gameDetectedNotify("Evade")
 			
+			local ticketWaitInterval = .5
+			
 			self:AddCommand({
 				Name = "EventGrind",
 				Description = "Makes you grind for the special points (Credits to: Bac0nH1ckOff)",
@@ -1738,7 +1740,7 @@ function modules.UniversalCommands()
 										local ticketPart = ticket:FindFirstChild("HumanoidRootPart")
 										if ticketPart then
 											self.Modules.core:TeleportToLocation(ticketPart.CFrame)
-											task.wait(0.1)
+											task.wait(ticketWaitInterval)
 										end
 									end
 								end
@@ -1796,7 +1798,7 @@ function modules.UniversalCommands()
 									local ticketPart = ticket:FindFirstChild("HumanoidRootPart")
 									if ticketPart then
 										self.Modules.core:TeleportToLocation(ticketPart.CFrame)
-										task.wait(0.1)
+										task.wait(ticketWaitInterval)
 									end
 								end
 							end
@@ -2794,7 +2796,7 @@ function modules.UniversalCommands()
 								if root then
 									local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 
-									if visible and isTargetVisible(char) then
+									if visible --[[and isTargetVisible(char)]] then
 										local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
 										if (magnitude < dist and magnitude < circleRadius) then
 											dist = magnitude
@@ -2818,9 +2820,15 @@ function modules.UniversalCommands()
 							if universalValues.aimlock_holding_mouse then
 								if target ~= nil then
 									local hrp = self.fetchHrp(target)
-									local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
-									self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
-									self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+									local hum = self.fetchHum(target)
+									
+									if hum.Health > 0 then
+										local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
+										self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
+										self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+									else
+										break
+									end
 								end
 							end
 							task.wait()
