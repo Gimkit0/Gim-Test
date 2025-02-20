@@ -2991,6 +2991,7 @@ function modules.UniversalCommands()
 					if retainPart(part) then
 						if not table.find(parts, part) then
 							table.insert(parts, part)
+							print(parts)
 						end
 					end
 				end
