@@ -916,7 +916,10 @@ function modules.Core()
 		end
 		
 		self.Client.spawn(function()
-			workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+			self.Client.Camera.CameraType = Enum.CameraType.Custom
+			if hum then
+				hum.PlatformStand = false
+			end
 		end)
 	end
 	
@@ -2775,39 +2778,39 @@ function modules.UniversalCommands()
 				end
 				
 				local function findNearest()
-					local dist = math.huge
+					local closestDistance = math.huge
+					local screenDistance = math.huge
 					local Target = nil
-					
+
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
 						if v.Character then
 							local hum = self.fetchHum(v.Character)
-							if v ~= speaker
-								and v.Character
-								and hum
-								and hum.Health > 0
-							then
+							if v ~= speaker and v.Character and hum and hum.Health > 0 then
 								if teamCheck and v.Team == speaker.Team then
 									continue
 								end
 
 								local char = v.Character
 								local root = self.fetchHrp(char)
-								
+
 								if root then
 									local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
+									local playerDistance = (root.Position - speaker.Character.PrimaryPart.Position).Magnitude
+									local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
 
-									if visible --[[and isTargetVisible(char)]] then
-										local magnitude = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-										if (magnitude < dist and magnitude < circleRadius) then
-											dist = magnitude
-											Target = char
-										end
+									if visible and playerDistance < closestDistance then
+										closestDistance = playerDistance
+										screenDistance = magnitude
+										Target = char
+									elseif visible and playerDistance == closestDistance and magnitude < screenDistance then
+										screenDistance = magnitude
+										Target = char
 									end
 								end
 							end
 						end
 					end
-					
+
 					task.wait()
 					return Target
 				end
