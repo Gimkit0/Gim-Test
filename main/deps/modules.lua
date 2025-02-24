@@ -2779,6 +2779,7 @@ function modules.UniversalCommands()
 				
 				local function findNearest()
 					local bestScore = math.huge
+					local dist = math.huge
 					local Target = nil
 
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
@@ -2798,12 +2799,14 @@ function modules.UniversalCommands()
 									local screenDistance = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
 
 									if visible then
-										-- Weighted scoring: Closer to player AND closer to mouse
-										local score = (playerDistance * 0.6) + (screenDistance * 0.4)
+										if (screenDistance < dist and screenDistance < circleRadius) then
+											local score = (playerDistance * 0.6) + (screenDistance * 0.4)
 
-										if score < bestScore then
-											bestScore = score
-											Target = char
+											if score < bestScore then
+												dist = screenDistance
+												bestScore = score
+												Target = char
+											end
 										end
 									end
 								end
