@@ -2883,7 +2883,7 @@ function modules.UniversalCommands()
 		})
 		
 		self:AddCommand({
-			Name = "Anti-Afk",
+			Name = "AntiAfk",
 			Description = "Disables the 20 minute afk kick message",
 
 			Aliases = {},
@@ -2946,9 +2946,6 @@ function modules.UniversalCommands()
 				local strength = args[4]
 
 				-- 変数 --
-				local folder = self.createDep("BLACKHOLE_FOLDER_DEP", "Folder", workspace)
-				local part = self.createDep("ATTRACTION_PART", "Part", folder)
-				local att1 = self.createDep("ATTRACTION_ATTACHMENT", "Attachment", part)
 
 				-- 関数 --
 				local network = {
@@ -2973,10 +2970,6 @@ function modules.UniversalCommands()
 					strength = 1000
 				end
 				
-				part.Anchored = true
-				part.CanCollide = false
-				part.Transparency = 1
-				
 				speaker.ReplicationFocus = workspace
 				
 				local function retainPart(inst)
@@ -2994,10 +2987,9 @@ function modules.UniversalCommands()
 				
 				local parts = {}
 				local function addPart(inst)
-					if retainPart(part) then
-						if not table.find(parts, part) then
-							table.insert(parts, part)
-							print(parts)
+					if retainPart(inst) then
+						if not table.find(parts, inst) then
+							table.insert(parts, inst)
 						end
 					end
 				end
@@ -3069,6 +3061,196 @@ function modules.UniversalCommands()
 				self.removeConn("SINGULARITY")
 				self.removeConn("BLACKHOLE_DESCENDANT_ADDED")
 				self.removeConn("BLACKHOLE_DESCENDANT_REMOVED")
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "FixCamera",
+			Description = "Fixes your camera just in case it's broken",
+
+			Aliases = {"FixCam"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				self.Modules.parser:RunCommand(speaker, "unview")
+				self.Camera:remove()
+				
+				task.wait(.1)
+				repeat task.wait() until speaker.Character ~= nil
+				
+				self.Camera.CameraSubject = hum
+				self.Camera.CameraType = "Custom"
+				speaker.CameraMinZoomDistance = 0.5
+				speaker.CameraMaxZoomDistance = 400
+				speaker.CameraMode = "Classic"
+				speaker.Character.Head.Anchored = false
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "EnableShiftLock",
+			Description = "If shift-lock is disabled, then it'll re-enable it",
+
+			Aliases = {"EnableSL", "Shiftlock"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				self.Modules.parser:RunCommand(speaker, "unview")
+				self.Camera:remove()
+
+				task.wait(.1)
+				repeat task.wait() until speaker.Character ~= nil
+
+				self.Camera.CameraSubject = hum
+				self.Camera.CameraType = "Custom"
+				speaker.CameraMinZoomDistance = 0.5
+				speaker.CameraMaxZoomDistance = 400
+				speaker.CameraMode = "Classic"
+				speaker.Character.Head.Anchored = false
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "MaxZoom",
+			Description = "Sets your cameras Max Zoom Distance to [Number]",
+
+			Aliases = {},
+			Arguments = {"Number"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local num = args[1]
+
+				-- 変数 --
+
+				-- 関数 --
+				if not num then
+					num = 400
+				end
+				speaker.CameraMaxZoomDistance = num
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "MinZoom",
+			Description = "Sets your cameras Min Zoom Distance to [Number]",
+
+			Aliases = {},
+			Arguments = {"Number"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local num = args[1]
+
+				-- 変数 --
+
+				-- 関数 --
+				if not num then
+					num = 0
+				end
+				speaker.CameraMaxZoomDistance = num
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "F3X",
+			Description = "Gives you BTools (Client)",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Orbit",
+			Description = "Makes your character circle around [Player]",
+
+			Aliases = {},
+			Arguments = {"Player", "Speed", "Distance"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local user = args[1]
+				local speed = args[2]
+				local distance = args[3]
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, user)
+				local speakerRoot = self.fetchHrp(speaker.Character)
+				local hum = self.fetchHum(speaker.Character)
+				local rotation = 0
+
+				-- 関数 --
+				if not speed then
+					speed = 10
+				end
+				if not distance then
+					distance = 6
+				end
+				
+				speed = speed/20
+				
+				for index, player in next, users do
+					if player.Character then
+						local hrp = self.fetchHrp(player.Character)
+						if hrp then
+							self.addConn("ORBIT_1", self.Services.RunService.Heartbeat:Connect(function()
+								self.spawn(function()
+									rotation += speed
+									self.Modules.core:TeleportToLocation(hrp.CFrame * CFrame.Angles(0, math.rad(rotation), 0) * CFrame.new(distance, 0, 0))
+								end)
+							end))
+							self.addConn("ORBIT_2", self.Services.RunService.RenderStepped:Connect(function()
+								self.spawn(function()
+									self.Modules.core:TeleportToLocation(CFrame.new(speakerRoot.Position, hrp.Position))
+								end)
+							end))
+							self.addConn("ORBIT_3", hum.Died:Connect(function()
+								self.Modules.parser:RunCommand(speaker, "unorbit")
+							end))
+							self:Notify(self.Config.SYSTEM.NAME, `Orbiting around <b>{player.Name}</b> (@{player.DisplayName})`, "INFO", nil, 5)
+						end
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unorbit",
+			Description = "Stops you from orbiting a player",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.removeConn("ORBIT_1")
+				self.removeConn("ORBIT_2")
+				self.removeConn("ORBIT_3")
 			end,
 		})
 	end
