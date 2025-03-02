@@ -45,12 +45,16 @@ function CommandBar.new(config)
 		currentlyOpened = false,
 		changingFOV = false,
 		changeFOV = false,
+		teleportCheck = false,
 	}
 	local defaultConfig = {
 		SYSTEM = {
 			NAME = "Server's Admin",
+			ON_TELEPORT_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
 			VERSION = 1.0,
+			
+			KEEP_ON_TELEPORT = true,
 		},
 		
 		FOCUSED = {
@@ -85,6 +89,8 @@ function CommandBar.new(config)
 		COMMANDS = {
 			UNIVERSAL_COMMANDS = true,
 			AUTOMATIC_BACKDOOR_SCAN = false,
+			
+			BANG_OFFSET = CFrame.new(0, 0, 1.1),
 		},
 		
 		UI = {
@@ -800,10 +806,19 @@ function CommandBar.new(config)
 				local returns = {}
 				for _, v in pairs(workspace:GetDescendants()) do
 					if v:IsA("Model") and self.fetchHrp(v) and v:FindFirstChildWhichIsA("Humanoid") and self.Services.Players:GetPlayerFromCharacter(v) == nil then
-						local clone = Instance.new("Player")
-						clone.Name = v.Name .. " - " .. v:FindFirstChildWhichIsA("Humanoid").DisplayName
-						clone.Character = v
-						table.insert(returns, clone)
+						if not self.Services.RunService:IsStudio() then
+							local clone = Instance.new("Player")
+							clone.Name = v.Name .. " - " .. v:FindFirstChildWhichIsA("Humanoid").DisplayName
+							clone.Character = v
+							table.insert(returns, clone)
+						else
+							local clone = {
+								Name = v.Name,
+								DisplayName = v.Name,
+								Character = v,
+							}
+							table.insert(returns, clone)
+						end
 					end
 				end
 				return returns
@@ -892,6 +907,12 @@ end
 function CommandBar:ConstructUI()
 	if self.findFirstChild(self.Services.Lighting, "REMNANTS_CLIENT_BLUR") then
 		self.findFirstChild(self.Services.Lighting, "REMNANTS_CLIENT_BLUR"):Destroy()
+	end
+	
+	local queueteleport
+	
+	if not self.Services.RunService:IsStudio() then
+		queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
 	end
 	
 	local cmdBlur = Instance.new("BlurEffect", self.Services.Lighting)
@@ -1344,6 +1365,13 @@ function CommandBar:ConstructUI()
 		end))
 		
 		open.Title.Text = `Open {self.Config.SYSTEM.NAME}`
+		
+		self.LocalPlayer.OnTeleport:Connect(function()
+			if self.Config.SYSTEM.KEEP_ON_TELEPORT and (not self.States.teleportCheck) and queueteleport then
+				self.States.teleportCheck = true
+				queueteleport(self.Config.SYSTEM.ON_TELEPORT_LOADSTRING)
+			end
+		end)
 		
 		self:Notify(self.Config.SYSTEM.NAME, `Welcome to <b>{self.Config.SYSTEM.NAME}</b>! Press <b>';'</b> for command bar.`, "SUCCESS", nil, 15)
 	end
