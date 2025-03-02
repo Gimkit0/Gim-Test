@@ -199,6 +199,10 @@ function modules.Resuponshibu()
 end
 
 function modules.Parser()
+	--[[
+		パーサーモジュールはもともとAdonis Creatorsによって作成されました
+	]]
+	
 	local Parser = {}
 
 	function Parser.new(client)
@@ -476,6 +480,10 @@ function modules.Parser()
 end
 
 function modules.Core()
+	--[[
+		管理コマンドの主なコンポーネント
+	]]
+	
 	local Core = {}
 	Core.__index = Core
 
@@ -507,6 +515,10 @@ function modules.Core()
 				m_fly_name1 = "",
 				m_fly_name2 = "",
 			},
+			
+			instances = {
+				animation = nil,
+			}
 		}
 
 		return self
@@ -938,6 +950,52 @@ function modules.Core()
 			array[i] = string.char(math.random(32, 126))
 		end
 		return table.concat(array)
+	end
+	
+	function Core:IsRigType(char, rigType)
+		if char then
+			local hum = self.Client.fetchHum(char)
+			if hum then
+				if hum.RigType == Enum.HumanoidRigType[rigType] then
+					return true
+				end
+			end
+		end
+	end
+	
+	function Core:PlayAnimation(animId)
+		self:StopAnimation()
+		
+		local anim = Instance.new("Animation")
+		anim.AnimationId = `rbxassetid://{animId}`
+		
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		if hum then
+			local animator = hum:FindFirstChild("Animator") or Instance.new("Animator", hum)
+			local animation = animator:LoadAnimation(anim)
+			animation:Play()
+			animation.Stopped:Connect(function()
+				animation:Destroy()
+			end)
+			
+			self.Storage.instances.animation = {inst = anim, anim = animation}
+		else
+			anim:Destroy()
+		end
+	end
+	
+	function Core:StopAnimation()
+		if self.Storage.instances.animation then
+			self.Storage.instances.animation.anim:Stop()
+			self.Storage.instances.animation.inst:Destroy()
+			self.Storage.instances.animation = nil
+		end
+	end
+	
+	function Core:SetAnimationSpeed(speed)
+		if self.Storage.instances.animation then
+			self.Storage.instances.animation.anim:AdjustSpeed(speed)
+		end
 	end
 
 	return Core
@@ -1681,6 +1739,17 @@ function modules.UniversalCommands()
 			-- others --
 			aimlock_holding_mouse = false,
 			walkflinging = false,
+			isInvisible = false,
+		}
+		
+		local universalConnections = {
+			bangDied = nil,
+			invisFix = nil,
+			invisDied = nil,
+		}
+		
+		local universalFuncs = {
+			turnVisible = nil,
 		}
 		
 		local instances = {
@@ -3251,6 +3320,277 @@ function modules.UniversalCommands()
 				self.removeConn("ORBIT_1")
 				self.removeConn("ORBIT_2")
 				self.removeConn("ORBIT_3")
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "HipHeight",
+			Description = "Sets your hipheight to [Number]",
+
+			Aliases = {"HHeight"},
+			Arguments = {"Number"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local num = args[1]
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				if hum then
+					hum.HipHeight = num or (self.Modules.core:IsRigType(speaker.Character, "R15") and 2.1 or 0)
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Bang",
+			Description = "Fucks your [Player] with a speed of [Speed]",
+
+			Aliases = {"Rape"},
+			Arguments = {"Player", "Speed"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local user = args[1]
+				local speed = args[2]
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, user)
+				local anim = not self.Modules.core:IsRigType(speaker.Character, "R15") and 148840371 or 5918726674
+				local speakerHrp = self.fetchHrp(speaker.Character)
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				if not speed then
+					speed = 3
+				end
+				
+				self.Modules.parser:RunCommand(speaker, "unbang")
+				
+				task.wait()
+				
+				universalConnections.bangDied = hum.Died:Connect(function()
+					self.Modules.parser:RunCommand(speaker, "unbang")
+				end)
+				
+				for index, player in next, users do
+					if player.Character then
+						self.Modules.core:PlayAnimation(anim)
+						self.Modules.core:SetAnimationSpeed(speed)
+						
+						self.startLoop("BANGING", 0, function()
+							self.spawn(function()
+								local hrp = self.fetchHrp(player.Character)
+								if hrp then
+									speakerHrp.CFrame = hrp.CFrame * self.Config.COMMANDS.BANG_OFFSET
+								end
+							end)
+						end)
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unbang",
+			Description = "Stops fucking your target",
+
+			Aliases = {"Unrape"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if universalConnections.bangDied then
+					self.stopLoop("BANGING")
+					self.Modules.core:StopAnimation()
+					
+					universalConnections.bangDied:Disconnect()
+					universalConnections.bangDied = nil
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Invisible",
+			Description = "Makes you invisible",
+
+			Aliases = {"Invis"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local void = workspace.FallenPartsDestroyHeight
+				local char = speaker.Character
+				
+				local currentlyInvis = false
+				local isRunning = false
+
+				-- 関数 --
+				if universalValues.isInvisible then return end
+				universalValues.isInvisible = true
+
+				char.Archivable = true
+				
+				local currentlyInvis = false
+				local isRunning = true
+
+				local invisChar = char:Clone()
+				invisChar.Parent = game.Lighting
+				invisChar.Name = ""
+
+				local function respawn()
+					local hum = self.fetchHum(char)
+					
+					if hum and hum.Sit then
+						hum.Sit = false
+						hum.Jump = true
+					end
+					
+					isRunning = false
+					if currentlyInvis then
+						self.spawn(function()
+							speaker.Character = char
+							task.wait()
+							char.Parent = workspace
+							hum:Destroy()
+							currentlyInvis = false
+							invisChar.Parent = nil
+							universalValues.isInvisible = false
+						end)
+					else
+						self.spawn(function()
+							speaker.Character = char
+							task.wait()
+							char.Parent = workspace
+							hum:Destroy()
+							universalFuncs.turnVisible()
+						end)
+					end
+				end
+
+				universalConnections.invisFix = self.Services.RunService.Stepped:Connect(function()
+					self.spawn(function()
+						local hrp = self.fetchHrp(char)
+						local charPos = hrp.Position
+						if tostring(void):find('-') then
+							if charPos.Y <= void then
+								respawn()
+							end
+						else
+							if charPos.Y >= void then
+								respawn()
+							end
+						end
+					end)
+				end)
+
+				for _, inst in pairs(invisChar:GetDescendants()) do
+					if inst:IsA("BasePart") then
+						inst.Transparency = (inst.Name == "HumanoidRootPart") and 1 or 0.5
+					elseif inst:IsA("ForceField") then
+						inst:Destroy()
+					end
+				end
+
+				local hum = self.fetchHum(char)
+				universalConnections.invisDied = hum.Died:Connect(function()
+					respawn()
+					universalConnections.invisDied:Disconnect()
+					universalConnections.invisDied = nil
+				end)
+
+				if currentlyInvis then return end
+				currentlyInvis = true
+
+				local charCFrame = char.HumanoidRootPart.CFrame
+				char:MoveTo(Vector3.new(0, math.pi * 1000000, 0))
+
+				local camera = self.Camera
+				camera.CameraType = Enum.CameraType.Scriptable
+				
+				local ghostHrp = self.fetchHrp(invisChar)
+				local ghostHum = self.fetchHum(invisChar)
+				
+				invisChar.Parent = workspace
+				ghostHrp.CFrame = charCFrame
+				ghostHum.DisplayName = ""
+				
+				self.Camera.CameraSubject = invisChar
+				
+				wait(.2)
+				camera.CameraType = Enum.CameraType.Custom
+
+				char.Parent = self.Services.Lighting
+				speaker.Character = invisChar
+
+				local animateScript = invisChar:FindFirstChild("Animate")
+				if animateScript then
+					animateScript.Disabled = true
+					animateScript.Disabled = false
+				end
+
+				universalFuncs.turnVisible = function()
+					if not currentlyInvis then
+						return
+					end
+					
+					local mainHrp = self.fetchHrp(char)
+					local ghostHrp = self.fetchHrp(invisChar)
+
+					universalConnections.invisFix:Disconnect()
+					universalConnections.invisFix = nil
+
+					mainHrp.CFrame = ghostHrp.CFrame
+					invisChar:Destroy()
+					speaker.Character = char
+					char.Parent = workspace
+					currentlyInvis = false
+
+					local animateScript = char:FindFirstChild("Animate")
+					if animateScript then
+						animateScript.Disabled = true
+						animateScript.Disabled = false
+					end
+
+					universalConnections.invisDied = char:FindFirstChildWhichIsA("Humanoid").Died:Connect(function()
+						respawn()
+						universalConnections.invisDied:Disconnect()
+						universalConnections.invisDied = nil
+					end)
+					
+					self.Camera.CameraSubject = char
+
+					universalValues.isInvisible = false
+				end
+
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Visible",
+			Description = "Makes you visible to other players",
+
+			Aliases = {"Vis"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if type(universalFuncs.turnVisible) == "function" then
+					universalFuncs.turnVisible()
+					universalFuncs.turnVisible = nil
+				end
 			end,
 		})
 	end
