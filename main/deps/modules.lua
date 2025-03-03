@@ -3179,7 +3179,6 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				self.Modules.parser:RunCommand(speaker, "unview")
-				self.Camera:remove()
 				
 				task.wait(.1)
 				repeat task.wait() until speaker.Character ~= nil
@@ -3189,7 +3188,13 @@ function modules.UniversalCommands()
 				speaker.CameraMinZoomDistance = 0.5
 				speaker.CameraMaxZoomDistance = 400
 				speaker.CameraMode = "Classic"
-				speaker.Character.Head.Anchored = false
+				
+				if speaker.Character then
+					local head = speaker.Character:FindFirstChild("Head")
+					if head then
+						head.Anchored = false
+					end
+				end
 			end,
 		})
 		
