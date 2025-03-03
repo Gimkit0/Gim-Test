@@ -50,11 +50,13 @@ function CommandBar.new(config)
 	local defaultConfig = {
 		SYSTEM = {
 			NAME = "Server's Admin",
-			ON_TELEPORT_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
+			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
 			VERSION = 1.0,
+			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
 			
 			KEEP_ON_TELEPORT = true,
+			CAN_AUTOMATICALLY_UPDATE = true,
 		},
 		
 		FOCUSED = {
@@ -893,6 +895,14 @@ function CommandBar.new(config)
 	self.changeTheme(self.Config.UI.DEFAULT_THEME)
 	
 	_G[globalName] = self
+	
+	self.spawn(function()
+		task.wait(5)
+		while self.Config.SYSTEM.CAN_AUTOMATICALLY_UPDATE do
+			self:_checkForUpdates()
+			task.wait(30)
+		end
+	end)
 
 	return self
 end
@@ -1369,7 +1379,7 @@ function CommandBar:ConstructUI()
 		self.LocalPlayer.OnTeleport:Connect(function()
 			if self.Config.SYSTEM.KEEP_ON_TELEPORT and (not self.States.teleportCheck) and queueteleport then
 				self.States.teleportCheck = true
-				queueteleport(self.Config.SYSTEM.ON_TELEPORT_LOADSTRING)
+				queueteleport(self.Config.SYSTEM.RELOAD_LOADSTRING)
 			end
 		end)
 		
@@ -1582,6 +1592,21 @@ function CommandBar:Destroy()
 		conn:Disconnect()
 	end
 	self.Connections = nil
+end
+
+function CommandBar:_checkForUpdates()
+	if self.Services.RunService:IsStudio() then
+		return
+	end
+	
+	local newVersion = loadstring(game:HttpGet(self.Config.SYSTEM.VERSION_CHECKER_LINK))()
+	if self.Version < newVersion then
+		self.Config.SYSTEM.CAN_AUTOMATICALLY_UPDATE = false
+		
+		self:Notify(self.Config.SYSTEM.NAME, `New version detected: <b>{newVersion}</b> reloading in 5 seconds!`, "SUCCESS", nil, 5)
+		task.wait(5)
+		loadstring(self.Config.SYSTEM.RELOAD_LOADSTRING)()
+	end
 end
 
 return CommandBar
