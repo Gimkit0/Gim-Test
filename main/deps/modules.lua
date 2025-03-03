@@ -518,6 +518,8 @@ function modules.Core()
 			
 			instances = {
 				animation = nil,
+				
+				animations = {},
 			}
 		}
 
@@ -963,8 +965,10 @@ function modules.Core()
 		end
 	end
 	
-	function Core:PlayAnimation(animId)
-		self:StopAnimation()
+	function Core:PlayAnimation(animId, properties, async: boolean?)
+		if not async then
+			self:StopAnimation()
+		end
 		
 		local anim = Instance.new("Animation")
 		anim.AnimationId = `rbxassetid://{animId}`
@@ -973,12 +977,23 @@ function modules.Core()
 		if hum then
 			local animator = hum:FindFirstChild("Animator") or Instance.new("Animator", hum)
 			local animation = animator:LoadAnimation(anim)
+			
+			if type(properties) == "table" then
+				for i, v in pairs(properties) do
+					animation[i] = v
+				end
+			end
+			
 			animation:Play()
 			animation.Stopped:Connect(function()
 				animation:Destroy()
 			end)
 			
-			self.Storage.instances.animation = {inst = anim, anim = animation}
+			if not async then
+				self.Storage.instances.animation = {inst = anim, anim = animation}
+			else
+				table.insert(self.Storage.instances.animations, {inst = anim, anim = animation})
+			end
 		else
 			anim:Destroy()
 		end
@@ -990,11 +1005,19 @@ function modules.Core()
 			self.Storage.instances.animation.inst:Destroy()
 			self.Storage.instances.animation = nil
 		end
+		for i, v in pairs(self.Storage.instances.animations) do
+			v.anim:Stop()
+			v.inst:Destroy()
+			v = nil
+		end
 	end
 	
 	function Core:SetAnimationSpeed(speed)
 		if self.Storage.instances.animation then
 			self.Storage.instances.animation.anim:AdjustSpeed(speed)
+		end
+		for i, v in pairs(self.Storage.instances.animations) do
+			v.anim:AdjustSpeed(speed)
 		end
 	end
 
@@ -1744,8 +1767,16 @@ function modules.UniversalCommands()
 		
 		local universalConnections = {
 			bangDied = nil,
+			
 			invisFix = nil,
 			invisDied = nil,
+			
+			swimming = nil,
+			swimDied = nil,
+		}
+		
+		local universalStorage = {
+			old_gravity = 192.2,
 		}
 		
 		local universalFuncs = {
@@ -3417,6 +3448,86 @@ function modules.UniversalCommands()
 		})
 		
 		self:AddCommand({
+			Name = "Swim",
+			Description = "Makes you swim in the air",
+
+			Aliases = {"AirSwim", "FlySwim"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+				local hrp = self.fetchHrp(speaker.Character)
+				local enums = Enum.HumanoidStateType:GetEnumItems()
+
+				-- 関数 --
+				if universalConnections.swimming or (not hum) or (not hrp) then
+					return
+				end
+				
+				universalStorage.old_gravity = workspace.Gravity
+				table.remove(enums, table.find(enums, Enum.HumanoidStateType.None))
+				
+				workspace.Gravity = 0
+				
+				universalConnections.swimDied = hum.Died:Connect(function()
+					workspace.Gravity = universalStorage.old_gravity
+				end)
+				
+				for i, v in pairs(enums) do
+					hum:SetStateEnabled(v, false)
+				end
+				hum:ChangeState(Enum.HumanoidStateType.Swimming)
+				
+				universalConnections.swimming = self.Services.RunService.Heartbeat:Connect(function()
+					self.spawn(function()
+						hrp.Velocity = ((hum.MoveDirection ~= Vector3.new()
+							or self.Services.UserInputService:IsKeyDown(Enum.KeyCode.Space))
+							and hrp.Velocity
+							or Vector3.new()
+						)
+					end)
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unswim",
+			Description = "Stops your character from swimming in the air",
+
+			Aliases = {"Unairswim", "Unflyswim"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+				local enums = Enum.HumanoidStateType:GetEnumItems()
+
+				-- 関数 --
+				if universalConnections.swimming then
+					universalConnections.swimming:Disconnect()
+					universalConnections.swimming = nil
+					
+					workspace.Gravity = universalStorage.old_gravity
+					
+					if universalConnections.swimDied then
+						universalConnections.swimDied:Disconnect()
+						universalConnections.swimDied = nil
+					end
+					
+					table.remove(enums, table.find(enums, Enum.HumanoidStateType.None))
+					for i, v in pairs(enums) do
+						hum:SetStateEnabled(v, true)
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
 			Name = "Invisible",
 			Description = "Makes you invisible",
 
@@ -3570,7 +3681,7 @@ function modules.UniversalCommands()
 
 					universalValues.isInvisible = false
 				end
-
+				self:Notify(self.Config.SYSTEM.NAME, `You are invisible to other players`, "INFO", nil, 5)
 			end,
 		})
 		
@@ -3591,6 +3702,78 @@ function modules.UniversalCommands()
 					universalFuncs.turnVisible()
 					universalFuncs.turnVisible = nil
 				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "HamsterBall",
+			Description = "Rolls your character like a hamster ball",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/hamsterball.lua"))()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "JerkOff",
+			Description = "Makes you masterbathe with a speed of [Speed]",
+
+			Aliases = {"Masterbathe"},
+			Arguments = {"Speed"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local speed = args[1]
+
+				-- 変数 --
+				local r6Anims = {
+					JERK_OFF = 99198989,
+					CLOSER_HANDS = 168086975,
+				}
+
+				-- 関数 --
+				if not speed then
+					speed = 2
+				end
+				
+				if self.Modules.core:IsRigType(speaker.Character, "R6") then
+					self.Modules.core:StopAnimation()
+
+					self.Modules.core:PlayAnimation(r6Anims.JERK_OFF, {
+						Looped = true,
+					}, true)
+					self.Modules.core:PlayAnimation(r6Anims.CLOSER_HANDS, {
+						Looped = true,
+					}, true)
+					self.Modules.core:SetAnimationSpeed(speed)
+				else
+					self:Notify(self.Config.SYSTEM.NAME, `Sorry, but this command doesn't support r15 yet.`, "ERROR", nil, 5)
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Undance",
+			Description = "Stops you from dancing/jerking off",
+
+			Aliases = {"Unmasterbathe", "UnjerkOff"},
+			Arguments = {"Speed"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.Modules.core:StopAnimation()
 			end,
 		})
 	end
