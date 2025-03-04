@@ -479,6 +479,344 @@ function modules.Parser()
 	return Parser
 end
 
+function modules.Spring()
+	local Spring = {}
+	Spring.__index = Spring
+
+	function Spring.new(freq, pos)
+		local self = setmetatable({}, Spring)
+		self.f = freq
+		self.p = pos
+		self.v = pos*0
+		return self
+	end
+
+	function Spring:Update(dt, goal)
+		local f = self.f*2*math.pi
+		local p0 = self.p
+		local v0 = self.v
+
+		local offset = goal - p0
+		local decay = math.exp(-f*dt)
+
+		local p1 = goal + (v0*dt - offset*(f*dt + 1))*decay
+		local v1 = (f*dt*(offset*f - v0) + v0)*decay
+
+		self.p = p1
+		self.v = v1
+
+		return p1
+	end
+
+	function Spring:Reset(pos)
+		self.p = pos
+		self.v = pos*0
+	end
+	
+	return Spring
+end
+
+function modules.Input(client, INPUT_PRIORITY)
+	local Input = {}
+	
+	local pi    = math.pi
+	local abs   = math.abs
+	local clamp = math.clamp
+	local exp   = math.exp
+	local rad   = math.rad
+	local sign  = math.sign
+	local sqrt  = math.sqrt
+	local tan   = math.tan
+	
+	local thumbstickCurve do
+		local K_CURVATURE = 2.0
+		local K_DEADZONE = 0.15
+
+		local function fCurve(x)
+			return (exp(K_CURVATURE*x) - 1)/(exp(K_CURVATURE) - 1)
+		end
+
+		local function fDeadzone(x)
+			return fCurve((x - K_DEADZONE)/(1 - K_DEADZONE))
+		end
+
+		function thumbstickCurve(x)
+			return sign(x)*clamp(fDeadzone(abs(x)), 0, 1)
+		end
+	end
+
+	local gamepad = {
+		ButtonX = 0,
+		ButtonY = 0,
+		DPadDown = 0,
+		DPadUp = 0,
+		ButtonL2 = 0,
+		ButtonR2 = 0,
+		Thumbstick1 = Vector2.new(),
+		Thumbstick2 = Vector2.new(),
+	}
+
+	local keyboard = {
+		W = 0,
+		A = 0,
+		S = 0,
+		D = 0,
+		E = 0,
+		Q = 0,
+		U = 0,
+		H = 0,
+		J = 0,
+		K = 0,
+		I = 0,
+		Y = 0,
+		Up = 0,
+		Down = 0,
+		LeftShift = 0,
+		RightShift = 0,
+	}
+
+	local mouse = {
+		Delta = Vector2.new(),
+		MouseWheel = 0,
+	}
+
+	local NAV_GAMEPAD_SPEED  = Vector3.new(1, 1, 1)
+	local NAV_KEYBOARD_SPEED = Vector3.new(1, 1, 1)
+	local PAN_MOUSE_SPEED    = Vector2.new(1, 1)*(pi/64)
+	local PAN_GAMEPAD_SPEED  = Vector2.new(1, 1)*(pi/8)
+	local FOV_WHEEL_SPEED    = 1.0
+	local FOV_GAMEPAD_SPEED  = 0.25
+	local NAV_ADJ_SPEED      = 0.75
+	local NAV_SHIFT_MUL      = 0.25
+
+	local navSpeed = 1
+
+	function Input.Vel(dt)
+		navSpeed = clamp(navSpeed + dt*(keyboard.Up - keyboard.Down)*NAV_ADJ_SPEED, 0.01, 4)
+
+		local kGamepad = Vector3.new(
+			thumbstickCurve(gamepad.Thumbstick1.X),
+			thumbstickCurve(gamepad.ButtonR2) - thumbstickCurve(gamepad.ButtonL2),
+			thumbstickCurve(-gamepad.Thumbstick1.Y)
+		)*NAV_GAMEPAD_SPEED
+
+		local kKeyboard = Vector3.new(
+			keyboard.D - keyboard.A + keyboard.K - keyboard.H,
+			keyboard.E - keyboard.Q + keyboard.I - keyboard.Y,
+			keyboard.S - keyboard.W + keyboard.J - keyboard.U
+		)*NAV_KEYBOARD_SPEED
+
+		local shift = client.Services.UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or client.Services.UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+
+		return (kGamepad + kKeyboard)*(navSpeed*(shift and NAV_SHIFT_MUL or 1))
+	end
+
+	function Input.Pan(dt)
+		local kGamepad = Vector2.new(
+			thumbstickCurve(gamepad.Thumbstick2.Y),
+			thumbstickCurve(-gamepad.Thumbstick2.X)
+		)*PAN_GAMEPAD_SPEED
+		local kMouse = mouse.Delta*PAN_MOUSE_SPEED
+		mouse.Delta = Vector2.new()
+		return kGamepad + kMouse
+	end
+
+	function Input.Fov(dt)
+		local kGamepad = (gamepad.ButtonX - gamepad.ButtonY)*FOV_GAMEPAD_SPEED
+		local kMouse = mouse.MouseWheel*FOV_WHEEL_SPEED
+		mouse.MouseWheel = 0
+		return kGamepad + kMouse
+	end
+
+	do
+		local function Keypress(action, state, input)
+			keyboard[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function GpButton(action, state, input)
+			gamepad[input.KeyCode.Name] = state == Enum.UserInputState.Begin and 1 or 0
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function MousePan(action, state, input)
+			local delta = input.Delta
+			mouse.Delta = Vector2.new(-delta.y, -delta.x)
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function Thumb(action, state, input)
+			gamepad[input.KeyCode.Name] = input.Position
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function Trigger(action, state, input)
+			gamepad[input.KeyCode.Name] = input.Position.z
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function MouseWheel(action, state, input)
+			mouse[input.UserInputType.Name] = -input.Position.z
+			return Enum.ContextActionResult.Sink
+		end
+
+		local function Zero(t)
+			for k, v in pairs(t) do
+				t[k] = v*0
+			end
+		end
+
+		function Input.StartCapture()
+			client.Services.ContextActionService:BindActionAtPriority("FreecamKeyboard", Keypress, false, INPUT_PRIORITY,
+				Enum.KeyCode.W, Enum.KeyCode.U,
+				Enum.KeyCode.A, Enum.KeyCode.H,
+				Enum.KeyCode.S, Enum.KeyCode.J,
+				Enum.KeyCode.D, Enum.KeyCode.K,
+				Enum.KeyCode.E, Enum.KeyCode.I,
+				Enum.KeyCode.Q, Enum.KeyCode.Y,
+				Enum.KeyCode.Up, Enum.KeyCode.Down
+			)
+			client.Services.ContextActionService:BindActionAtPriority("FreecamMousePan",          MousePan,   false, INPUT_PRIORITY, Enum.UserInputType.MouseMovement)
+			client.Services.ContextActionService:BindActionAtPriority("FreecamMouseWheel",        MouseWheel, false, INPUT_PRIORITY, Enum.UserInputType.MouseWheel)
+			client.Services.ContextActionService:BindActionAtPriority("FreecamGamepadButton",     GpButton,   false, INPUT_PRIORITY, Enum.KeyCode.ButtonX, Enum.KeyCode.ButtonY)
+			client.Services.ContextActionService:BindActionAtPriority("FreecamGamepadTrigger",    Trigger,    false, INPUT_PRIORITY, Enum.KeyCode.ButtonR2, Enum.KeyCode.ButtonL2)
+			client.Services.ContextActionService:BindActionAtPriority("FreecamGamepadThumbstick", Thumb,      false, INPUT_PRIORITY, Enum.KeyCode.Thumbstick1, Enum.KeyCode.Thumbstick2)
+		end
+
+		function Input.StopCapture()
+			navSpeed = 1
+			Zero(gamepad)
+			Zero(keyboard)
+			Zero(mouse)
+			client.Services.ContextActionService:UnbindAction("FreecamKeyboard")
+			client.Services.ContextActionService:UnbindAction("FreecamMousePan")
+			client.Services.ContextActionService:UnbindAction("FreecamMouseWheel")
+			client.Services.ContextActionService:UnbindAction("FreecamGamepadButton")
+			client.Services.ContextActionService:UnbindAction("FreecamGamepadTrigger")
+			client.Services.ContextActionService:UnbindAction("FreecamGamepadThumbstick")
+		end
+	end
+	
+	return Input
+end
+
+function modules.PlayerState(client)
+	local PlayerState = {}
+	
+	local mouseBehavior = ""
+	local mouseIconEnabled = ""
+	local cameraType = ""
+	local cameraFocus = ""
+	local cameraCFrame = ""
+	local cameraFieldOfView = ""
+	
+	local disabledGuis = {}
+	
+	local FFlagUserExitFreecamBreaksWithShiftlock
+	do
+		local success, result = pcall(function()
+			return UserSettings():IsUserFeatureEnabled("UserExitFreecamBreaksWithShiftlock")
+		end)
+		FFlagUserExitFreecamBreaksWithShiftlock = success and result
+	end
+	
+	local function checkMouseLockAvailability()
+		local devAllowsMouseLock = client.LocalPlayer.DevEnableMouseLock
+		local devMovementModeIsScriptable = client.LocalPlayer.DevComputerMovementMode == Enum.DevComputerMovementMode.Scriptable
+		local userHasMouseLockModeEnabled = UserSettings().GameSettings.ControlMode == Enum.ControlMode.MouseLockSwitch
+		local userHasClickToMoveEnabled =  UserSettings().GameSettings.ComputerMovementMode == Enum.ComputerMovementMode.ClickToMove
+		local MouseLockAvailable = devAllowsMouseLock and userHasMouseLockModeEnabled and not userHasClickToMoveEnabled and not devMovementModeIsScriptable
+
+		return MouseLockAvailable
+	end
+	
+	local coreGuis = {
+		Backpack = true,
+		Chat = true,
+		Health = true,
+		PlayerList = true,
+	}
+	local setCores = {
+		BadgesNotificationsActive = true,
+		PointsNotificationsActive = true,
+	}
+
+	function PlayerState.Push(disableCores : boolean?)
+		if disableCores then
+			local playerGui = client.LocalPlayer:FindFirstChildOfClass("PlayerGui")
+			if playerGui then
+				for _, gui in pairs(playerGui:GetChildren()) do
+					if gui:IsA("ScreenGui") and gui.Enabled then
+						disabledGuis[#disabledGuis + 1] = gui
+						gui.Enabled = false
+					end
+				end
+			end
+			for name in pairs(coreGuis) do
+				coreGuis[name] = client.Services.StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType[name])
+				client.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType[name], false)
+			end
+			for name in pairs(setCores) do
+				setCores[name] = client.Services.StarterGui:GetCore(name)
+				client.Services.StarterGui:SetCore(name, false)
+			end
+		end
+		
+		cameraFieldOfView = client.Camera.FieldOfView
+		client.Camera.FieldOfView = 70
+
+		cameraType = client.Camera.CameraType
+		client.Camera.CameraType = Enum.CameraType.Custom
+
+		cameraCFrame = client.Camera.CFrame
+		cameraFocus = client.Camera.Focus
+
+		mouseIconEnabled = client.Services.UserInputService.MouseIconEnabled
+		--client.Services.UserInputService.MouseIconEnabled = false
+
+		if FFlagUserExitFreecamBreaksWithShiftlock and checkMouseLockAvailability() then
+			mouseBehavior = Enum.MouseBehavior.Default
+		else
+			mouseBehavior = client.Services.UserInputService.MouseBehavior
+		end
+		client.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+	end
+
+	function PlayerState.Pop()
+		for name, isEnabled in pairs(coreGuis) do
+			client.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType[name], isEnabled)
+		end
+		for name, isEnabled in pairs(setCores) do
+			client.Services.StarterGui:SetCore(name, isEnabled)
+		end
+		for _, gui in pairs(disabledGuis) do
+			if gui.Parent then
+				gui.Enabled = true
+			end
+		end
+		
+		client.Camera.FieldOfView = cameraFieldOfView
+		cameraFieldOfView = nil
+
+		client.Camera.CameraType = cameraType
+		cameraType = nil
+
+		client.Camera.CFrame = cameraCFrame
+		cameraCFrame = nil
+
+		client.Camera.Focus = cameraFocus
+		cameraFocus = nil
+
+		client.Services.UserInputService.MouseIconEnabled = mouseIconEnabled
+		mouseIconEnabled = nil
+
+		client.Services.UserInputService.MouseBehavior = mouseBehavior
+		mouseBehavior = nil
+	end
+	
+	return PlayerState
+end
+
 function modules.Core()
 	--[[
 		管理コマンドの主なコンポーネント
@@ -522,6 +860,25 @@ function modules.Core()
 				animations = {},
 			}
 		}
+		
+		local cameraPos = Vector3.new()
+		local cameraRot = Vector2.new()
+
+		local velSpring = self.Client.PreloadedModules.spring.new(1.5, Vector3.new())
+		local panSpring = self.Client.PreloadedModules.spring.new(1.0, Vector2.new())
+		local fovSpring = self.Client.PreloadedModules.spring.new(4.0, 0)
+		
+		self.cameraPos = cameraPos
+		self.cameraRot = cameraRot
+		self.velSpring = velSpring
+		self.panSpring = panSpring
+		self.fovSpring = fovSpring
+		
+		self.disabledGuis = {}
+		
+		self.freecamActive = false
+		
+		self.cameraFov = 70
 
 		return self
 	end
@@ -1019,6 +1376,95 @@ function modules.Core()
 		for i, v in pairs(self.Storage.instances.animations) do
 			v.anim:AdjustSpeed(speed)
 		end
+	end
+	
+	function Core:Freecam(disableCores, pos)
+		if self.freecamActive then
+			self:StopFreecam()
+		end
+		self.freecamActive = true
+		
+		local cameraCFrame = self.Client.Camera.CFrame
+		if pos then
+			cameraCFrame = pos
+		end
+
+		local function stepFreecam(delta)
+			local FOV_GAIN = 300
+			
+			local vel = self.velSpring:Update(delta, self.Client.PreloadedModules.input.Vel(delta))
+			local pan = self.panSpring:Update(delta, self.Client.PreloadedModules.input.Pan(delta))
+			local fov = self.fovSpring:Update(delta, self.Client.PreloadedModules.input.Fov(delta))
+
+			local zoomFactor = math.sqrt(math.tan(math.rad(70/2)) / math.tan(math.rad(self.cameraFov/2)))
+			
+			self.cameraFov = math.clamp(self.cameraFov + fov*FOV_GAIN*(delta/zoomFactor), 1, 120)
+			self.cameraRot = self.cameraRot + pan * Vector2.new(0.75, 1) * 8 * (delta / zoomFactor)
+			self.cameraRot = Vector2.new(math.clamp(self.cameraRot.x, -math.rad(90), math.rad(90)), self.cameraRot.y % (2 * math.pi))
+
+			local cameraCFrame = CFrame.new(self.cameraPos) * CFrame.fromOrientation(self.cameraRot.x, self.cameraRot.y, 0) * CFrame.new(vel * Vector3.new(1, 1, 1) * 64 * delta)
+			self.cameraPos = cameraCFrame.p
+
+			self.Client.Camera.FieldOfView = self.cameraFov
+			self.Client.Camera.CFrame = cameraCFrame
+			self.Client.Camera.Focus = cameraCFrame * CFrame.new(0, 0, self:_getFocusDistance(cameraCFrame))
+		end
+
+		self.cameraRot = Vector2.new()
+		self.cameraPos = cameraCFrame.p
+		self.cameraFov = self.Client.Camera.FieldOfView
+
+		self.velSpring:Reset(Vector3.new())
+		self.panSpring:Reset(Vector2.new())
+		self.fovSpring:Reset(0)
+		
+		self.Client.Modules.parser:RunCommand(self.Client.LocalPlayer, "minzoom", "50")
+
+		self.Client.PreloadedModules.playerState.Push(disableCores)
+		
+		self.Client.Services.RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, stepFreecam)
+		
+		self.Client.PreloadedModules.input.StartCapture()
+	end
+	
+	function Core:StopFreecam()
+		if self.freecamActive then
+			self.freecamActive = false
+			
+			self.Client.PreloadedModules.input.StopCapture()
+			self.Client.Services.RunService:UnbindFromRenderStep("Freecam")
+			self.Client.PreloadedModules.playerState.Pop()
+		end
+	end
+	
+	function Core:_getFocusDistance(cameraFrame)
+		local znear = 0.1
+		local viewport = self.Client.Camera.ViewportSize
+		local projy = 2*math.tan(self.cameraFov/2)
+		local projx = viewport.x/viewport.y*projy
+		local fx = cameraFrame.rightVector
+		local fy = cameraFrame.upVector
+		local fz = cameraFrame.lookVector
+
+		local minVect = Vector3.new()
+		local minDist = 512
+
+		for x = 0, 1, 0.5 do
+			for y = 0, 1, 0.5 do
+				local cx = (x - 0.5)*projx
+				local cy = (y - 0.5)*projy
+				local offset = fx*cx - fy*cy + fz
+				local origin = cameraFrame.p + offset*znear
+				local _, hit = workspace:FindPartOnRay(Ray.new(origin, offset.unit*minDist))
+				local dist = (hit - origin).magnitude
+				if minDist > dist then
+					minDist = dist
+					minVect = offset.unit
+				end
+			end
+		end
+
+		return fz:Dot(minVect)*minDist
 	end
 
 	return Core
@@ -2809,15 +3255,11 @@ function modules.UniversalCommands()
 				-- 引数 --
 				local epipath = args[1]
 				local offsetY = args[2]
-				local teamCheck = args[3]
+				local teamCheck = self.getBool(args[3])
 				
 				-- 変数 --
 				if not offsetY then
 					offsetY = 25
-				end
-				if teamCheck == "yes" or teamCheck == "true" then
-					teamCheck = true else
-					teamCheck = false
 				end
 				
 				local headOffset = Vector3.new(0, offsetY/20, 0)
@@ -3209,21 +3651,10 @@ function modules.UniversalCommands()
 				-- 引数 --
 
 				-- 変数 --
-				local hum = self.fetchHum(speaker.Character)
+				
 
 				-- 関数 --
-				self.Modules.parser:RunCommand(speaker, "unview")
-				self.Camera:remove()
-
-				task.wait(.1)
-				repeat task.wait() until speaker.Character ~= nil
-
-				self.Camera.CameraSubject = hum
-				self.Camera.CameraType = "Custom"
-				speaker.CameraMinZoomDistance = 0.5
-				speaker.CameraMaxZoomDistance = 400
-				speaker.CameraMode = "Classic"
-				speaker.Character.Head.Anchored = false
+				speaker.DevEnableMouseLock = true
 			end,
 		})
 		
@@ -3231,7 +3662,7 @@ function modules.UniversalCommands()
 			Name = "MaxZoom",
 			Description = "Sets your cameras Max Zoom Distance to [Number]",
 
-			Aliases = {},
+			Aliases = {"MaxZoomDistance"},
 			Arguments = {"Number"},
 
 			Function = function(speaker, args)
@@ -3252,7 +3683,7 @@ function modules.UniversalCommands()
 			Name = "MinZoom",
 			Description = "Sets your cameras Min Zoom Distance to [Number]",
 
-			Aliases = {},
+			Aliases = {"MinZoomDistance"},
 			Arguments = {"Number"},
 
 			Function = function(speaker, args)
@@ -3384,7 +3815,7 @@ function modules.UniversalCommands()
 			Name = "Bang",
 			Description = "Fucks your [Player] with a speed of [Speed]",
 
-			Aliases = {"Rape"},
+			Aliases = {"Rape", "Hump", "Fuck"},
 			Arguments = {"Player", "Speed"},
 
 			Function = function(speaker, args)
@@ -3433,7 +3864,7 @@ function modules.UniversalCommands()
 			Name = "Unbang",
 			Description = "Stops fucking your target",
 
-			Aliases = {"Unrape"},
+			Aliases = {"Unrape", "Unhump", "Unfuck"},
 			Arguments = {},
 
 			Function = function(speaker, args)
@@ -3454,13 +3885,14 @@ function modules.UniversalCommands()
 		
 		self:AddCommand({
 			Name = "Swim",
-			Description = "Makes you swim in the air",
+			Description = "Makes you swim in the air with the speed of [Speed]",
 
 			Aliases = {"AirSwim", "FlySwim"},
-			Arguments = {},
+			Arguments = {"Speed"},
 
 			Function = function(speaker, args)
 				-- 引数 --
+				local speed = args[1]
 
 				-- 変数 --
 				local hum = self.fetchHum(speaker.Character)
@@ -3470,6 +3902,9 @@ function modules.UniversalCommands()
 				-- 関数 --
 				if universalConnections.swimming or (not hum) or (not hrp) then
 					return
+				end
+				if not speed then
+					speed = 50
 				end
 				
 				universalStorage.old_gravity = workspace.Gravity
@@ -3486,6 +3921,8 @@ function modules.UniversalCommands()
 				end
 				hum:ChangeState(Enum.HumanoidStateType.Swimming)
 				
+				self.Modules.parser:RunCommand(speaker, "cframespeed", speed)
+				
 				universalConnections.swimming = self.Services.RunService.Heartbeat:Connect(function()
 					self.spawn(function()
 						hrp.Velocity = ((hum.MoveDirection ~= Vector3.new()
@@ -3495,6 +3932,7 @@ function modules.UniversalCommands()
 						)
 					end)
 				end)
+				
 			end,
 		})
 		
@@ -3523,6 +3961,8 @@ function modules.UniversalCommands()
 						universalConnections.swimDied:Disconnect()
 						universalConnections.swimDied = nil
 					end
+					
+					self.Modules.parser:RunCommand(speaker, "uncframespeed")
 					
 					table.remove(enums, table.find(enums, Enum.HumanoidStateType.None))
 					for i, v in pairs(enums) do
@@ -3760,7 +4200,8 @@ function modules.UniversalCommands()
 					}, true)
 					self.Modules.core:SetAnimationSpeed(speed)
 				else
-					self:Notify(self.Config.SYSTEM.NAME, `Sorry, but this command doesn't support r15 yet.`, "ERROR", nil, 5)
+					loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+					self:Notify(self.Config.SYSTEM.NAME, `For now, R15 version uses a tool.`, "INFO", nil, 5)
 				end
 			end,
 		})
@@ -3776,9 +4217,86 @@ function modules.UniversalCommands()
 				-- 引数 --
 
 				-- 変数 --
+				local tool = speaker.Backpack:FindFirstChild("Jerk Off")
 
 				-- 関数 --
 				self.Modules.core:StopAnimation()
+				if tool then
+					tool:Destroy()
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "EnableInventory",
+			Description = "Enables your inventory",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				
+
+				-- 関数 --
+				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "DisableInventory",
+			Description = "Disables your inventory",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+
+				-- 関数 --
+				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Freecam",
+			Description = "Makes you go in freecam mode",
+
+			Aliases = {},
+			Arguments = {"DisableCores"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local disableCores = self.getBool(args[1])
+
+				-- 変数 --
+
+
+				-- 関数 --
+				self.Modules.core:Freecam(disableCores)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "StopFreecam",
+			Description = "Stops freecam mode",
+
+			Aliases = {"Unfreecam"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+
+				-- 関数 --
+				self.Modules.core:StopFreecam()
 			end,
 		})
 	end
