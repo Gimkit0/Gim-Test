@@ -4217,7 +4217,7 @@ function modules.UniversalCommands()
 				-- 引数 --
 
 				-- 変数 --
-				local tool = speaker.Backpack:FindFirstChild("Jerk Off")
+				local tool = speaker.Backpack:FindFirstChild("Jerk Off R15")
 
 				-- 関数 --
 				self.Modules.core:StopAnimation()
