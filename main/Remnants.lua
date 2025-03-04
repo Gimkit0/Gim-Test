@@ -22,6 +22,18 @@ function CommandBar.new(config)
 		_G[globalName]:Destroy()
 	end
 	
+	if not game:IsLoaded() then
+		local parent = game:GetService("RunService"):IsStudio()
+			and workspace or game:GetService("CoreGui")
+		
+		local notLoaded = Instance.new("Message")
+		notLoaded.Parent = parent
+		notLoaded.Text = "Remnants Admin is waiting for the game to load"
+		notLoaded.Name = globalName
+		game.Loaded:Wait()
+		notLoaded:Destroy()
+	end
+	
 	if game:GetService("RunService"):IsStudio() then
 		loadedModules = require(script.Modules)
 	else
@@ -31,13 +43,21 @@ function CommandBar.new(config)
 	local defaultConfig = {
 		SYSTEM = {
 			NAME = "Server's Admin",
+			SAVE_FILE_NAME = `{globalName}.rem`,
 			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
-			VERSION = 1.01,
+			VERSION = 1.02,
 			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
 			
 			KEEP_ON_TELEPORT = true,
 			CAN_AUTOMATICALLY_UPDATE = true,
+		},
+		
+		SAVING = {
+			ENABLED = true,
+			
+			MAX_RETRY_ATTEMPTS = 5,
+			RETRY_COOLDOWN = 1,
 		},
 		
 		FOCUSED = {
@@ -57,8 +77,6 @@ function CommandBar.new(config)
 			BATCH_KEY = ";",
 			
 			MAX_COMMAND_STRING_LIMIT = 35,
-
-			NO_PERM_MESSAGE = "Insufficient level! Must be rank <b>%s</b> in order to do this.",
 		},
 		
 		CONSOLE = {
@@ -417,13 +435,36 @@ function CommandBar.new(config)
 			self.Connections[name] = nil
 		end
 	end
+	self.safePlayerAdded = function(func)
+		if type(func) ~= "function" then
+			return
+		end
+		self.spawn(function()
+			for _, plr in ipairs(self.Services.Players:GetPlayers()) do
+				func(plr)
+			end
+		end)
+		return self.Services.Players.PlayerAdded:Connect(func)
+	end
+	self.safeChildAdded = function(inst, func)
+		if type(func) ~= "function" then
+			return
+		end
+		if inst then
+			self.spawn(function()
+				func(inst)
+			end)
+			return inst.ChildAdded:Connect(func)
+		end
+		return nil
+	end
 	self.getBool = function(str)
 		str = tostring(str)
 		str = str:lower()
 		str = self.cleanWhiteSpaces(str)
 		
 		if str == "affirmative"
-			or str == "yes" or str == "hai"
+			or str == "yes" or str == "hai" or str == "si"
 			or str == "yeah" or str == "yep" or str == "yea" or str == "yah" or str == "yuh"
 			or str == "true"
 			or str == "indeed"
@@ -433,6 +474,7 @@ function CommandBar.new(config)
 			or str == "absolutely"
 			or str == "alright"
 			or str == "fine"
+			or str == "1" or str == "one"
 		then
 			return true
 		else
@@ -527,6 +569,15 @@ function CommandBar.new(config)
 		end
 		return newConfig
 	end
+	self.validateType = function(data, vtype)
+		if not data then
+			return false
+		end
+		if type(data) == "userdata" then
+			return typeof(data) == vtype
+		end
+		return type(data) == vtype
+	end
 	self.toTokens = function(str)
 		local tokens = {}
 		for op,name in string.gmatch(str,"([+-])([^+-]+)") do
@@ -569,6 +620,13 @@ function CommandBar.new(config)
 		inst.Name = depName
 		
 		return inst
+	end
+	self.saveData = function()
+		if not self.Services.RunService:IsStudio() then
+			if self.Config.SAVING.ENABLED and writefileExploit() then
+				
+			end
+		end
 	end
 	self.getPlayersByName = function(name)
 		local name, len, found = string.lower(name),#name,{}
@@ -909,6 +967,8 @@ function CommandBar.new(config)
 	self.Config = self.validateConfig(defaultConfig, config or {})
 	
 	self.floatName = self.Modules.core:RandomString()
+	self.espName = self.Modules.core:RandomString()
+	self.globalName = globalName
 	
 	if self.Config.COMMANDS.UNIVERSAL_COMMANDS then
 		self.Modules.universalCommands.new(self)
@@ -1623,7 +1683,7 @@ function CommandBar:_checkForUpdates()
 		return
 	end
 	
-	local newVersion = loadstring(game:HttpGet(self.Config.SYSTEM.VERSION_CHECKER_LINK))()
+	local newVersion = tonumber(game:HttpGet(self.Config.SYSTEM.VERSION_CHECKER_LINK))
 	if self.Version < newVersion then
 		self.Config.SYSTEM.CAN_AUTOMATICALLY_UPDATE = false
 		
