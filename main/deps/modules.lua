@@ -1041,12 +1041,22 @@ function modules.Core()
 		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
 		if hum and hrp then
 			local lastPos = hrp.CFrame
+			local viewPart = Instance.new("Part", workspace)
+			viewPart.Name = self.Client.globalName
+			viewPart.CFrame = lastPos
+			viewPart.Transparency = 1
+			viewPart.CanCollide = false
+			viewPart.CanTouch = false
+			viewPart.CanQuery = false
 			
-			self.Client.addConn("REFRESHING_PLAYER", self.Client.Services.Players[self.Client.LocalPlayer.Name].CharacterAdded:Connect(function(char)
-				self.Client.removeConn("REFRESHING_PLAYER")
+			self.Client.addConn("REFRESHING_PLAYER", self.Client.LocalPlayer.CharacterAdded:Connect(function(char)
 				self:TeleportToLocation(lastPos)
+				self.Client.Camera.CameraSubject = self.Client.LocalPlayer
+				viewPart:Destroy()
+				self.Client.removeConn("REFRESHING_PLAYER")
 			end))
 			
+			self.Client.Camera.CameraSubject = viewPart
 			self:TeleportToLocation(CFrame.new(0, 50000, 0))
 			
 			task.wait(.25)
@@ -2231,6 +2241,8 @@ function modules.UniversalCommands()
 		
 		local instances = {
 			fov_circle = nil,
+			
+			esp_instances = {},
 		}
 
 		if not self.Services.RunService:IsStudio() then
@@ -4058,9 +4070,11 @@ function modules.UniversalCommands()
 
 				local hum = self.fetchHum(char)
 				universalConnections.invisDied = hum.Died:Connect(function()
-					respawn()
-					universalConnections.invisDied:Disconnect()
-					universalConnections.invisDied = nil
+					if universalConnections.invisDied then
+						respawn()
+						universalConnections.invisDied:Disconnect()
+						universalConnections.invisDied = nil
+					end
 				end)
 
 				if currentlyInvis then return end
@@ -4100,9 +4114,15 @@ function modules.UniversalCommands()
 					
 					local mainHrp = self.fetchHrp(char)
 					local ghostHrp = self.fetchHrp(invisChar)
-
-					universalConnections.invisFix:Disconnect()
-					universalConnections.invisFix = nil
+					
+					if universalConnections.invisFix then
+						universalConnections.invisFix:Disconnect()
+						universalConnections.invisFix = nil
+					end
+					if universalConnections.invisDied then
+						universalConnections.invisDied:Disconnect()
+						universalConnections.invisDied = nil
+					end
 
 					mainHrp.CFrame = ghostHrp.CFrame
 					invisChar:Destroy()
@@ -4115,12 +4135,6 @@ function modules.UniversalCommands()
 						animateScript.Disabled = true
 						animateScript.Disabled = false
 					end
-
-					universalConnections.invisDied = char:FindFirstChildWhichIsA("Humanoid").Died:Connect(function()
-						respawn()
-						universalConnections.invisDied:Disconnect()
-						universalConnections.invisDied = nil
-					end)
 					
 					self.Camera.CameraSubject = char
 
@@ -4238,7 +4252,6 @@ function modules.UniversalCommands()
 				-- 引数 --
 
 				-- 変数 --
-				
 
 				-- 関数 --
 				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
@@ -4257,9 +4270,42 @@ function modules.UniversalCommands()
 
 				-- 変数 --
 
-
 				-- 関数 --
 				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "EnableChat",
+			Description = "Enables the chat for you",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "DisableChat",
+			Description = "Disables the chat for you",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
 			end,
 		})
 		
@@ -4275,7 +4321,6 @@ function modules.UniversalCommands()
 				local disableCores = self.getBool(args[1])
 
 				-- 変数 --
-
 
 				-- 関数 --
 				self.Modules.core:Freecam(disableCores)
@@ -4294,9 +4339,152 @@ function modules.UniversalCommands()
 
 				-- 変数 --
 
-
 				-- 関数 --
 				self.Modules.core:StopFreecam()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "ESP",
+			Description = "See players/npcs through the walls",
+
+			Aliases = {},
+			Arguments = {"Transparency", "Npcs"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local transparency = args[1]
+				local npcs = self.getBool(args[2])
+
+				-- 変数 --
+
+				-- 関数 --
+				if not transparency then
+					transparency = .5
+				end
+				
+				self.Modules.parser:RunCommand(speaker, "unesp")
+				
+				task.wait(.1)
+				
+				local function addESP(target, isPlayer)
+					if (not target) or (target and self.Services.Players:GetPlayerFromCharacter(target) and target.Name == speaker.Name) then
+						return
+					end
+					local oldEsp = target:FindFirstChild(self.espName)
+					if oldEsp then
+						return
+					end
+					local highlightColor = Color3.fromRGB(255, 0, 0)
+					if isPlayer and self.Services.Players:GetPlayerFromCharacter(target) then
+						local player = self.Services.Players:GetPlayerFromCharacter(target)
+						if player.Team then
+							highlightColor = player.Team.TeamColor.Color
+						end
+					end
+					
+					local hrp = self.fetchHrp(target)
+					
+					local highlight = Instance.new("Highlight")
+					highlight.Adornee = target
+					highlight.FillColor = highlightColor
+					highlight.FillTransparency = transparency
+					highlight.OutlineColor = highlightColor
+					highlight.Parent = self.Services.RunService:IsStudio() and speaker.PlayerGui or game.CoreGui
+					highlight.Name = self.espName
+					
+					local billboard = Instance.new("BillboardGui")
+					billboard.Adornee = hrp
+					billboard.Size = UDim2.new(4, 0, 1, 0)
+					billboard.StudsOffset = Vector3.new(0, 3, 0)
+					billboard.AlwaysOnTop = true
+					billboard.Parent = highlight
+
+					local textLabel = Instance.new("TextLabel")
+					textLabel.Size = UDim2.new(1, 0, 1, 0)
+					textLabel.BackgroundTransparency = 1
+					textLabel.TextStrokeTransparency = 0.5
+					textLabel.Text = target.Name
+					textLabel.TextColor3 = highlightColor
+					textLabel.Font = Enum.Font.GothamBold
+					textLabel.TextSize = 16
+					textLabel.Parent = billboard
+					
+					self.spawn(function()
+						local player = self.Services.Players:GetPlayerFromCharacter(target)
+						local hum = self.fetchHum(target)
+						
+						while textLabel do
+							self.spawn(function()
+								player = self.Services.Players:GetPlayerFromCharacter(target)
+								if not player then
+									hum = self.fetchHum(target)
+									hrp = self.fetchHrp(target)
+								else
+									hum = self.fetchHum(player.Character)
+									hrp = self.fetchHrp(player.Character)
+								end
+								
+								local speakerHrp = self.fetchHrp(speaker.Character)
+								local distance
+								if speakerHrp and hrp then
+									distance = math.round(tonumber((hrp.Position - speakerHrp.Position).Magnitude))
+								end
+								
+								textLabel.Text = `{target.Name} @{player and player.DisplayName or ""}: Health: {hum and hum.Health.."/"..hum.MaxHealth or "N/A"} | Distance: {distance or "N/A"}`
+							end)
+							task.wait()
+						end
+					end)
+					
+					table.insert(instances.esp_instances, highlight)
+				end
+				
+				self.addConn("ESP_PLAYER_ADDED", self.safePlayerAdded(function(player)
+					player.CharacterAdded:Connect(function()
+						addESP(player.Character, true)
+					end)
+					if player.Character then
+						addESP(player.Character, true)
+					end
+				end))
+				self.addConn("ESP_NPC_ADDED", self.safeChildAdded(workspace, function()
+					if npcs then
+						for _, npc in pairs(workspace:GetDescendants()) do
+							if npc:IsA("Model") and npc:FindFirstChildWhichIsA("Humanoid")
+								and not self.Services.Players:GetPlayerFromCharacter(npc)
+							then
+								addESP(npc, false)
+							end
+						end
+					end
+				end))
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unesp",
+			Description = "Disables esp",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.removeConn("ESP_PLAYER_ADDED")
+				self.removeConn("ESP_NPC_ADDED")
+				
+				for _, v in ipairs(instances.esp_instances) do
+					if v then
+						v:Destroy()
+					end
+				end
+				
+				table.clear(instances.esp_instances)
 			end,
 		})
 	end
