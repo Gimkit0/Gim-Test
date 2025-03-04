@@ -27,32 +27,13 @@ function CommandBar.new(config)
 	else
 		loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua"))()
 	end
-
-	local services = {
-		UserInputService = game:GetService("UserInputService"),
-		RunService = game:GetService("RunService"),
-		TweenService = game:GetService("TweenService"),
-		StarterGui = game:GetService("StarterGui"),
-		Lighting = game:GetService("Lighting"),
-		Players = game:GetService("Players"),
-		HttpService = game:GetService("HttpService"),
-		TeleportService = game:GetService("TeleportService"),
-		AvatarEditorService = game:GetService("AvatarEditorService"),
-		ReplicatedStorage = game:GetService("ReplicatedStorage"),
-	}
-	local states = {
-		consoleOpened = false,
-		currentlyOpened = false,
-		changingFOV = false,
-		changeFOV = false,
-		teleportCheck = false,
-	}
+	
 	local defaultConfig = {
 		SYSTEM = {
 			NAME = "Server's Admin",
 			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
-			VERSION = 1.0,
+			VERSION = 1.01,
 			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
 			
 			KEEP_ON_TELEPORT = true,
@@ -284,38 +265,59 @@ function CommandBar.new(config)
 			},
 		},
 	}
-	local storage = {
+
+	self.Config = config
+	self.States = {
+		consoleOpened = false,
+		currentlyOpened = false,
+		changingFOV = false,
+		changeFOV = false,
+		teleportCheck = false,
+	}
+	self.Storage = {
 		autofillQuery = "",
 		lastCommand = "",
-		
+
 		numCommands = 0,
 		lastFov = 0,
-		
+
 		onThemeChangeConns = {},
 	}
-	local modules = {
+	self.Services = {
+		UserInputService = game:GetService("UserInputService"),
+		RunService = game:GetService("RunService"),
+		TweenService = game:GetService("TweenService"),
+		StarterGui = game:GetService("StarterGui"),
+		Lighting = game:GetService("Lighting"),
+		Players = game:GetService("Players"),
+		HttpService = game:GetService("HttpService"),
+		TeleportService = game:GetService("TeleportService"),
+		AvatarEditorService = game:GetService("AvatarEditorService"),
+		ReplicatedStorage = game:GetService("ReplicatedStorage"),
+		ContextActionService = game:GetService("ContextActionService"),
+	}
+	self.PreloadedModules = {
+		spring = loadedModules.Spring(),
+		input = loadedModules.Input(self, Enum.ContextActionPriority.High.Value),
+		playerState = loadedModules.PlayerState(self),
+	}
+	self.Modules = {
 		autocomplete = loadedModules.Autocomplete(),
 		fade = loadedModules.Fade(),
 		universalCommands = loadedModules.UniversalCommands(),
 		resuponshibu = loadedModules.Resuponshibu().new(),
 		parser = loadedModules.Parser().new(self),
 		core = loadedModules.Core().new(self),
-		
+
 		notifcationTemp = loadedModules.NotifyUI(),
 	}
-
-	self.States = states
-	self.Config = config
-	self.Storage = storage
-	self.Services = services
-	self.Modules = modules
 	
 	self.Commands = {}
 	self.Connections = {}
 	self.Loops = {}
 
 	self.Camera = workspace.CurrentCamera
-	self.LocalPlayer = services.Players.LocalPlayer
+	self.LocalPlayer = self.Services.Players.LocalPlayer
 	self.Mouse = self.LocalPlayer:GetMouse()
 	
 	self.UI = loadedModules.ConsoleInterface()
@@ -413,6 +415,28 @@ function CommandBar.new(config)
 		if self.Connections[name] then
 			self.Connections[name]:Disconnect()
 			self.Connections[name] = nil
+		end
+	end
+	self.getBool = function(str)
+		str = tostring(str)
+		str = str:lower()
+		str = self.cleanWhiteSpaces(str)
+		
+		if str == "affirmative"
+			or str == "yes" or str == "hai"
+			or str == "yeah" or str == "yep" or str == "yea" or str == "yah" or str == "yuh"
+			or str == "true"
+			or str == "indeed"
+			or str == "sure"
+			or str == "ok" or str == "okay" or str == "okey"
+			or str == "certainly"
+			or str == "absolutely"
+			or str == "alright"
+			or str == "fine"
+		then
+			return true
+		else
+			return false
 		end
 	end
 	self.findCommand = function(name)
