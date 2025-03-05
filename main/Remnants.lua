@@ -46,7 +46,7 @@ function CommandBar.new(config)
 			SAVE_FILE_NAME = `{globalName}.rem`,
 			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
-			VERSION = 1.03,
+			VERSION = 1.02,
 			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
 			
 			KEEP_ON_TELEPORT = true,
@@ -434,6 +434,9 @@ function CommandBar.new(config)
 			self.Connections[name]:Disconnect()
 			self.Connections[name] = nil
 		end
+	end
+	self.isConnActive = function(name)
+		return self.Connections[name] ~= nil
 	end
 	self.safePlayerAdded = function(func)
 		if type(func) ~= "function" then
