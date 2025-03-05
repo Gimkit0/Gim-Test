@@ -4386,17 +4386,16 @@ function modules.UniversalCommands()
 					local hrp = self.fetchHrp(target)
 					
 					local highlight = Instance.new("Highlight")
-					highlight.Adornee = target
 					highlight.FillColor = highlightColor
 					highlight.FillTransparency = transparency
 					highlight.OutlineColor = highlightColor
-					highlight.Parent = self.Services.RunService:IsStudio() and speaker.PlayerGui or game.CoreGui
+					highlight.Parent = target
 					highlight.Name = self.espName
 					
 					local billboard = Instance.new("BillboardGui")
 					billboard.Adornee = hrp
 					billboard.Size = UDim2.new(4, 0, 1, 0)
-					billboard.StudsOffset = Vector3.new(0, 3, 0)
+					billboard.StudsOffset = Vector3.new(0, 5, 0)
 					billboard.AlwaysOnTop = true
 					billboard.Parent = highlight
 
@@ -4424,9 +4423,6 @@ function modules.UniversalCommands()
 								else
 									hum = self.fetchHum(player.Character)
 									hrp = self.fetchHrp(player.Character)
-									self.spawn(function()
-										highlight.Adornee = player.Character
-									end)
 								end
 								
 								billboard.Adornee = hrp
