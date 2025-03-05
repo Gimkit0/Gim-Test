@@ -4414,7 +4414,7 @@ function modules.UniversalCommands()
 						local player = self.Services.Players:GetPlayerFromCharacter(target)
 						local hum = self.fetchHum(target)
 						
-						while textLabel do
+						while billboard and textLabel do
 							self.spawn(function()
 								player = self.Services.Players:GetPlayerFromCharacter(target)
 								if not player then
@@ -4424,6 +4424,8 @@ function modules.UniversalCommands()
 									hum = self.fetchHum(player.Character)
 									hrp = self.fetchHrp(player.Character)
 								end
+								
+								billboard.Adornee = hrp
 								
 								local speakerHrp = self.fetchHrp(speaker.Character)
 								local distance
