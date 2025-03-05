@@ -2241,6 +2241,7 @@ function modules.UniversalCommands()
 		
 		local instances = {
 			fov_circle = nil,
+			spin_force = nil,
 			
 			esp_instances = {},
 		}
@@ -4508,6 +4509,186 @@ function modules.UniversalCommands()
 				self.Services.Lighting.ClockTime = 14
 				self.Services.Lighting.Brightness = 2
 				self.Services.Lighting.GlobalShadows = false
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Spin",
+			Description = "Makes you spin with the speed of [Speed]",
+
+			Aliases = {},
+			Arguments = {"Speed"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local speed = args[1]
+
+				-- 変数 --
+				local hrp = self.fetchHrp(speaker.Character)
+
+				-- 関数 --
+				if not speed then
+					speed = 20
+				end
+				
+				if instances.spin_force then
+					instances.spin_force:Destroy()
+					instances.spin_force = nil
+				end
+				
+				if hrp then
+					local spin = Instance.new("BodyAngularVelocity")
+					spin.Name = "Spinning"
+					spin.Parent = hrp
+					spin.MaxTorque = Vector3.new(0, math.huge, 0)
+					spin.AngularVelocity = Vector3.new(0,speed,0)
+					instances.spin_force = spin
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unspin",
+			Description = "Stops you from spinning",
+
+			Aliases = {"StopSpin"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if instances.spin_force then
+					instances.spin_force:Destroy()
+					instances.spin_force = nil
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "XRay",
+			Description = "See through the walls",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				for _, v in pairs(workspace:GetDescendants()) do
+					if v:IsA("BasePart")
+						and not v.Parent:FindFirstChildWhichIsA("Humanoid")
+						and not v.Parent.Parent:FindFirstChildWhichIsA("Humanoid")
+					then
+						v.LocalTransparencyModifier = .5
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "UnXRay",
+			Description = "Stop seeing through the walls",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				for _, v in pairs(workspace:GetDescendants()) do
+					if v:IsA("BasePart")
+						and not v.Parent:FindFirstChildWhichIsA("Humanoid")
+						and not v.Parent.Parent:FindFirstChildWhichIsA("Humanoid")
+					then
+						v.LocalTransparencyModifier = 0
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Car",
+			Description = "Makes you look like your driving a car with the speed of [Speed] and height of [HipHeight]",
+
+			Aliases = {},
+			Arguments = {"AccelerationRate", "DecelerationRate", "MaxSpeed", "HipHeight"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local accelRate = args[1]
+				local decelRate = args[2]
+				local speed = args[3]
+				local hipheight = args[4]
+
+				-- 変数 --
+				local r6animation = 129342287
+				local r15animation = 15570378042
+				
+				local hum = self.fetchHum(speaker.Character)
+				
+				local isMoving = false
+
+				-- 関数 --
+				if not hum then
+					return
+				end
+				if not hipheight then
+					hipheight = 1.03
+				end
+				if not speed then
+					speed = 70
+				end
+				if not accelRate then
+					accelRate = 2
+				end
+				if not decelRate then
+					decelRate = 3
+				end
+				
+				accelRate /= 5
+				decelRate /= 2
+				
+				if hum then
+					local currentSpeed = 16
+					
+					hum.WalkSpeed = 0
+					
+					self.Modules.parser:RunCommand(speaker, "jumppower", ".00001")
+					
+					self.addConn("CAR_ACCELERATION", self.Services.RunService.RenderStepped:Connect(function()
+						if hum.MoveDirection.Magnitude > 0 then
+							isMoving = true else
+							isMoving = false
+						end
+						
+						if isMoving and currentSpeed < speed then
+							currentSpeed = math.min(currentSpeed + accelRate, speed)
+						elseif not isMoving and currentSpeed > 16 then
+							currentSpeed = math.max(currentSpeed - decelRate, 0)
+						end
+
+						hum.WalkSpeed = currentSpeed
+					end))
+				end
+				
+				self.Modules.core:PlayAnimation(self.Modules.core:IsRigType(speaker.Character, "R6") and r6animation or r15animation)
+				
+				for _, part in pairs(speaker.Character:GetDescendants()) do
+					if part:IsA("BasePart") or part:IsA("MeshPart") then
+						part.CustomPhysicalProperties = PhysicalProperties.new(.05, 0, 0)
+					end
+				end
+				
+				hum.HipHeight = hipheight * (1.5)
 			end,
 		})
 	end
