@@ -4424,10 +4424,12 @@ function modules.UniversalCommands()
 								else
 									hum = self.fetchHum(player.Character)
 									hrp = self.fetchHrp(player.Character)
+									self.spawn(function()
+										highlight.Adornee = player.Character
+									end)
 								end
 								
 								billboard.Adornee = hrp
-								highlight.Adornee = player.Character or target
 								
 								local speakerHrp = self.fetchHrp(speaker.Character)
 								local distance
@@ -4435,7 +4437,7 @@ function modules.UniversalCommands()
 									distance = math.round(tonumber((hrp.Position - speakerHrp.Position).Magnitude))
 								end
 								
-								textLabel.Text = `{target.Name} @{player and player.DisplayName or ""}: Health: {hum and hum.Health.."/"..hum.MaxHealth or "N/A"} | Distance: {distance or "N/A"}`
+								textLabel.Text = `{target.Name} @{player and player.DisplayName or ""}: Health: {hum and math.round(hum.Health).."/"..math.round(hum.MaxHealth) or "N/A"} | Distance: {distance or "N/A"}`
 							end)
 							task.wait()
 						end
