@@ -4404,10 +4404,11 @@ function modules.UniversalCommands()
 					textLabel.Size = UDim2.new(1, 0, 1, 0)
 					textLabel.BackgroundTransparency = 1
 					textLabel.TextStrokeTransparency = 0.5
+					textLabel.TextTransparency = .3
 					textLabel.Text = target.Name
 					textLabel.TextColor3 = highlightColor
 					textLabel.Font = Enum.Font.GothamBold
-					textLabel.TextSize = 16
+					textLabel.TextSize = 14
 					textLabel.Parent = billboard
 					
 					self.spawn(function()
@@ -4426,6 +4427,7 @@ function modules.UniversalCommands()
 								end
 								
 								billboard.Adornee = hrp
+								highlight.Adornee = player.Character or target
 								
 								local speakerHrp = self.fetchHrp(speaker.Character)
 								local distance
@@ -4507,7 +4509,7 @@ function modules.UniversalCommands()
 				self.Services.Lighting.FogStart = 0
 				self.Services.Lighting.ClockTime = 14
 				self.Services.Lighting.Brightness = 2
-				self.Services.Lighting.GlobalShadows = true
+				self.Services.Lighting.GlobalShadows = false
 			end,
 		})
 	end
