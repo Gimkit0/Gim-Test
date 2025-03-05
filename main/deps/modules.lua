@@ -2233,6 +2233,7 @@ function modules.UniversalCommands()
 		
 		local universalStorage = {
 			old_gravity = 192.2,
+			old_hipheight = 0,
 		}
 		
 		local universalFuncs = {
@@ -4688,7 +4689,43 @@ function modules.UniversalCommands()
 					end
 				end
 				
+				universalStorage.old_hipheight = hum.HipHeight
+				
 				hum.HipHeight = hipheight * (1.5)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Uncar",
+			Description = "Stops you being a car",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				if self.isConnActive("CAR_ACCELERATION") then
+					self.removeConn("CAR_ACCELERATION")
+					self.Modules.core:StopAnimation()
+
+					self.Modules.parser:RunCommand(speaker, "jumppower", "50")
+					self.Modules.parser:RunCommand(speaker, "speed", "16")
+
+					if hum then
+						hum.HipHeight = universalStorage.old_hipheight
+					end
+
+					for _, part in pairs(speaker.Character:GetDescendants()) do
+						if part:IsA("BasePart") or part:IsA("MeshPart") then
+							part.CustomPhysicalProperties = PhysicalProperties.new(1, 0, 0)
+						end
+					end
+				end
 			end,
 		})
 	end
