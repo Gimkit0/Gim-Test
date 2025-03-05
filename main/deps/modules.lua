@@ -4489,6 +4489,27 @@ function modules.UniversalCommands()
 				table.clear(instances.esp_instances)
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "Fullbright",
+			Description = "Makes the map look brighter",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.Services.Lighting.FogEnd = 100000
+				self.Services.Lighting.FogStart = 0
+				self.Services.Lighting.ClockTime = 14
+				self.Services.Lighting.Brightness = 2
+				self.Services.Lighting.GlobalShadows = true
+			end,
+		})
 	end
 	
 	return module
