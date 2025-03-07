@@ -2491,7 +2491,7 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
-					local amount = args[1]
+					local amount = self.getNum(args[1])
 
 					-- 変数 --
 					local blockName = "LuckyBlock"
@@ -2516,7 +2516,7 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
-					local amount = args[1]
+					local amount = self.getNum(args[1])
 
 					-- 変数 --
 					local blockName = "SuperBlock"
@@ -2541,7 +2541,7 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
-					local amount = args[1]
+					local amount = self.getNum(args[1])
 
 					-- 変数 --
 					local blockName = "DiamondBlock"
@@ -2566,7 +2566,7 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
-					local amount = args[1]
+					local amount = self.getNum(args[1])
 
 					-- 変数 --
 					local blockName = "RainbowBlock"
@@ -2591,7 +2591,7 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
-					local amount = args[1]
+					local amount = self.getNum(args[1])
 
 					-- 変数 --
 					local blockName = "GalaxyBlock"
@@ -2738,7 +2738,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local power = args[1]
+				local power = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -2756,7 +2756,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -2774,7 +2774,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -2809,12 +2809,12 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 
 				-- 関数 --
-				workspace.Gravity = tonumber(args[1])
+				workspace.Gravity = speed
 			end,
 		})
 
@@ -2952,7 +2952,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -2970,7 +2970,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -3005,7 +3005,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -3023,7 +3023,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -3263,13 +3263,15 @@ function modules.UniversalCommands()
 			Description = "Have god tier aim. [Epitaph] is prediction of where the bullet will land",
 
 			Aliases = {"GodAim"},
-			Arguments = {"Epitaph", "HeadOffset", "TeamCheck"},
+			Arguments = {"Epitaph", "HeadOffset", "TeamCheck", "Npcs", "HoldToCheck"},
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local epipath = args[1]
-				local offsetY = args[2]
+				local epipath = self.getNum(args[1])
+				local offsetY = self.getNum(args[2])
 				local teamCheck = self.getBool(args[3])
+				local npcs = self.getBool(args[4])
+				local holdToCheck = self.getBool(args[5])
 				
 				-- 変数 --
 				if not offsetY then
@@ -3337,7 +3339,32 @@ function modules.UniversalCommands()
 					local bestScore = math.huge
 					local dist = math.huge
 					local Target = nil
+					
+					if npcs then
+						for _, npc in pairs(workspace:GetChildren()) do
+							if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") then
+								local hum = self.fetchHum(npc)
+								local root = self.fetchHrp(npc)
 
+								if hum and root and hum.Health > 0 then
+									local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
+									local npcDistance = (root.Position - speaker.Character.PrimaryPart.Position).Magnitude
+									local screenDistance = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+									local visibilityPenalty = isTargetVisible(npc) and 0 or 1000
+
+									if visible and screenDistance < circleRadius then
+										local score = (npcDistance * 0.6) + (screenDistance * 0.4) + visibilityPenalty
+
+										if score < bestScore then
+											dist = screenDistance
+											bestScore = score
+											Target = npc
+										end
+									end
+								end
+							end
+						end
+					end
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
 						if v.Character then
 							local hum = self.fetchHum(v.Character)
@@ -3347,16 +3374,17 @@ function modules.UniversalCommands()
 								end
 
 								local char = v.Character
-								local root = self.fetchHrp(char)
+								local root = char and char:FindFirstChild("Head") or self.fetchHrp(char)
 
 								if root then
 									local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
 									local playerDistance = (root.Position - speaker.Character.PrimaryPart.Position).Magnitude
 									local screenDistance = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+									local visibilityPenalty = isTargetVisible(char) and 0 or 1000
 
 									if visible then
 										if (screenDistance < dist and screenDistance < circleRadius) then
-											local score = (playerDistance * 0.6) + (screenDistance * 0.4)
+											local score = (playerDistance * 0.6) + (screenDistance * 0.4) + visibilityPenalty
 
 											if score < bestScore then
 												dist = screenDistance
@@ -3370,7 +3398,6 @@ function modules.UniversalCommands()
 						end
 					end
 
-					task.wait()
 					return Target
 				end
 				
@@ -3380,12 +3407,15 @@ function modules.UniversalCommands()
 						local target = findNearest()
 						while universalValues.aimlock_holding_mouse do
 							if universalValues.aimlock_holding_mouse then
+								if holdToCheck then
+									target = findNearest()
+								end
 								if target ~= nil then
-									local hrp = self.fetchHrp(target)
+									local hrp = target and target:FindFirstChild("Head") or self.fetchHrp(target)
 									local hum = self.fetchHum(target)
 									
-									if hum.Health > 0 then
-										local future = hrp.CFrame + (hrp.Velocity * epipath + headOffset)
+									if (hum and hum.Health > 0) and (hrp) then
+										local future = hrp.CFrame + (hrp.Velocity * epipath + (hrp.Name == "HumanoidRootPart" and headOffset or Vector3.new(0, 0, 0)))
 										self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
 										self.Services.UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 									else
@@ -3496,10 +3526,10 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local radius = args[1]
-				local height = args[2]
-				local rotSpeed = args[3]
-				local strength = args[4]
+				local radius = self.getNum(args[1])
+				local height = self.getNum(args[2])
+				local rotSpeed = self.getNum(args[3])
+				local strength = self.getNum(args[4])
 
 				-- 変数 --
 
@@ -3529,8 +3559,11 @@ function modules.UniversalCommands()
 				speaker.ReplicationFocus = workspace
 				
 				local function retainPart(inst)
-					if inst:IsA("BasePart") and not inst.Anchored and inst:IsDescendantOf(workspace) then
+					if inst:IsA("BasePart") and inst:IsDescendantOf(workspace) then
 						if inst.Parent == speaker.Character or inst:IsDescendantOf(speaker.Character) then
+							return false
+						end
+						if inst.Anchored then
 							return false
 						end
 
@@ -3681,7 +3714,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local num = args[1]
+				local num = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -3702,7 +3735,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local num = args[1]
+				local num = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -3740,9 +3773,9 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local user = args[1]
-				local speed = args[2]
-				local distance = args[3]
+				local user = self.getNum(args[1])
+				local speed = self.getNum(args[2])
+				local distance = self.getNum(args[3])
 
 				-- 変数 --
 				local users = self.getPlayer(speaker, user)
@@ -3813,7 +3846,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local num = args[1]
+				local num = self.getNum(args[1])
 
 				-- 変数 --
 				local hum = self.fetchHum(speaker.Character)
@@ -3834,7 +3867,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local user = args[1]
+				local user = self.getNum(args[1])
 				local speed = args[2]
 
 				-- 変数 --
@@ -3906,7 +3939,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 				local hum = self.fetchHum(speaker.Character)
@@ -4355,7 +4388,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local transparency = args[1]
+				local transparency = self.getNum(args[1])
 				local npcs = self.getBool(args[2])
 
 				-- 変数 --
@@ -4522,7 +4555,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local speed = args[1]
+				local speed = self.getNum(args[1])
 
 				-- 変数 --
 				local hrp = self.fetchHrp(speaker.Character)
@@ -4625,10 +4658,10 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local accelRate = args[1]
-				local decelRate = args[2]
-				local speed = args[3]
-				local hipheight = args[4]
+				local accelRate = self.getNum(args[1])
+				local decelRate = self.getNum(args[2])
+				local speed = self.getNum(args[3])
+				local hipheight = self.getNum(args[4])
 
 				-- 変数 --
 				local r6animation = 129342287
@@ -4654,6 +4687,8 @@ function modules.UniversalCommands()
 				if not decelRate then
 					decelRate = 3
 				end
+				
+				
 				
 				accelRate /= 5
 				decelRate /= 2
