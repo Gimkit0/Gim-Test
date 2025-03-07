@@ -3335,31 +3335,41 @@ function modules.UniversalCommands()
 					return false
 				end
 				
+				local function getAllNPCs()
+					local npcsList = {}
+
+					for _, obj in pairs(workspace:GetDescendants()) do
+						if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj:FindFirstChild("HumanoidRootPart") then
+							table.insert(npcsList, obj)
+						end
+					end
+
+					return npcsList
+				end
+				
 				local function findNearest()
 					local bestScore = math.huge
 					local dist = math.huge
 					local Target = nil
 					
 					if npcs then
-						for _, npc in pairs(workspace:GetChildren()) do
-							if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") then
-								local hum = self.fetchHum(npc)
-								local root = self.fetchHrp(npc)
+						for _, npc in pairs(getAllNPCs()) do
+							local hum = self.fetchHum(npc)
+							local root = self.fetchHrp(npc)
 
-								if hum and root and hum.Health > 0 then
-									local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
-									local npcDistance = (root.Position - speaker.Character.PrimaryPart.Position).Magnitude
-									local screenDistance = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-									local visibilityPenalty = isTargetVisible(npc) and 0 or 1000
+							if hum and root and hum.Health > 0 then
+								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
+								local npcDistance = (root.Position - speaker.Character.PrimaryPart.Position).Magnitude
+								local screenDistance = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+								local visibilityPenalty = isTargetVisible(npc) and 0 or 1000
 
-									if visible and screenDistance < circleRadius then
-										local score = (npcDistance * 0.6) + (screenDistance * 0.4) + visibilityPenalty
+								if visible and screenDistance < circleRadius then
+									local score = (npcDistance * 0.6) + (screenDistance * 0.4) + visibilityPenalty
 
-										if score < bestScore then
-											dist = screenDistance
-											bestScore = score
-											Target = npc
-										end
+									if score < bestScore then
+										dist = screenDistance
+										bestScore = score
+										Target = npc
 									end
 								end
 							end
