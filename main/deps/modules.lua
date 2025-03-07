@@ -3282,7 +3282,7 @@ function modules.UniversalCommands()
 				
 				local circleEnabled = false
 				local circleSides = 64
-				local circleRadius = 100
+				local circleRadius = 200
 				local circleThickness = 1
 				local circleTransparency = .5
 				local circleFilled = false
@@ -3404,6 +3404,7 @@ function modules.UniversalCommands()
 				self.addConn("AIMLOCK_INPUT_BEGAN", self.Services.UserInputService.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton2 then
 						universalValues.aimlock_holding_mouse = true
+						
 						local target = findNearest()
 						while universalValues.aimlock_holding_mouse do
 							if universalValues.aimlock_holding_mouse then
