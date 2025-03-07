@@ -8,7 +8,7 @@
 	  - And you: For making this possible 😘
 ]=]
 
-local CommandBar = {}
+--local CommandBar = {}
 CommandBar.__index = CommandBar
 
 function CommandBar.new(config)
