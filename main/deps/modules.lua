@@ -3339,7 +3339,7 @@ function modules.UniversalCommands()
 					local npcsList = {}
 
 					for _, obj in pairs(workspace:GetDescendants()) do
-						if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj:FindFirstChild("HumanoidRootPart") then
+						if obj:IsA("Model") and obj:FindFirstChildWhichIsA("Humanoid") and obj:FindFirstChild("HumanoidRootPart") then
 							table.insert(npcsList, obj)
 						end
 					end
@@ -4413,6 +4413,18 @@ function modules.UniversalCommands()
 				
 				task.wait(.1)
 				
+				local function getAllNPCs()
+					local npcsList = {}
+
+					for _, obj in pairs(workspace:GetDescendants()) do
+						if obj:IsA("Model") and obj:FindFirstChildWhichIsA("Humanoid") and obj:FindFirstChild("HumanoidRootPart") then
+							table.insert(npcsList, obj)
+						end
+					end
+
+					return npcsList
+				end
+				
 				local function addESP(target, isPlayer)
 					if (not target) or (target and self.Services.Players:GetPlayerFromCharacter(target) and target.Name == speaker.Name) then
 						return
@@ -4498,10 +4510,8 @@ function modules.UniversalCommands()
 				end))
 				self.addConn("ESP_NPC_ADDED", self.safeChildAdded(workspace, function()
 					if npcs then
-						for _, npc in pairs(workspace:GetDescendants()) do
-							if npc:IsA("Model") and npc:FindFirstChildWhichIsA("Humanoid")
-								and not self.Services.Players:GetPlayerFromCharacter(npc)
-							then
+						for _, npc in pairs(getAllNPCs()) do
+							if not self.Services.Players:GetPlayerFromCharacter(npc) then
 								addESP(npc, false)
 							end
 						end
