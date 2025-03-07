@@ -46,7 +46,7 @@ function CommandBar.new(config)
 			SAVE_FILE_NAME = `{globalName}.rem`,
 			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
-			VERSION = 1.04,
+			VERSION = 1.02,
 			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
 			
 			KEEP_ON_TELEPORT = true,
@@ -483,6 +483,18 @@ function CommandBar.new(config)
 		else
 			return false
 		end
+	end
+	self.getNum = function(str)
+		str = tostring(str)
+		str = str:lower()
+		str = self.cleanWhiteSpaces(str)
+		
+		if str == "inf" or str == "infinite" or str == "infinity" then
+			return math.huge
+		elseif str == "pi" or str == "pie" or str == "π" then
+			return math.pi
+		end
+		return tonumber(str)
 	end
 	self.findCommand = function(name)
 		for _, cmd in ipairs(self.Commands) do
