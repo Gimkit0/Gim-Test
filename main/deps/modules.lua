@@ -3352,29 +3352,6 @@ function modules.UniversalCommands()
 					local dist = math.huge
 					local Target = nil
 					
-					if npcs then
-						for _, npc in pairs(getAllNPCs()) do
-							local hum = self.fetchHum(npc)
-							local root = self.fetchHrp(npc)
-
-							if hum and root and hum.Health > 0 then
-								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
-								local npcDistance = (root.Position - speaker.Character.PrimaryPart.Position).Magnitude
-								local screenDistance = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-								local visibilityPenalty = isTargetVisible(npc) and 0 or 1000
-
-								if visible and screenDistance < circleRadius then
-									local score = (npcDistance * 0.6) + (screenDistance * 0.4) + visibilityPenalty
-
-									if score < bestScore then
-										dist = screenDistance
-										bestScore = score
-										Target = npc
-									end
-								end
-							end
-						end
-					end
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
 						if v.Character then
 							local hum = self.fetchHum(v.Character)
@@ -3402,6 +3379,29 @@ function modules.UniversalCommands()
 												Target = char
 											end
 										end
+									end
+								end
+							end
+						end
+					end
+					if npcs then
+						for _, npc in pairs(getAllNPCs()) do
+							local hum = self.fetchHum(npc)
+							local root = self.fetchHrp(npc)
+
+							if hum and root and hum.Health > 0 then
+								local screenPos, visible = self.Camera:WorldToViewportPoint(root.Position)
+								local npcDistance = (root.Position - speaker.Character.PrimaryPart.Position).Magnitude
+								local screenDistance = (Vector2.new(self.Mouse.X, self.Mouse.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+								local visibilityPenalty = isTargetVisible(npc) and 0 or 1000
+
+								if visible and screenDistance < circleRadius then
+									local score = (npcDistance * 0.6) + (screenDistance * 0.4) + visibilityPenalty
+
+									if score < bestScore then
+										dist = screenDistance
+										bestScore = score
+										Target = npc
 									end
 								end
 							end
