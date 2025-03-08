@@ -3784,7 +3784,7 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local user = self.getNum(args[1])
+				local user = args[1]
 				local speed = self.getNum(args[2])
 				local distance = self.getNum(args[3])
 
