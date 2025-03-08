@@ -3878,8 +3878,8 @@ function modules.UniversalCommands()
 
 			Function = function(speaker, args)
 				-- 引数 --
-				local user = self.getNum(args[1])
-				local speed = args[2]
+				local user = args[1]
+				local speed = self.getNum(args[2])
 
 				-- 変数 --
 				local users = self.getPlayer(speaker, user)
