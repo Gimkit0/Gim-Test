@@ -2608,6 +2608,8 @@ function modules.UniversalCommands()
 			})
 		
 		elseif game.PlaceId == 95963293166138--[[Namgyu land for namgyu ethusiasts]] then
+			gameDetectedNotify("Namgyu Land for Namgyu Ethusiasts")
+			
 			self:AddCommand({
 				Name = "CollectAllCoins",
 				Description = "Makes you collect all coins in the map",
