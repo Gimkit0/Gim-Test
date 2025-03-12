@@ -2606,6 +2606,32 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
+		
+		elseif game.PlaceId == 95963293166138--[[Namgyu land for namgyu ethusiasts]] then
+			self:AddCommand({
+				Name = "CollectAllCoins",
+				Description = "Makes you collect all coins in the map",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					
+
+					-- 関数 --
+					for i, v in ipairs(workspace:GetChildren()) do
+						if v:IsA("BasePart") and v:FindFirstChildWhichIsA("Script") then
+							if v.Color == Color3.fromRGB(253,234,141) then
+								self.Modules.core:TeleportToLocation(v.CFrame)
+								task.wait(.25)
+							end
+						end
+					end
+				end,
+			})
 		end
 		
 		--------------------------------------------------------------------
