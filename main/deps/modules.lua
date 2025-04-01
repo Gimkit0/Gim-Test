@@ -3607,7 +3607,6 @@ function modules.UniversalCommands()
 						end
 
 						inst.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-						inst.CanCollide = false
 						return true
 					end
 					return false
