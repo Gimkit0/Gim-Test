@@ -3082,12 +3082,17 @@ function modules.UniversalCommands()
 					local customerName = "PizzaPlanetDeliveryCustomer"
 
 					-- 関数 --
-					local locPart = Instance.new("Part", workspace)
-					locPart.Name = "LOC_PART"
-					locPart.CanCollide = false
-					locPart.Anchored = true
-					locPart.Transparency = 1
-					locPart.CFrame = CFrame.new(1165, 15.1437988, 270.823181, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+					local locPart = nil
+					if workspace:FindFirstChild("LOC_PART") then
+						locPart = workspace:FindFirstChild("LOC_PART")
+					else
+						locPart = Instance.new("Part", workspace)
+						locPart.Name = "LOC_PART"
+						locPart.CanCollide = false
+						locPart.Anchored = true
+						locPart.Transparency = 1
+						locPart.CFrame = CFrame.new(1165, 15.1437988, 270.823181, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+					end
 					
 					local function moveTo(part)
 						self.Modules.core:Pathfind(part, nil, true, {
@@ -3105,13 +3110,12 @@ function modules.UniversalCommands()
 					
 					self.Modules.parser:RunCommand(speaker, "noclip")
 					
-					self.safeChildAdded(spawnedCharacters, function(npc)
-						if npc.Name == customerName then
-							moveTo(npc.PrimaryPart)
-							repeat task.wait() until not npc
-							moveTo(locPart)
-						end
-					end)
+					local npc = spawnedCharacters:FindFirstChild(customerName)
+					if npc then
+						moveTo(npc.PrimaryPart)
+						repeat task.wait() until not npc
+						moveTo(locPart)
+					end
 				end,
 			})
 		end
