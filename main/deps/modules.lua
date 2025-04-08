@@ -3095,14 +3095,14 @@ function modules.UniversalCommands()
 					end
 					
 					local function moveTo(part)
-						self.Modules.core:Pathfind(part, nil, true, {
+						self.Modules.core:Pathfind(part, nil, false, {
 							OnRan = function(model, nextWaypoint)
 								task.wait()
-								self.tween(model.PrimaryPart, TweenInfo.new(.1), {CFrame = CFrame.new(
+								model.PrimaryPart.CFrame = CFrame.new(
 									nextWaypoint.Position.X,
 									nextWaypoint.Position.Y - 10,
 									nextWaypoint.Position.Z
-									)})
+								)
 								self.Modules.parser:RunCommand(speaker, "breakvelocity")
 							end,
 						}, nil, true)
