@@ -3071,6 +3071,7 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
+					local useTeleport = self.getBool(args[1])
 
 					-- 変数 --
 					local _game = workspace:WaitForChild("_game")
@@ -3095,17 +3096,21 @@ function modules.UniversalCommands()
 					end
 					
 					local function moveTo(part)
-						self.Modules.core:Pathfind(part, nil, false, {
-							OnRan = function(model, nextWaypoint)
-								task.wait()
-								model.PrimaryPart.CFrame = CFrame.new(
-									nextWaypoint.Position.X,
-									nextWaypoint.Position.Y - 10,
-									nextWaypoint.Position.Z
-								)
-								self.Modules.parser:RunCommand(speaker, "breakvelocity")
-							end,
-						}, nil, true)
+						if useTeleport then
+							self.Modules.core:Pathfind(part, nil, false, {
+								OnRan = function(model, nextWaypoint)
+									task.wait()
+									model.PrimaryPart.CFrame = CFrame.new(
+										nextWaypoint.Position.X,
+										nextWaypoint.Position.Y - 10,
+										nextWaypoint.Position.Z
+									)
+									self.Modules.parser:RunCommand(speaker, "breakvelocity")
+								end,
+							}, nil, true)
+						else
+							self.Modules.core:Pathfind(part)
+						end
 					end
 					
 					self.Modules.parser:RunCommand(speaker, "noclip")
