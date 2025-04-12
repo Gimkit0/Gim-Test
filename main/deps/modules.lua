@@ -3159,7 +3159,8 @@ function modules.UniversalCommands()
 											highlight = Instance.new("Highlight", block)
 											highlight.FillColor = block.BrickColor.Color
 											highlight.OutlineColor = Color3.new(0, 0, 0)
-											highlight.OutlineTransparency = 0.5
+											highlight.OutlineTransparency = 0.7
+											highlight.Name = "ORE_HIGHLIGHT"
 											table.insert(oreHighlights, highlight)
 										end
 									end
