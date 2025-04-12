@@ -2687,11 +2687,19 @@ function modules.UniversalCommands()
 			end)
 		end
 		
-		if game.PlaceId == 9872472334--[[Evade]] then
-			gameDetectedNotify("Evade")
+		local function loadSupportedGame(placeId, gameName, func)
+			gameDetectedNotify(gameName)
 			
+			if game.PlaceId == placeId then
+				if type(func) == "function" then
+					func()
+				end
+			end
+		end
+		
+		loadSupportedGame(9872472334, "Evade", function()
 			local ticketWaitInterval = .5
-			
+
 			self:AddCommand({
 				Name = "EventGrind",
 				Description = "Makes you grind for the special points (Credits to: Bac0nH1ckOff)",
@@ -2710,14 +2718,14 @@ function modules.UniversalCommands()
 					-- 関数 --
 					if tickets then
 						universalValues.evade_ticket_farming = true
-						
+
 						while universalValues.evade_ticket_farming do
 							local hrp = self.fetchHrp(speaker.Character)
-							
+
 							tickets = workspace:FindFirstChild("Game")
 								and workspace.Game:FindFirstChild("Effects")
 								and workspace.Game.Effects:FindFirstChild("Tickets")
-							
+
 							if tickets then
 								if speaker.Character then
 									if speaker.Character:GetAttribute("Downed") then
@@ -2735,11 +2743,11 @@ function modules.UniversalCommands()
 							end
 							task.wait()
 						end
-						
+
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "StopEventGrind",
 				Description = "Stops you from grinding tickets",
@@ -2756,7 +2764,7 @@ function modules.UniversalCommands()
 					universalValues.evade_ticket_farming = false
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "GrabAllTickets",
 				Description = "Collects all of the tickets in the map",
@@ -2795,7 +2803,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "FastRevive",
 				Description = "Makes it so you can revive people faster",
@@ -2807,13 +2815,13 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					
+
 
 					-- 関数 --
 					workspace.Game.Settings:SetAttribute("ReviveTime", 2.2)
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "RemoveBarriers",
 				Description = "Removes the invisible walls around the map",
@@ -2830,7 +2838,7 @@ function modules.UniversalCommands()
 					workspace.Game.Map.InvisParts:ClearAllChildren()
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "TeleportToObjectives",
 				Description = "Disables water damaging",
@@ -2854,7 +2862,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "AutofarmWins",
 				Description = "Makes you win the game everytime",
@@ -2884,7 +2892,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "StopAutofarmWins",
 				Description = "Disables auto winning",
@@ -2904,9 +2912,8 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-		elseif game.PlaceId == 662417684--[[Lucky block battle grounds]] then
-			gameDetectedNotify("Luckyblock Battlegrounds")
-			
+		end)
+		loadSupportedGame(662417684, "Lucky Block Battle Grounds", function()
 			self:AddCommand({
 				Name = "GiveLuckyBlock",
 				Description = "Gives you [Amount] of lucky blocks",
@@ -2925,13 +2932,13 @@ function modules.UniversalCommands()
 					if not amount then
 						amount = 1
 					end
-					
+
 					for i = 1, tonumber(amount) do
 						self.Services.ReplicatedStorage[`Spawn{blockName}`]:FireServer()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "GiveSuperLuckyBlock",
 				Description = "Gives you [Amount] of super lucky blocks",
@@ -2956,7 +2963,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "GiveDiamondLuckyBlock",
 				Description = "Gives you [Amount] of diamond lucky blocks",
@@ -2981,7 +2988,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "GiveRainbowLuckyBlock",
 				Description = "Gives you [Amount] of rainbow lucky blocks",
@@ -3006,7 +3013,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "GiveGalaxyLuckyBlock",
 				Description = "Gives you [Amount] of galaxy lucky blocks",
@@ -3031,10 +3038,8 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-		
-		elseif game.PlaceId == 95963293166138--[[Namgyu land for namgyu ethusiasts]] then
-			gameDetectedNotify("Namgyu Land for Namgyu Ethusiasts")
-			
+		end)
+		loadSupportedGame(95963293166138, "Namgyu Land for Namgyu Ethusiasts", function()
 			self:AddCommand({
 				Name = "CollectAllCoins",
 				Description = "Makes you collect all coins in the map",
@@ -3046,7 +3051,7 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					
+
 
 					-- 関数 --
 					for i, v in ipairs(workspace:GetChildren()) do
@@ -3059,9 +3064,8 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-		elseif game.PlaceId == 185655149--[[Welcome To Bloxburg]] then
-			gameDetectedNotify("Welcome To Bloxburg")
-			
+		end)
+		loadSupportedGame(185655149, "Welcome To Bloxburg", function()
 			self:AddCommand({
 				Name = "Autogrind",
 				Description = "Makes you autogrind in the Pizza Place",
@@ -3076,10 +3080,10 @@ function modules.UniversalCommands()
 					-- 変数 --
 					local _game = workspace:WaitForChild("_game")
 					local environment = workspace:WaitForChild("Environment")
-					
+
 					local locations = environment:WaitForChild("Locations")
 					local spawnedCharacters = _game:WaitForChild("SpawnedCharacters")
-					
+
 					local customerName = "PizzaPlanetDeliveryCustomer"
 
 					-- 関数 --
@@ -3094,7 +3098,7 @@ function modules.UniversalCommands()
 						locPart.Transparency = 1
 						locPart.CFrame = CFrame.new(1165, 15.1437988, 270.823181, 1, 0, 0, 0, 1, 0, 0, 0, 1)
 					end
-					
+
 					local function moveTo(part)
 						if useTeleport then
 							self.Modules.core:Pathfind(part, nil, false, {
@@ -3112,9 +3116,9 @@ function modules.UniversalCommands()
 							self.Modules.core:Pathfind(part)
 						end
 					end
-					
+
 					self.Modules.parser:RunCommand(speaker, "noclip")
-					
+
 					local npc = spawnedCharacters:FindFirstChild(customerName)
 					if npc then
 						moveTo(npc.PrimaryPart)
@@ -3123,7 +3127,68 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-		end
+		end)
+		loadSupportedGame(15523276627, "CraftBlox", function()
+			local oreEsp = false
+			local oreHighlights = {}
+			
+			self:AddCommand({
+				Name = "OreESP",
+				Description = "Lets you see all of the ores around you",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local blocks = workspace:WaitForChild("Blocks")
+
+					-- 関数 --
+					self.Modules.parser:RunCommand(speaker, "UnOreESP")
+					
+					oreEsp = true
+					while oreEsp do
+						for _, block in ipairs(blocks:GetDescendants()) do
+							if block.ClassName ~= "Folder" and block.BrickColor ~= BrickColor.new("Medium stone grey") then
+								local highlight = block:FindFirstChild("ORE_HIGHLIGHT")
+								if not highlight then
+									highlight = Instance.new("Highlight", block)
+									highlight.FillColor = block.BrickColor.Color
+									highlight.OutlineColor = Color3.new(0, 0, 0)
+									highlight.OutlineTransparency = 0.5
+									table.insert(oreHighlights, highlight)
+								end
+							end
+						end
+						task.wait(1)
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "UnOreESP",
+				Description = "Stops Ore ESP",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if oreEsp then
+						oreEsp = false
+						for _, highlight in ipairs(oreHighlights) do
+							highlight:Destroy()
+						end
+					end
+				end,
+			})
+		end)
 		
 		--------------------------------------------------------------------
 		--[[							END								]]--
