@@ -2688,9 +2688,8 @@ function modules.UniversalCommands()
 		end
 		
 		local function loadSupportedGame(placeId, gameName, func)
-			gameDetectedNotify(gameName)
-			
 			if game.PlaceId == placeId then
+				gameDetectedNotify(gameName)
 				if type(func) == "function" then
 					func()
 				end
@@ -3149,19 +3148,28 @@ function modules.UniversalCommands()
 					self.Modules.parser:RunCommand(speaker, "UnOreESP")
 					
 					oreEsp = true
-					while oreEsp do
-						for _, block in ipairs(blocks:GetDescendants()) do
-							if block.ClassName ~= "Folder" and block.BrickColor ~= BrickColor.new("Medium stone grey") then
-								local highlight = block:FindFirstChild("ORE_HIGHLIGHT")
-								if not highlight then
-									highlight = Instance.new("Highlight", block)
-									highlight.FillColor = block.BrickColor.Color
-									highlight.OutlineColor = Color3.new(0, 0, 0)
-									highlight.OutlineTransparency = 0.5
-									table.insert(oreHighlights, highlight)
+					
+					local function updateHighlights()
+						for _, folder in ipairs(blocks:GetDescendants()) do
+							if folder.ClassName == "Folder" then
+								for _, block in ipairs(folder:GetChildren()) do
+									if block.BrickColor ~= BrickColor.new("Medium stone grey") then
+										local highlight = block:FindFirstChild("ORE_HIGHLIGHT")
+										if not highlight then
+											highlight = Instance.new("Highlight", block)
+											highlight.FillColor = block.BrickColor.Color
+											highlight.OutlineColor = Color3.new(0, 0, 0)
+											highlight.OutlineTransparency = 0.5
+											table.insert(oreHighlights, highlight)
+										end
+									end
 								end
 							end
 						end
+					end
+					
+					while oreEsp do
+						updateHighlights()
 						task.wait(1)
 					end
 				end,
