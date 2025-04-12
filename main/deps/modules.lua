@@ -3133,18 +3133,23 @@ function modules.UniversalCommands()
 			
 			self:AddCommand({
 				Name = "OreESP",
-				Description = "Lets you see all of the ores around you",
+				Description = "Lets you see all of the ores around you [RefreshRate]",
 
 				Aliases = {},
 				Arguments = {},
 
 				Function = function(speaker, args)
 					-- 引数 --
+					local refreshRate = self.getNum(args[1])
 
 					-- 変数 --
 					local blocks = workspace:WaitForChild("Blocks")
 
 					-- 関数 --
+					if not refreshRate then
+						refreshRate = 5
+					end
+					
 					self.Modules.parser:RunCommand(speaker, "UnOreESP")
 					
 					oreEsp = true
@@ -3171,7 +3176,7 @@ function modules.UniversalCommands()
 					
 					while oreEsp do
 						updateHighlights()
-						task.wait(1)
+						task.wait(refreshRate)
 					end
 				end,
 			})
