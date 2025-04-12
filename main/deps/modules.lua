@@ -3153,7 +3153,7 @@ function modules.UniversalCommands()
 						for _, folder in ipairs(blocks:GetDescendants()) do
 							if folder.ClassName == "Folder" then
 								for _, block in ipairs(folder:GetChildren()) do
-									if block.BrickColor ~= BrickColor.new("Medium stone grey") then
+									if block.ClassName == "MeshPart" and block.BrickColor ~= BrickColor.new("Medium stone grey") then
 										local highlight = block:FindFirstChild("ORE_HIGHLIGHT")
 										if not highlight then
 											highlight = Instance.new("Highlight", block)
