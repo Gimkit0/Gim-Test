@@ -5610,8 +5610,8 @@ function modules.UniversalCommands()
 				end,
 			})
 			self:AddCommand({
-				Name = "AttachmentMenu",
-				Description = "Gives you the attachment menu for guns",
+				Name = "Explode",
+				Description = "Explodes the [Player]",
 
 				Aliases = {},
 				Arguments = {"Player"},
@@ -5625,11 +5625,128 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					for index, player in next, users do
-						if getACSVersion() == "2.0.1" then
-							loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/attachmentMenu.lua"))()
-						else
-							self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 2.0.1 is only supported for now`, "ERROR", nil, 5)
+						if player.Character then
+							local hrp = self.fetchHrp(player.Character)
+							if getACSVersion() == "1.7.5" then
+								if hrp then
+									events.Hit:FireServer(hrp.Position, hrp, Vector3.new(0,0,0), "Dirt", {
+										ExplosiveHit = true,
+										ExPressure = 500000,
+										ExpRadius = 100,
+										DestroyJointRadiusPercent = 100,
+									})
+								end
+							else
+								self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 1.7.5 is only supported for now`, "ERROR", nil, 5)
+							end
 						end
+					end
+				end,
+			})
+			self:AddCommand({
+				Name = "Nuke",
+				Description = "Nukes the [Player]",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							local hrp = self.fetchHrp(player.Character)
+							if getACSVersion() == "1.7.5" then
+								if hrp then
+									local origin = hrp.CFrame.p
+									
+									local heightSteps = 10
+									local verticalSpacing = 15
+									
+									self.spawn(function()
+										for i = 1, 20 do
+											for i = 0, heightSteps do
+												local y = i * verticalSpacing
+												events.Hit:FireServer(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), "Dirt", {
+													ExplosiveHit = true,
+													ExPressure = 500000,
+													ExpRadius = 80,
+													DestroyJointRadiusPercent = 100,
+												})
+												task.wait()
+											end
+											local capHeight = origin.Y + heightSteps * verticalSpacing
+											local numRings = 4
+											local ringSpacing = 20
+
+											for ring = 1, numRings do
+												local radius = ring * 30
+												local numBooms = 30
+												for i = 1, numBooms do
+													local angle = i * ((math.pi * 2) / numBooms)
+													local x = radius * math.cos(angle)
+													local z = radius * math.sin(angle)
+
+													events.Hit:FireServer(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), "Dirt", {
+														ExplosiveHit = true,
+														ExPressure = 500000,
+														ExpRadius = 100,
+														DestroyJointRadiusPercent = 100,
+													})
+												end
+												task.wait()
+											end
+											task.wait(0.2)
+										end
+									end)
+									
+									for index = 1, 15 do
+										local numBooms = 20
+										for i = 1, numBooms do
+											local a = i * ((math.pi * 2) / numBooms) 
+											local radius = index * 25 -- Spread out explosions over time
+											local x = radius * math.cos(a)
+											local z = radius * math.sin(a)
+
+											events.Hit:FireServer(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), "Dirt", {
+												ExplosiveHit = true,
+												ExPressure = 500000,
+												ExpRadius = 100,
+												DestroyJointRadiusPercent = 100,
+											})
+										end
+										task.wait(0.5)
+									end
+								end
+							else
+								self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 1.7.5 is only supported for now`, "ERROR", nil, 5)
+							end
+						end
+					end
+				end,
+			})
+			self:AddCommand({
+				Name = "AttachmentMenu",
+				Description = "Gives you the attachment menu for guns",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if getACSVersion() == "2.0.1" then
+						loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/attachmentMenu.lua"))()
+					else
+						self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 2.0.1 is only supported for now`, "ERROR", nil, 5)
 					end
 				end,
 			})
