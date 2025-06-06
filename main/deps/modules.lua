@@ -5487,7 +5487,7 @@ function modules.UniversalCommands()
 							for _, weapon in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
 								if weapon:IsA("BackpackItem") then
 									if weapon:FindFirstChild("ACS_Animations") or weapon:FindFirstChild("ACS_Settings") then
-										weaponData = require(acsWeapon.ACS_Settings)
+										weaponData = require(weapon.ACS_Settings)
 										
 										if weaponData.Type ~= "Grenade" then
 											acsWeapon = weapon
@@ -5495,7 +5495,7 @@ function modules.UniversalCommands()
 											acsWeapon.Destroying:Connect(function()
 												acsWeapon = nil
 											end)
-											break
+											
 										end
 									end
 								end
