@@ -11,7 +11,7 @@
 local G2L = {};
 
 -- StarterGui.Gunsmith_GUI
-G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
+G2L["1"] = Instance.new("ScreenGui", game:GetService("CoreGui"))
 G2L["1"]["Name"] = [[Gunsmith_GUI]];
 
 
