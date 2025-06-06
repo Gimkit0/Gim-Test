@@ -5613,7 +5613,7 @@ function modules.UniversalCommands()
 			})
 			self:AddCommand({
 				Name = "PVPMode",
-				Description = "Makes the [Player] killable but also makes the player able to kill everyone else",
+				Description = "Makes the [Player] able to kill everyone else",
 
 				Aliases = {},
 				Arguments = {"Player"},
@@ -5627,10 +5627,12 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					for index, player in next, users do
-						events.Squad:FireServer("_PVP_ENABLED_", Color3.fromRGB(94, 122, 122))
+						--events.Squad:FireServer("_PVP_ENABLED_", Color3.fromRGB(94, 122, 122))
 						
+						self:RunCommand(player, "StopPVPMode")
 						if getACSVersion() == "1.7.5" then
 							pvpEnabled[player.Name] = {
+								--[[
 								hitConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
 									if hitPart.Parent and hitPart.Parent.Name == targetedPlayer.Character.Name then
 										if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
@@ -5642,6 +5644,7 @@ function modules.UniversalCommands()
 										end
 									end
 								end),
+								]]
 								shootConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
 									if hitPart.Parent ~= targetedPlayer.Character and player == targetedPlayer then
 										if self.fetchHum(hitPart.Parent) then
@@ -5657,6 +5660,29 @@ function modules.UniversalCommands()
 									end
 								end)
 							}
+						end
+					end
+				end,
+			})
+			self:AddCommand({
+				Name = "StopPVPMode",
+				Description = "Disables PVPMode for [Player]",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if pvpEnabled[player.Name] then
+							pvpEnabled[player.Name].shootConn:Disconnect()
+							pvpEnabled[player.Name] = nil
 						end
 					end
 				end,
