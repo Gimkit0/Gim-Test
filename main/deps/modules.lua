@@ -5627,24 +5627,9 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					for index, player in next, users do
-						--events.Squad:FireServer("_PVP_ENABLED_", Color3.fromRGB(94, 122, 122))
-						
-						self:RunCommand(player, "StopPVPMode")
+						self.Modules.parser:RunCommand(player, "StopPVPMode")
 						if getACSVersion() == "1.7.5" then
 							pvpEnabled[player.Name] = {
-								--[[
-								hitConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
-									if hitPart.Parent and hitPart.Parent.Name == targetedPlayer.Character.Name then
-										if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
-											damage(targetedPlayer.Character, config.TorsoDamage[math.random(1, #config.TorsoDamage)])
-										elseif hitPart.Name == "Head" then
-											damage(targetedPlayer.Character, config.HeadDamage[math.random(1, #config.HeadDamage)])
-										else
-											damage(targetedPlayer.Character, config.LimbsDamage[math.random(1, #config.LimbsDamage)])
-										end
-									end
-								end),
-								]]
 								shootConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
 									if hitPart.Parent ~= targetedPlayer.Character and player == targetedPlayer then
 										if self.fetchHum(hitPart.Parent) then
