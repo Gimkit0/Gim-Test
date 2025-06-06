@@ -5611,14 +5611,15 @@ function modules.UniversalCommands()
 			})
 			self:AddCommand({
 				Name = "Explode",
-				Description = "Explodes the [Player]",
+				Description = "Explodes the [Player] (Causes terrain damage if toggled)",
 
 				Aliases = {},
-				Arguments = {"Player"},
+				Arguments = {"Player", "TerrainDamage"},
 
 				Function = function(speaker, args)
 					-- 引数 --
 					local user = args[1]
+					local causeTerrainDamage = self.getBool(args[2])
 
 					-- 変数 --
 					local users = self.getPlayer(speaker, user)
@@ -5629,11 +5630,13 @@ function modules.UniversalCommands()
 							local hrp = self.fetchHrp(player.Character)
 							if getACSVersion() == "1.7.5" then
 								if hrp then
+									
 									events.Hit:FireServer(hrp.Position, hrp, Vector3.new(0,0,0), "Dirt", {
 										ExplosiveHit = true,
-										ExPressure = 500000,
+										ExPressure = causeTerrainDamage and 5000000 or 0,
 										ExpRadius = 100,
 										DestroyJointRadiusPercent = 100,
+										ExplosionDamage = math.huge,
 									})
 								end
 							else
@@ -5648,11 +5651,12 @@ function modules.UniversalCommands()
 				Description = "Nukes the [Player]",
 
 				Aliases = {},
-				Arguments = {"Player"},
+				Arguments = {"Player", "TerrainDamage"},
 
 				Function = function(speaker, args)
 					-- 引数 --
 					local user = args[1]
+					local causeTerrainDamage = self.getBool(args[2])
 
 					-- 変数 --
 					local users = self.getPlayer(speaker, user)
@@ -5674,9 +5678,10 @@ function modules.UniversalCommands()
 												local y = i * verticalSpacing
 												events.Hit:FireServer(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), "Dirt", {
 													ExplosiveHit = true,
-													ExPressure = 500000,
+													ExPressure = causeTerrainDamage and 5000000 or 0,
 													ExpRadius = 80,
 													DestroyJointRadiusPercent = 100,
+													ExplosionDamage = math.huge,
 												})
 												task.wait()
 											end
@@ -5694,9 +5699,10 @@ function modules.UniversalCommands()
 
 													events.Hit:FireServer(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), "Dirt", {
 														ExplosiveHit = true,
-														ExPressure = 500000,
+														ExPressure = causeTerrainDamage and 5000000 or 0,
 														ExpRadius = 100,
 														DestroyJointRadiusPercent = 100,
+														ExplosionDamage = math.huge,
 													})
 												end
 												task.wait()
@@ -5715,9 +5721,10 @@ function modules.UniversalCommands()
 
 											events.Hit:FireServer(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), "Dirt", {
 												ExplosiveHit = true,
-												ExPressure = 500000,
+												ExPressure = causeTerrainDamage and 5000000 or 0,
 												ExpRadius = 100,
 												DestroyJointRadiusPercent = 100,
+												ExplosionDamage = math.huge,
 											})
 										end
 										task.wait(0.5)
