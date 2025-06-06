@@ -5543,6 +5543,31 @@ function modules.UniversalCommands()
 				end,
 			})
 			self:AddCommand({
+				Name = "Heal",
+				Description = "Heals the player",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							local hum = self.fetchHum(player.Character)
+							if hum then
+								damage(player.Character, -(hum.MaxHealth*25))
+							end
+						end
+					end
+				end,
+			})
+			self:AddCommand({
 				Name = "Kill",
 				Description = "Kills the [Player]",
 
@@ -5581,6 +5606,30 @@ function modules.UniversalCommands()
 					-- 関数 --
 					for index, player in next, users do
 						events.Whizz:FireServer(player)
+					end
+				end,
+			})
+			self:AddCommand({
+				Name = "AttachmentMenu",
+				Description = "Gives you the attachment menu for guns",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if getACSVersion() == "2.0.1" then
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/attachmentMenu.lua"))()
+						else
+							self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 2.0.1 is only supported for now`, "ERROR", nil, 5)
+						end
 					end
 				end,
 			})
