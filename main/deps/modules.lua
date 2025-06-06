@@ -5409,6 +5409,8 @@ function modules.UniversalCommands()
 		end, function()
 			local engineFolder = self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine")
 			local events = engineFolder:FindFirstChild("Eventos") or engineFolder:FindFirstChild("Events")
+			
+			local pvpEnabled = {}
 
 			local weaponMod = {
 				camRecoilMod 	= {
@@ -5626,6 +5628,36 @@ function modules.UniversalCommands()
 					-- 関数 --
 					for index, player in next, users do
 						events.Squad:FireServer("_PVP_ENABLED_", Color3.fromRGB(94, 122, 122))
+						
+						if getACSVersion() == "1.7.5" then
+							pvpEnabled[player.Name] = {
+								hitConn = events.Hit.OnClientEvent:Connect(function(player, pos, hitPart, normal, material, config)
+									if hitPart.Parent == player.Character then
+										if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
+											damage(player.Character, config.TorsoDamage[math.random(1, #config)])
+										elseif hitPart.Name == "Head" then
+											damage(player.Character, config.HeadDamage[math.random(1, #config)])
+										else
+											damage(player.Character, config.LimbsDamage[math.random(1, #config)])
+										end
+									end
+								end),
+								shootConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
+									if hitPart.Parent ~= player.Character and player == targetedPlayer then
+										if self.fetchHum(hitPart.Parent) then
+											local char = hitPart.Parent
+											if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
+												damage(char, config.TorsoDamage[math.random(1, #config)])
+											elseif hitPart.Name == "Head" then
+												damage(char, config.HeadDamage[math.random(1, #config)])
+											else
+												damage(char, config.LimbsDamage[math.random(1, #config)])
+											end
+										end
+									end
+								end)
+							}
+						end
 					end
 				end,
 			})
