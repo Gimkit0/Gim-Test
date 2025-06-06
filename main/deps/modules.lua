@@ -5473,6 +5473,7 @@ function modules.UniversalCommands()
 			end
 
 			local acsWeapon = nil
+			local weaponData = nil
 			local function damage(character, amount)
 				if character and self.fetchHum(character) then
 					local hum = self.fetchHum(character)
@@ -5486,18 +5487,22 @@ function modules.UniversalCommands()
 							for _, weapon in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
 								if weapon:IsA("BackpackItem") then
 									if weapon:FindFirstChild("ACS_Animations") or weapon:FindFirstChild("ACS_Settings") then
-										acsWeapon = weapon
-										acsWeapon.Parent = self.Services.ReplicatedStorage
-										acsWeapon.Destroying:Connect(function()
-											acsWeapon = nil
-										end)
+										weaponData = require(acsWeapon.ACS_Settings)
+										
+										if weaponData.Type ~= "Grenade" then
+											acsWeapon = weapon
+											acsWeapon.Parent = self.Services.ReplicatedStorage
+											acsWeapon.Destroying:Connect(function()
+												acsWeapon = nil
+											end)
+											break
+										end
 									end
 								end
 							end
 						end
 
 						if acsWeapon then
-							local weaponData = require(acsWeapon.ACS_Settings)
 							local newWeaponMod = weaponMod
 							if weaponData.Type == "Melee" then if amount == math.huge then amount = 99999999999 end end
 
@@ -5581,18 +5586,22 @@ function modules.UniversalCommands()
 			})
 			self:ChangeCommand({
 				Name = "God",
-				Description = "Unkillable in most games",
+				Description = "Makes the [Player] unkillable",
 
 				Aliases = {"GodMode", "AntiKill"},
-				Arguments = {},
+				Arguments = {"Player"},
 
 				Function = function(speaker, args)
 					-- 引数 --
+					local user = args[1]
 
 					-- 変数 --
+					local users = self.getPlayer(speaker, user)
 
 					-- 関数 --
-					damage(speaker.Character, -math.huge)
+					for index, player in next, users do
+						damage(speaker.Character, -math.huge)
+					end
 				end,
 			})
 		end)
