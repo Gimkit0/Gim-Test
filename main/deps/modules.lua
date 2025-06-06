@@ -5520,6 +5520,26 @@ function modules.UniversalCommands()
 					end
 				end
 			end
+			local function pvpMode(player)
+				if getACSVersion() == "1.7.5" then
+					pvpEnabled[player.Name] = {
+						shootConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
+							if hitPart.Parent ~= targetedPlayer.Character and player == targetedPlayer then
+								if self.fetchHum(hitPart.Parent) then
+									local char = hitPart.Parent
+									if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
+										damage(char, config.TorsoDamage[math.random(1, #config.TorsoDamage)])
+									elseif hitPart.Name == "Head" then
+										damage(char, config.HeadDamage[math.random(1, #config.HeadDamage)])
+									else
+										damage(char, config.LimbsDamage[math.random(1, #config.LimbsDamage)])
+									end
+								end
+							end
+						end)
+					}
+				end
+			end
 
 			self:AddCommand({
 				Name = "Damage",
@@ -5628,25 +5648,36 @@ function modules.UniversalCommands()
 					-- 関数 --
 					for index, player in next, users do
 						self.Modules.parser:RunCommand(player, "StopPVPMode")
-						if getACSVersion() == "1.7.5" then
-							pvpEnabled[player.Name] = {
-								shootConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
-									if hitPart.Parent ~= targetedPlayer.Character and player == targetedPlayer then
-										if self.fetchHum(hitPart.Parent) then
-											local char = hitPart.Parent
-											if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
-												damage(char, config.TorsoDamage[math.random(1, #config.TorsoDamage)])
-											elseif hitPart.Name == "Head" then
-												damage(char, config.HeadDamage[math.random(1, #config.HeadDamage)])
-											else
-												damage(char, config.LimbsDamage[math.random(1, #config.LimbsDamage)])
-											end
-										end
-									end
-								end)
-							}
-						end
+						task.wait(.5)
+						pvpMode(player)
 					end
+				end,
+			})
+			self:AddCommand({
+				Name = "GlobalPVPMode",
+				Description = "Now everyone can kill eachother",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					
+					-- 変数 --
+					local users = self.getPlayer(speaker, "all")
+
+					-- 関数 --
+					for index, player in next, users do
+						self.Modules.parser:RunCommand(player, "StopPVPMode")
+						task.wait(.5)
+						pvpMode(player)
+					end
+					self.addConn("GLOBAL_PVP_JOINED", self.safePlayerAdded(function(player)
+						pvpMode(player)
+					end))
+					self.addConn("GLOBAL_PVP_LEAVED",  self.safePlayerAdded(function(player)
+						self.Modules.parser:RunCommand(player, "StopPVPMode")
+					end))
 				end,
 			})
 			self:AddCommand({
