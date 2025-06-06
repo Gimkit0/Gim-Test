@@ -5631,19 +5631,19 @@ function modules.UniversalCommands()
 						
 						if getACSVersion() == "1.7.5" then
 							pvpEnabled[player.Name] = {
-								hitConn = events.Hit.OnClientEvent:Connect(function(player, pos, hitPart, normal, material, config)
-									if hitPart.Parent == player.Character then
+								hitConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
+									if hitPart.Parent and hitPart.Parent.Name == targetedPlayer.Character.Name then
 										if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
-											damage(player.Character, config.TorsoDamage[math.random(1, #config.TorsoDamage)])
+											damage(targetedPlayer.Character, config.TorsoDamage[math.random(1, #config.TorsoDamage)])
 										elseif hitPart.Name == "Head" then
-											damage(player.Character, config.HeadDamage[math.random(1, #config.HeadDamage)])
+											damage(targetedPlayer.Character, config.HeadDamage[math.random(1, #config.HeadDamage)])
 										else
-											damage(player.Character, config.LimbsDamage[math.random(1, #config.LimbsDamage)])
+											damage(targetedPlayer.Character, config.LimbsDamage[math.random(1, #config.LimbsDamage)])
 										end
 									end
 								end),
 								shootConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
-									if hitPart.Parent ~= player.Character and player == targetedPlayer then
+									if hitPart.Parent ~= targetedPlayer.Character and player == targetedPlayer then
 										if self.fetchHum(hitPart.Parent) then
 											local char = hitPart.Parent
 											if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
