@@ -5610,6 +5610,26 @@ function modules.UniversalCommands()
 				end,
 			})
 			self:AddCommand({
+				Name = "PVPMode",
+				Description = "Makes the [Player] killable but also makes the player able to kill everyone else",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						events.Squad:FireServer("_PVP_ENABLED_", Color3.fromRGB(94, 122, 122))
+					end
+				end,
+			})
+			self:AddCommand({
 				Name = "Explode",
 				Description = "Explodes the [Player] (Causes terrain damage if toggled)",
 
