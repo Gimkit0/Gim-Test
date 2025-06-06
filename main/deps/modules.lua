@@ -2695,6 +2695,17 @@ function modules.UniversalCommands()
 				end
 			end
 		end
+		local function loadDetection(name, detection, onLoad)
+			if type(detection) == "function" and type(onLoad) == "function" then
+				if detection() then
+					self.spawn(function()
+						task.wait(1)
+						self:Notify(self.Config.SYSTEM.NAME, `Loading detection "<b>{name}</b>"`, "INFO", nil, 5)
+					end)
+					onLoad()
+				end
+			end
+		end
 		
 		loadSupportedGame(9872472334, "Evade", function()
 			local ticketWaitInterval = .5
@@ -5386,6 +5397,205 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
+		
+		
+		
+		
+		loadDetection("ACS Gun System", function()
+			if self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine") then
+				return true
+			end
+			return false
+		end, function()
+			local engineFolder = self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine")
+			local events = engineFolder:FindFirstChild("Eventos") or engineFolder:FindFirstChild("Events")
+
+			local weaponMod = {
+				camRecoilMod 	= {
+					RecoilTilt 	= 1,
+					RecoilUp 	= 1,
+					RecoilLeft 	= 1,
+					RecoilRight = 1
+				}
+
+				,gunRecoilMod	= {
+					RecoilUp 	= 1,
+					RecoilTilt 	= 1,
+					RecoilLeft 	= 1,
+					RecoilRight = 1
+				}
+
+				,ZoomValue 		= 1
+				,Zoom2Value 	= 1
+				,AimRM 			= 1
+				,SpreadRM 		= 1
+				,DamageMod 		= 1
+				,minDamageMod 	= 1
+
+				,MinRecoilPower 			= 1
+				,MaxRecoilPower 			= 1
+				,RecoilPowerStepAmount 		= 1
+
+				,MinSpread 					= 1
+				,MaxSpread 					= 1					
+				,AimInaccuracyStepAmount 	= 1
+				,AimInaccuracyDecrease 		= 1
+				,WalkMult 					= 1
+				,adsTime 					= 1		
+				,MuzzleVelocity 			= 1
+			}
+
+			local function getMultiplier(input, target)
+				return target / input
+			end
+			local function getACSVersion()
+				if engineFolder:FindFirstChild("GameRules")
+					and engineFolder:FindFirstChild("Events")
+				then
+					return "2.0.1"
+				elseif engineFolder:FindFirstChild("ServerConfigs")
+					and engineFolder:FindFirstChild("Eventos")
+					and not engineFolder:FindFirstChild("Shatter")
+				then
+					return "1.7.5"
+				elseif engineFolder:FindFirstChild("ServerConfigs")
+					and engineFolder:FindFirstChild("Eventos")
+					and engineFolder:FindFirstChild("Shatter")
+				then
+					return "Kitsune"
+				elseif engineFolder:FindFirstChild("ServerConfigs")
+					and engineFolder:FindFirstChild("Eventos")
+					and engineFolder:FindFirstChild("Modulos")
+					and engineFolder:FindFirstChild("Modules"):FindFirstChuld("DragProjectile")
+				then
+					return "1.2.8 R15"
+				end
+			end
+
+			local acsWeapon = nil
+			local function damage(character, amount)
+				if character and self.fetchHum(character) then
+					local hum = self.fetchHum(character)
+					if getACSVersion() == "1.7.5" then
+						events.Damage:FireServer(hum, amount, 0, 0)
+					elseif getACSVersion() == "2.0.1" then
+						local accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
+							.."-"..self.LocalPlayer.UserId
+
+						if not acsWeapon then
+							for _, weapon in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
+								if weapon:IsA("BackpackItem") then
+									if weapon:FindFirstChild("ACS_Animations") or weapon:FindFirstChild("ACS_Settings") then
+										acsWeapon = weapon
+										acsWeapon.Parent = self.Services.ReplicatedStorage
+										acsWeapon.Destroying:Connect(function()
+											acsWeapon = nil
+										end)
+									end
+								end
+							end
+						end
+
+						if acsWeapon then
+							local weaponData = require(acsWeapon.ACS_Settings)
+							local newWeaponMod = weaponMod
+							if weaponData.Type == "Melee" then if amount == math.huge then amount = 99999999999 end end
+
+							newWeaponMod.DamageMod = getMultiplier(weaponData.HeadDamage[1], amount)
+							newWeaponMod.minDamageMod = getMultiplier(weaponData.HeadDamage[1], amount)
+
+							repeat task.wait() until accessId
+
+							events.Damage:InvokeServer(acsWeapon, hum, 0, 1, weaponData, newWeaponMod, nil, nil, accessId)
+						else
+							self:Notify(self.Config.SYSTEM.NAME, `Please have an ACS weapon in backpack [CANNOT BE A GRENADE]`, "ERROR", nil, 5)
+						end
+					end
+				end
+			end
+
+			self:AddCommand({
+				Name = "Damage",
+				Description = "Damages the [Player] by [Amount]",
+
+				Aliases = {"DMG"},
+				Arguments = {"Player", "Amount"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+					local amount = self.getNum(args[2])
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							damage(player.Character, amount)
+						end
+					end
+				end,
+			})
+			self:AddCommand({
+				Name = "Kill",
+				Description = "Kills the [Player]",
+
+				Aliases = {"CommitDie", "Die"},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							damage(player.Character, math.huge)
+						end
+					end
+				end,
+			})
+			self:AddCommand({
+				Name = "Whizz",
+				Description = "Plays the whizz sound effect on the [Player]",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						events.Whizz:FireServer(player)
+					end
+				end,
+			})
+			self:ChangeCommand({
+				Name = "God",
+				Description = "Unkillable in most games",
+
+				Aliases = {"GodMode", "AntiKill"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					damage(speaker.Character, -math.huge)
+				end,
+			})
+		end)
 	end
 	
 	return module
