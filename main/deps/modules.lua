@@ -5696,10 +5696,10 @@ function modules.UniversalCommands()
 										for i = 1, 20 do
 											for i = 0, heightSteps do
 												local y = i * verticalSpacing
-												events.Hit:FireServer(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), "Dirt", {
+												events.Hit:FireServer(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 													ExplosiveHit = true,
 													ExPressure = causeTerrainDamage and 5000000 or 0,
-													ExpRadius = 80,
+													ExpRadius = 100,
 													DestroyJointRadiusPercent = 100,
 													ExplosionDamage = math.huge,
 												})
@@ -5717,7 +5717,7 @@ function modules.UniversalCommands()
 													local x = radius * math.cos(angle)
 													local z = radius * math.sin(angle)
 
-													events.Hit:FireServer(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), "Dirt", {
+													events.Hit:FireServer(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 														ExplosiveHit = true,
 														ExPressure = causeTerrainDamage and 5000000 or 0,
 														ExpRadius = 100,
@@ -5730,19 +5730,39 @@ function modules.UniversalCommands()
 											task.wait(0.2)
 										end
 									end)
+									self.spawn(function()
+										for index = 1, 3 do
+											local numBooms = 20
+											for i = 1, numBooms do
+												local a = i * ((math.pi * 2) / numBooms) 
+												local radius = index * 25 -- Spread out explosions over time
+												local x = radius * math.cos(a)
+												local z = radius * math.sin(a)
+
+												events.Hit:FireServer(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y - 25, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+													ExplosiveHit = true,
+													ExPressure = causeTerrainDamage and 5000000 or 0,
+													ExpRadius = 100,
+													DestroyJointRadiusPercent = 100,
+													ExplosionDamage = math.huge,
+												})
+											end
+											task.wait(0.5)
+										end
+									end)
 									
-									for index = 1, 15 do
-										local numBooms = 20
+									for index = 1, 25 do
+										local numBooms = 25
 										for i = 1, numBooms do
 											local a = i * ((math.pi * 2) / numBooms) 
 											local radius = index * 25 -- Spread out explosions over time
 											local x = radius * math.cos(a)
 											local z = radius * math.sin(a)
 
-											events.Hit:FireServer(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), "Dirt", {
+											events.Hit:FireServer(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 												ExplosiveHit = true,
 												ExPressure = causeTerrainDamage and 5000000 or 0,
-												ExpRadius = 100,
+												ExpRadius = 65,
 												DestroyJointRadiusPercent = 100,
 												ExplosionDamage = math.huge,
 											})
