@@ -5495,7 +5495,7 @@ function modules.UniversalCommands()
 											acsWeapon.Destroying:Connect(function()
 												acsWeapon = nil
 											end)
-											
+											break
 										end
 									end
 								end
@@ -5600,7 +5600,7 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					for index, player in next, users do
-						damage(speaker.Character, -math.huge)
+						damage(player.Character, -math.huge)
 					end
 				end,
 			})
