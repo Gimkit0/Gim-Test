@@ -46,7 +46,7 @@ function CommandBar.new(config)
 			SAVE_FILE_NAME = `{globalName}.rem`,
 			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
-			VERSION = 1.05,
+			VERSION = 1.02,
 			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
 			
 			KEEP_ON_TELEPORT = true,
@@ -1011,6 +1011,19 @@ function CommandBar:AddCommand(cmd)
 		return
 	end
 	table.insert(self.Commands, cmd)
+end
+
+function CommandBar:ChangeCommand(newCmd)
+	if type(newCmd) ~= "table" or type(newCmd.Name) ~= "string" then
+		return
+	end
+
+	for i, cmd in ipairs(self.Commands) do
+		if cmd.Name == newCmd.Name then
+			self.Commands[i] = newCmd
+			return
+		end
+	end
 end
 
 function CommandBar:ConstructUI()
