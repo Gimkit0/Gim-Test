@@ -5415,7 +5415,7 @@ function modules.UniversalCommands()
 			local globalPVPConn = nil
 			
 			local accessId = nil
-			if events:FindFirstChild("AccessId") then
+			if events:FindFirstChild("AcessId") then
 				if events.AcessId:IsA("RemoteFunction") then
 					accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
 						.."-"..self.LocalPlayer.UserId
