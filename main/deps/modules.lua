@@ -5760,8 +5760,29 @@ function modules.UniversalCommands()
 										ExplosionDamage = math.huge,
 									})
 								end
-							else
-								self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 1.7.5 is only supported for now`, "ERROR", nil, 5)
+							elseif getACSVersion() == "2.0.1" then
+								local grenade
+								local grenadeData
+								for _, tool in ipairs(speaker.Backpack:GetChildren()) do
+									local grenadeModels = engineFolder:FindFirstChild("GrenadeModels")
+									if grenadeModels then
+										if tool and grenadeModels:FindFirstChild(tool.Name) then
+											grenade = tool
+											grenade.Parent = self.Services.ReplicatedStorage
+											grenadeData = require(tool.ACS_Settings)
+											break
+										end
+									end
+								end
+								if grenade then
+									local accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
+										.."-"..self.LocalPlayer.UserId
+									events.Grenade:FireServer(grenade, grenadeData, hrp.CFrame, CFrame.new(0,0,0), Vector3.new(0,0,0), accessId)
+								else
+									self:Notify(self.Config.SYSTEM.NAME, `Please equip a ACS Grenade`, "ERROR", nil, 5)
+								end
+							
+								--self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 1.7.5 is only supported for now`, "ERROR", nil, 5)
 							end
 						end
 					end
