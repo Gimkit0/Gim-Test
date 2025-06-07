@@ -683,6 +683,7 @@ local script = G2L["38"];
 	local AttModels 	= Engine:WaitForChild("AttModels")
 	local AttModules  	= Engine:WaitForChild("AttModules")
 	local Rules			= Engine:WaitForChild("GameRules")
+	local Events        = Engine:WaitForChild("Events")
 	
 	local Ultil			= require(Mods:WaitForChild("Utilities"))
 	
@@ -706,8 +707,6 @@ local script = G2L["38"];
 	
 	local a = 90
 	
-	
-	--[[
 	local require = function(module)
 		if typeof(module) == "Instance" then
 			if module.Parent and module.Parent:FindFirstChild("__"..module.Name.."__") then
@@ -720,7 +719,6 @@ local script = G2L["38"];
 			return require(clone)
 		end
 	end
-	]]
 	
 	--------------------mods
 	
@@ -769,8 +767,9 @@ local script = G2L["38"];
 		resetMods()
 	end
 	
+	local equipEvent = nil
+	local unequipEvent = nil
 	function SetupGun()
-	
 		for Arg1, Child in pairs(WT_Tool:GetChildren()) do
 			if Child:IsA("Tool") and require(Child.ACS_Settings).Type == 'Gun' then
 				Gun 		= Child
@@ -821,9 +820,34 @@ local script = G2L["38"];
 				else
 					script.Parent.Main.Attachments.Other.Visible = false
 				end
-	
+				if equipEvent then
+					equipEvent:Disconnect()
+					equipEvent = nil
+				end
+				if unequipEvent then
+					unequipEvent:Disconnect()
+					unequipEvent = nil
+				end
+				
+				local animData = require(Gun.ACS_Animations)
+				equipEvent = Gun.Equipped:Connect(function()
+					local viewModel = workspace.CurrentCamera:FindFirstChild("Viewmodel")
+					
+					Events:WaitForChild("Equip"):FireServer(Gun, 1, GunData, animData)
+					if viewModel then
+						local viewGun = viewModel:FindFirstChild(GunData.gunName)
+						if viewGun then
+							loadAttachment(viewGun)
+						end
+					end
+				end)
+				unequipEvent = Gun.Unequipped:Connect(function()
+					Events:WaitForChild("Equip"):FireServer(Gun, 2, GunData, animData)
+				end)
+				Gun.Destroying:Connect(function()
+					script.Parent:Destroy()
+				end)
 			else
-	
 				Gun 		= nil
 				GunData		= nil
 				model 		= nil
@@ -1099,9 +1123,10 @@ local script = G2L["38"];
 	
 	script.Parent.Main.Finish.MouseButton1Click:Connect(function()
 		Gun.Parent = plr.Backpack
-		UnSetGun()
+		--UnSetGun()
 		GunInfoUpdate()
-		script.Parent:Destroy()
+		script.Parent.Enabled = false
+		--script.Parent:Destroy()
 	end)
 	
 	script.Parent.Main.Attachments.Sight.MouseButton1Click:Connect(function()
@@ -1233,7 +1258,7 @@ local script = G2L["38"];
 	local pack = selections.Pack
 	
 	selections.Close.Activated:Connect(function()
-		script.Parent:Destroy()
+		script.Parent.Enabled = false
 	end)
 	
 	for _, Child in pairs(plr.Backpack:GetChildren()) do
