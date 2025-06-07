@@ -5401,6 +5401,59 @@ function modules.UniversalCommands()
 		
 		
 		
+		loadDetection("Roblox Blaster System", function()
+			if self.Services.ReplicatedStorage:FindFirstChild("Blaster") then
+				return true
+			end
+			return false
+		end, function()
+			local engineFolder = self.Services.ReplicatedStorage:FindFirstChild("Blaster")
+			local events = engineFolder:FindFirstChild("Remotes")
+			
+			self:AddCommand({
+				Name = "Kill",
+				Description = "Kills the [Player]",
+
+				Aliases = {"CommitDie", "Die"},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							local hrp = self.fetchHrp(player.Character)
+							local hum = self.fetchHum(player.Character)
+							
+							local tool
+							for _, instance in ipairs(speaker.Character:GetChildren()) do
+								if instance:IsA("Tool") then
+									tool = instance
+									break
+								end
+							end
+							if tool then
+								for i = 1, 50 do
+									local now = workspace:GetServerTimeNow()
+									events.Shoot:FireServer(now, tool, hrp.CFrame, {
+										[tostring(1)] = hum,
+									})
+								end
+							else
+								self:Notify(self.Config.SYSTEM.NAME, `Please have a blaster equipped`, "ERROR", nil, 5)
+							end
+							
+						end
+					end
+				end,
+			})
+		end)
+		
 		loadDetection("ACS Gun System", function()
 			if self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine") then
 				return true
@@ -5777,6 +5830,7 @@ function modules.UniversalCommands()
 								if grenade then
 									local accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
 										.."-"..self.LocalPlayer.UserId
+									
 									events.Grenade:FireServer(grenade, grenadeData, hrp.CFrame, CFrame.new(0,0,0), Vector3.new(0,0,0), accessId)
 								else
 									self:Notify(self.Config.SYSTEM.NAME, `Please equip a ACS Grenade`, "ERROR", nil, 5)
