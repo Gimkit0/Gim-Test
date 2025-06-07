@@ -5411,6 +5411,8 @@ function modules.UniversalCommands()
 			local events = engineFolder:FindFirstChild("Eventos") or engineFolder:FindFirstChild("Events")
 			
 			local pvpEnabled = {}
+			
+			local globalPVPConn = nil
 
 			local weaponMod = {
 				camRecoilMod 	= {
@@ -5664,20 +5666,45 @@ function modules.UniversalCommands()
 					-- 引数 --
 					
 					-- 変数 --
-					local users = self.getPlayer(speaker, "all")
 
 					-- 関数 --
-					for index, player in next, users do
-						self.Modules.parser:RunCommand(player, "StopPVPMode")
-						task.wait(.5)
-						pvpMode(player)
+					self.Modules.parser:RunCommand(speaker, "StopGlobalPVPMode")
+					
+					task.wait(.5)
+					
+					globalPVPConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
+						if hitPart and hitPart.Parent then
+							if self.fetchHum(hitPart.Parent) then
+								local char = hitPart.Parent
+								if hitPart.Name == "Torso" or hitPart.Name == "HumanoidRootPart" then
+									damage(char, config.TorsoDamage[math.random(1, #config.TorsoDamage)])
+								elseif hitPart.Name == "Head" then
+									damage(char, config.HeadDamage[math.random(1, #config.HeadDamage)])
+								else
+									damage(char, config.LimbsDamage[math.random(1, #config.LimbsDamage)])
+								end
+							end
+						end
+					end)
+				end,
+			})
+			self:AddCommand({
+				Name = "StopGlobalPVPMode",
+				Description = "Disables PVPMode globally",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if globalPVPConn then
+						globalPVPConn:Disconnect()
+						globalPVPConn = nil
 					end
-					self.addConn("GLOBAL_PVP_JOINED", self.safePlayerAdded(function(player)
-						pvpMode(player)
-					end))
-					self.addConn("GLOBAL_PVP_LEAVED",  self.safePlayerAdded(function(player)
-						self.Modules.parser:RunCommand(player, "StopPVPMode")
-					end))
 				end,
 			})
 			self:AddCommand({
