@@ -5401,59 +5401,6 @@ function modules.UniversalCommands()
 		
 		
 		
-		loadDetection("Roblox Blaster System", function()
-			if self.Services.ReplicatedStorage:FindFirstChild("Blaster") then
-				return true
-			end
-			return false
-		end, function()
-			local engineFolder = self.Services.ReplicatedStorage:FindFirstChild("Blaster")
-			local events = engineFolder:FindFirstChild("Remotes")
-			
-			self:AddCommand({
-				Name = "Kill",
-				Description = "Kills the [Player]",
-
-				Aliases = {"CommitDie", "Die"},
-				Arguments = {"Player"},
-
-				Function = function(speaker, args)
-					-- 引数 --
-					local user = args[1]
-
-					-- 変数 --
-					local users = self.getPlayer(speaker, user)
-
-					-- 関数 --
-					for index, player in next, users do
-						if player.Character then
-							local hrp = self.fetchHrp(player.Character)
-							local hum = self.fetchHum(player.Character)
-							
-							local tool
-							for _, instance in ipairs(speaker.Character:GetChildren()) do
-								if instance:IsA("Tool") then
-									tool = instance
-									break
-								end
-							end
-							if tool then
-								for i = 1, 50 do
-									local now = workspace:GetServerTimeNow()
-									events.Shoot:FireServer(now, tool, hrp.CFrame, {
-										[tostring(1)] = hum,
-									})
-								end
-							else
-								self:Notify(self.Config.SYSTEM.NAME, `Please have a blaster equipped`, "ERROR", nil, 5)
-							end
-							
-						end
-					end
-				end,
-			})
-		end)
-		
 		loadDetection("ACS Gun System", function()
 			if self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine") then
 				return true
@@ -5466,6 +5413,20 @@ function modules.UniversalCommands()
 			local pvpEnabled = {}
 			
 			local globalPVPConn = nil
+			
+			local accessId = nil
+			if events:FindFirstChild("AccessId") then
+				if events.AcessId:IsA("RemoteFunction") then
+					accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
+						.."-"..self.LocalPlayer.UserId
+				elseif events.AcessId:IsA("RemoteEvent") then
+					events.AcessId:FireServer(self.LocalPlayer.UserId)
+					events.AcessId.OnClientEvent:Connect(function(arg1)
+						accessId = arg1
+					end)
+				end
+			end
+				
 
 			local weaponMod = {
 				camRecoilMod 	= {
@@ -5535,11 +5496,8 @@ function modules.UniversalCommands()
 				if character and self.fetchHum(character) then
 					local hum = self.fetchHum(character)
 					if getACSVersion() == "1.7.5" then
-						events.Damage:FireServer(hum, amount, 0, 0)
+						events.Damage:FireServer(hum, amount, 0, 0, accessId)
 					elseif getACSVersion() == "2.0.1" then
-						local accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
-							.."-"..self.LocalPlayer.UserId
-
 						if not acsWeapon then
 							for _, weapon in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
 								if weapon:IsA("BackpackItem") then
@@ -5574,6 +5532,9 @@ function modules.UniversalCommands()
 						end
 					end
 				end
+			end
+			local function explode(pos, hit, extraVector, material, config)
+				events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
 			end
 			local function pvpMode(player)
 				if getACSVersion() == "1.7.5" then
@@ -5682,7 +5643,7 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					for index, player in next, users do
-						events.Whizz:FireServer(player)
+						events.Whizz:FireServer(player, accessId)
 					end
 				end,
 			})
@@ -5804,8 +5765,7 @@ function modules.UniversalCommands()
 							local hrp = self.fetchHrp(player.Character)
 							if getACSVersion() == "1.7.5" then
 								if hrp then
-									
-									events.Hit:FireServer(hrp.Position, hrp, Vector3.new(0,0,0), "Dirt", {
+									explode(hrp.Position, hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 										ExplosiveHit = true,
 										ExPressure = causeTerrainDamage and 5000000 or 0,
 										ExpRadius = 100,
@@ -5828,9 +5788,6 @@ function modules.UniversalCommands()
 									end
 								end
 								if grenade then
-									local accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
-										.."-"..self.LocalPlayer.UserId
-									
 									events.Grenade:FireServer(grenade, grenadeData, hrp.CFrame, CFrame.new(0,0,0), Vector3.new(0,0,0), accessId)
 								else
 									self:Notify(self.Config.SYSTEM.NAME, `Please equip a ACS Grenade`, "ERROR", nil, 5)
@@ -5872,7 +5829,7 @@ function modules.UniversalCommands()
 										for i = 1, 20 do
 											for i = 0, heightSteps do
 												local y = i * verticalSpacing
-												events.Hit:FireServer(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+												explode(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 													ExplosiveHit = true,
 													ExPressure = causeTerrainDamage and 5000000 or 0,
 													ExpRadius = 100,
@@ -5893,7 +5850,7 @@ function modules.UniversalCommands()
 													local x = radius * math.cos(angle)
 													local z = radius * math.sin(angle)
 
-													events.Hit:FireServer(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+													explode(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 														ExplosiveHit = true,
 														ExPressure = causeTerrainDamage and 5000000 or 0,
 														ExpRadius = 100,
@@ -5915,7 +5872,7 @@ function modules.UniversalCommands()
 												local x = radius * math.cos(a)
 												local z = radius * math.sin(a)
 
-												events.Hit:FireServer(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y - 25, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+												explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y - 25, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 													ExplosiveHit = true,
 													ExPressure = causeTerrainDamage and 5000000 or 0,
 													ExpRadius = 100,
@@ -5935,7 +5892,7 @@ function modules.UniversalCommands()
 											local x = radius * math.cos(a)
 											local z = radius * math.sin(a)
 
-											events.Hit:FireServer(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+											explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 												ExplosiveHit = true,
 												ExPressure = causeTerrainDamage and 5000000 or 0,
 												ExpRadius = 65,
