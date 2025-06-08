@@ -7,7 +7,7 @@
  Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER 
 ]=]
 
--- Instances: 81 | Scripts: 1 | Modules: 1 | Tags: 0
+-- Instances: 135 | Scripts: 1 | Modules: 1 | Tags: 0
 local G2L = {};
 
 -- StarterGui.AttachmentMenu
@@ -15,6 +15,7 @@ G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:Wait
 G2L["1"]["IgnoreGuiInset"] = true;
 G2L["1"]["ScreenInsets"] = Enum.ScreenInsets.DeviceSafeInsets;
 G2L["1"]["Name"] = [[AttachmentMenu]];
+G2L["1"]["ResetOnSpawn"] = false;
 
 
 -- StarterGui.AttachmentMenu.Graphical
@@ -170,7 +171,7 @@ G2L["f"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
 G2L["f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["f"]["Name"] = [[Scroll]];
 G2L["f"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
-G2L["f"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["f"]["Size"] = UDim2.new(1, 0, 1, -50);
 G2L["f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["f"]["ScrollBarThickness"] = 2;
 G2L["f"]["BackgroundTransparency"] = 1;
@@ -187,697 +188,1324 @@ G2L["10"]["PaddingBottom"] = UDim.new(0, 20);
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.Scroll.UIGridLayout
 G2L["11"] = Instance.new("UIGridLayout", G2L["f"]);
 G2L["11"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
-G2L["11"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
 G2L["11"]["CellPadding"] = UDim2.new(0, 10, 0, 10);
 
 
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments
-G2L["12"] = Instance.new("Frame", G2L["d"]);
-G2L["12"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection
+G2L["12"] = Instance.new("Frame", G2L["e"]);
 G2L["12"]["BorderSizePixel"] = 0;
 G2L["12"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["12"]["AnchorPoint"] = Vector2.new(0.5, 1);
-G2L["12"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["12"]["Position"] = UDim2.new(0.5, 0, 1, 0);
+G2L["12"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["12"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["12"]["Position"] = UDim2.new(0, 0, 1, 0);
 G2L["12"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["12"]["Name"] = [[Attachments]];
+G2L["12"]["Name"] = [[ModSelection]];
 G2L["12"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu
-G2L["13"] = Instance.new("Frame", G2L["12"]);
-G2L["13"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection.Attachments
+G2L["13"] = Instance.new("TextButton", G2L["12"]);
+G2L["13"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 G2L["13"]["BorderSizePixel"] = 0;
+G2L["13"]["TextSize"] = 18;
+G2L["13"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
 G2L["13"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["13"]["Size"] = UDim2.new(0, 150, 1, 0);
-G2L["13"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["13"]["Name"] = [[AttachmentMenu]];
+G2L["13"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
 G2L["13"]["BackgroundTransparency"] = 0.5;
+G2L["13"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["13"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["13"]["Text"] = [[Attachments]];
+G2L["13"]["Name"] = [[Attachments]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection.Attachments.UIPadding
+G2L["14"] = Instance.new("UIPadding", G2L["13"]);
+G2L["14"]["PaddingTop"] = UDim.new(0, 20);
+G2L["14"]["PaddingRight"] = UDim.new(0, 20);
+G2L["14"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["14"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection.Attachments.Underline
+G2L["15"] = Instance.new("Frame", G2L["13"]);
+G2L["15"]["BorderSizePixel"] = 0;
+G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["15"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["15"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["15"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["15"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["15"]["Name"] = [[Underline]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection.UIListLayout
+G2L["16"] = Instance.new("UIListLayout", G2L["12"]);
+G2L["16"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+G2L["16"]["Padding"] = UDim.new(0, 10);
+G2L["16"]["VerticalAlignment"] = Enum.VerticalAlignment.Center;
+G2L["16"]["FillDirection"] = Enum.FillDirection.Horizontal;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection.Modifications
+G2L["17"] = Instance.new("TextButton", G2L["12"]);
+G2L["17"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["17"]["BorderSizePixel"] = 0;
+G2L["17"]["TextSize"] = 18;
+G2L["17"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["17"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["17"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["17"]["BackgroundTransparency"] = 0.5;
+G2L["17"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["17"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["17"]["Text"] = [[Modifications]];
+G2L["17"]["Name"] = [[Modifications]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection.Modifications.UIPadding
+G2L["18"] = Instance.new("UIPadding", G2L["17"]);
+G2L["18"]["PaddingTop"] = UDim.new(0, 20);
+G2L["18"]["PaddingRight"] = UDim.new(0, 20);
+G2L["18"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["18"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.ModSelection.Modifications.Underline
+G2L["19"] = Instance.new("Frame", G2L["17"]);
+G2L["19"]["BorderSizePixel"] = 0;
+G2L["19"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["19"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["19"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["19"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["19"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["19"]["Name"] = [[Underline]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments
+G2L["1a"] = Instance.new("Frame", G2L["d"]);
+G2L["1a"]["Visible"] = false;
+G2L["1a"]["BorderSizePixel"] = 0;
+G2L["1a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["1a"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["1a"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["1a"]["Position"] = UDim2.new(0.5, 0, 1, 0);
+G2L["1a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1a"]["Name"] = [[Attachments]];
+G2L["1a"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu
+G2L["1b"] = Instance.new("Frame", G2L["1a"]);
+G2L["1b"]["Visible"] = false;
+G2L["1b"]["BorderSizePixel"] = 0;
+G2L["1b"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1b"]["Size"] = UDim2.new(0, 150, 1, 0);
+G2L["1b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1b"]["Name"] = [[AttachmentMenu]];
+G2L["1b"]["BackgroundTransparency"] = 0.5;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.UICorner
-G2L["14"] = Instance.new("UICorner", G2L["13"]);
-G2L["14"]["CornerRadius"] = UDim.new(0, 15);
+G2L["1c"] = Instance.new("UICorner", G2L["1b"]);
+G2L["1c"]["CornerRadius"] = UDim.new(0, 15);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.Title
-G2L["15"] = Instance.new("TextLabel", G2L["13"]);
-G2L["15"]["ZIndex"] = 2;
-G2L["15"]["BorderSizePixel"] = 0;
-G2L["15"]["TextSize"] = 20;
-G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["15"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["15"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["15"]["BackgroundTransparency"] = 1;
-G2L["15"]["Size"] = UDim2.new(1, 0, 0, 50);
-G2L["15"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["15"]["Text"] = [[Attachments]];
-G2L["15"]["Name"] = [[Title]];
+G2L["1d"] = Instance.new("TextLabel", G2L["1b"]);
+G2L["1d"]["ZIndex"] = 2;
+G2L["1d"]["BorderSizePixel"] = 0;
+G2L["1d"]["TextSize"] = 20;
+G2L["1d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["1d"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["1d"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["1d"]["BackgroundTransparency"] = 1;
+G2L["1d"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["1d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1d"]["Text"] = [[Attachments]];
+G2L["1d"]["Name"] = [[Title]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.UIStroke
-G2L["16"] = Instance.new("UIStroke", G2L["13"]);
-G2L["16"]["Transparency"] = 0.5;
-G2L["16"]["Thickness"] = 2;
-G2L["16"]["Color"] = Color3.fromRGB(255, 255, 255);
+G2L["1e"] = Instance.new("UIStroke", G2L["1b"]);
+G2L["1e"]["Transparency"] = 0.5;
+G2L["1e"]["Thickness"] = 2;
+G2L["1e"]["Color"] = Color3.fromRGB(255, 255, 255);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.UIStroke.UIGradient
-G2L["17"] = Instance.new("UIGradient", G2L["16"]);
-G2L["17"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
+G2L["1f"] = Instance.new("UIGradient", G2L["1e"]);
+G2L["1f"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.Scroll
-G2L["18"] = Instance.new("ScrollingFrame", G2L["13"]);
-G2L["18"]["Active"] = true;
-G2L["18"]["BorderSizePixel"] = 0;
-G2L["18"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
-G2L["18"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["18"]["Name"] = [[Scroll]];
-G2L["18"]["AnchorPoint"] = Vector2.new(0, 1);
-G2L["18"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
-G2L["18"]["Size"] = UDim2.new(1, 0, 1, -50);
-G2L["18"]["Position"] = UDim2.new(0, 0, 1, 0);
-G2L["18"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["18"]["ScrollBarThickness"] = 2;
-G2L["18"]["BackgroundTransparency"] = 1;
+G2L["20"] = Instance.new("ScrollingFrame", G2L["1b"]);
+G2L["20"]["Active"] = true;
+G2L["20"]["BorderSizePixel"] = 0;
+G2L["20"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+G2L["20"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["20"]["Name"] = [[Scroll]];
+G2L["20"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["20"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+G2L["20"]["Size"] = UDim2.new(1, 0, 1, -50);
+G2L["20"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["20"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["20"]["ScrollBarThickness"] = 2;
+G2L["20"]["BackgroundTransparency"] = 1;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.Scroll.UIListLayout
-G2L["19"] = Instance.new("UIListLayout", G2L["18"]);
-G2L["19"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
-G2L["19"]["Padding"] = UDim.new(0, 10);
-G2L["19"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+G2L["21"] = Instance.new("UIListLayout", G2L["20"]);
+G2L["21"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+G2L["21"]["Padding"] = UDim.new(0, 10);
+G2L["21"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo
-G2L["1a"] = Instance.new("Frame", G2L["12"]);
-G2L["1a"]["BorderSizePixel"] = 0;
-G2L["1a"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1a"]["AnchorPoint"] = Vector2.new(1, 0);
-G2L["1a"]["Size"] = UDim2.new(0, 150, 1, 0);
-G2L["1a"]["Position"] = UDim2.new(1, 0, 0, 0);
-G2L["1a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1a"]["Name"] = [[GunInfo]];
-G2L["1a"]["BackgroundTransparency"] = 0.5;
+G2L["22"] = Instance.new("Frame", G2L["1a"]);
+G2L["22"]["BorderSizePixel"] = 0;
+G2L["22"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["22"]["AnchorPoint"] = Vector2.new(1, 0);
+G2L["22"]["Size"] = UDim2.new(0, 150, 1, 0);
+G2L["22"]["Position"] = UDim2.new(1, 0, 0, 0);
+G2L["22"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["22"]["Name"] = [[GunInfo]];
+G2L["22"]["BackgroundTransparency"] = 0.5;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.UICorner
-G2L["1b"] = Instance.new("UICorner", G2L["1a"]);
-G2L["1b"]["CornerRadius"] = UDim.new(0, 15);
+G2L["23"] = Instance.new("UICorner", G2L["22"]);
+G2L["23"]["CornerRadius"] = UDim.new(0, 15);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Title
-G2L["1c"] = Instance.new("TextLabel", G2L["1a"]);
-G2L["1c"]["ZIndex"] = 2;
-G2L["1c"]["BorderSizePixel"] = 0;
-G2L["1c"]["TextSize"] = 20;
-G2L["1c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["1c"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1c"]["BackgroundTransparency"] = 1;
-G2L["1c"]["Size"] = UDim2.new(1, 0, 0, 50);
-G2L["1c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1c"]["Text"] = [[Gun Info]];
-G2L["1c"]["Name"] = [[Title]];
+G2L["24"] = Instance.new("TextLabel", G2L["22"]);
+G2L["24"]["ZIndex"] = 2;
+G2L["24"]["BorderSizePixel"] = 0;
+G2L["24"]["TextSize"] = 20;
+G2L["24"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["24"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["24"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["24"]["BackgroundTransparency"] = 1;
+G2L["24"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["24"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["24"]["Text"] = [[Gun Info]];
+G2L["24"]["Name"] = [[Title]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.UIStroke
-G2L["1d"] = Instance.new("UIStroke", G2L["1a"]);
-G2L["1d"]["Transparency"] = 0.5;
-G2L["1d"]["Thickness"] = 2;
-G2L["1d"]["Color"] = Color3.fromRGB(255, 255, 255);
+G2L["25"] = Instance.new("UIStroke", G2L["22"]);
+G2L["25"]["Transparency"] = 0.5;
+G2L["25"]["Thickness"] = 2;
+G2L["25"]["Color"] = Color3.fromRGB(255, 255, 255);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.UIStroke.UIGradient
-G2L["1e"] = Instance.new("UIGradient", G2L["1d"]);
-G2L["1e"]["Rotation"] = 180;
-G2L["1e"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
+G2L["26"] = Instance.new("UIGradient", G2L["25"]);
+G2L["26"]["Rotation"] = 180;
+G2L["26"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll
-G2L["1f"] = Instance.new("ScrollingFrame", G2L["1a"]);
-G2L["1f"]["Active"] = true;
-G2L["1f"]["BorderSizePixel"] = 0;
-G2L["1f"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
-G2L["1f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1f"]["Name"] = [[Scroll]];
-G2L["1f"]["AnchorPoint"] = Vector2.new(0, 1);
-G2L["1f"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
-G2L["1f"]["Size"] = UDim2.new(1, 0, 1, -50);
-G2L["1f"]["Position"] = UDim2.new(0, 0, 1, 0);
-G2L["1f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1f"]["ScrollBarThickness"] = 2;
-G2L["1f"]["BackgroundTransparency"] = 1;
+G2L["27"] = Instance.new("ScrollingFrame", G2L["22"]);
+G2L["27"]["Active"] = true;
+G2L["27"]["BorderSizePixel"] = 0;
+G2L["27"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+G2L["27"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["27"]["Name"] = [[Scroll]];
+G2L["27"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["27"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+G2L["27"]["Size"] = UDim2.new(1, 0, 1, -50);
+G2L["27"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["27"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["27"]["ScrollBarThickness"] = 2;
+G2L["27"]["BackgroundTransparency"] = 1;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Optic
-G2L["20"] = Instance.new("TextButton", G2L["1f"]);
-G2L["20"]["RichText"] = true;
-G2L["20"]["BorderSizePixel"] = 0;
-G2L["20"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["20"]["TextSize"] = 18;
-G2L["20"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["20"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["20"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["20"]["BackgroundTransparency"] = 1;
-G2L["20"]["Size"] = UDim2.new(1, 0, 0, 40);
-G2L["20"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["20"]["Text"] = [[Optic: None]];
-G2L["20"]["Name"] = [[Optic]];
+G2L["28"] = Instance.new("TextButton", G2L["27"]);
+G2L["28"]["RichText"] = true;
+G2L["28"]["BorderSizePixel"] = 0;
+G2L["28"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["28"]["TextSize"] = 18;
+G2L["28"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["28"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["28"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["28"]["BackgroundTransparency"] = 1;
+G2L["28"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["28"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["28"]["Text"] = [[Optic: None]];
+G2L["28"]["Name"] = [[Optic]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Optic.UIPadding
-G2L["21"] = Instance.new("UIPadding", G2L["20"]);
-G2L["21"]["PaddingTop"] = UDim.new(0, 20);
-G2L["21"]["PaddingRight"] = UDim.new(0, 10);
-G2L["21"]["PaddingLeft"] = UDim.new(0, 10);
-G2L["21"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["29"] = Instance.new("UIPadding", G2L["28"]);
+G2L["29"]["PaddingTop"] = UDim.new(0, 20);
+G2L["29"]["PaddingRight"] = UDim.new(0, 10);
+G2L["29"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["29"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Barrel
-G2L["22"] = Instance.new("TextButton", G2L["1f"]);
-G2L["22"]["RichText"] = true;
-G2L["22"]["BorderSizePixel"] = 0;
-G2L["22"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["22"]["TextSize"] = 18;
-G2L["22"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["22"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["22"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["22"]["BackgroundTransparency"] = 1;
-G2L["22"]["Size"] = UDim2.new(1, 0, 0, 40);
-G2L["22"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["22"]["Text"] = [[Barrel: None]];
-G2L["22"]["Name"] = [[Barrel]];
-G2L["22"]["Position"] = UDim2.new(0, 0, 0, 40);
+G2L["2a"] = Instance.new("TextButton", G2L["27"]);
+G2L["2a"]["RichText"] = true;
+G2L["2a"]["BorderSizePixel"] = 0;
+G2L["2a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["2a"]["TextSize"] = 18;
+G2L["2a"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["2a"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2a"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["2a"]["BackgroundTransparency"] = 1;
+G2L["2a"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["2a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2a"]["Text"] = [[Barrel: None]];
+G2L["2a"]["Name"] = [[Barrel]];
+G2L["2a"]["Position"] = UDim2.new(0, 0, 0, 40);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Barrel.UIPadding
-G2L["23"] = Instance.new("UIPadding", G2L["22"]);
-G2L["23"]["PaddingTop"] = UDim.new(0, 20);
-G2L["23"]["PaddingRight"] = UDim.new(0, 10);
-G2L["23"]["PaddingLeft"] = UDim.new(0, 10);
-G2L["23"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["2b"] = Instance.new("UIPadding", G2L["2a"]);
+G2L["2b"]["PaddingTop"] = UDim.new(0, 20);
+G2L["2b"]["PaddingRight"] = UDim.new(0, 10);
+G2L["2b"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["2b"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.UnderBarrel
-G2L["24"] = Instance.new("TextButton", G2L["1f"]);
-G2L["24"]["RichText"] = true;
-G2L["24"]["BorderSizePixel"] = 0;
-G2L["24"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["24"]["TextSize"] = 18;
-G2L["24"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["24"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["24"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["24"]["BackgroundTransparency"] = 1;
-G2L["24"]["Size"] = UDim2.new(1, 0, 0, 40);
-G2L["24"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["24"]["Text"] = [[UnderBarrel: None]];
-G2L["24"]["Name"] = [[UnderBarrel]];
-G2L["24"]["Position"] = UDim2.new(0, 0, 0, 80);
+G2L["2c"] = Instance.new("TextButton", G2L["27"]);
+G2L["2c"]["RichText"] = true;
+G2L["2c"]["BorderSizePixel"] = 0;
+G2L["2c"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["2c"]["TextSize"] = 18;
+G2L["2c"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["2c"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["2c"]["BackgroundTransparency"] = 1;
+G2L["2c"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["2c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2c"]["Text"] = [[UnderBarrel: None]];
+G2L["2c"]["Name"] = [[UnderBarrel]];
+G2L["2c"]["Position"] = UDim2.new(0, 0, 0, 80);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.UnderBarrel.UIPadding
-G2L["25"] = Instance.new("UIPadding", G2L["24"]);
-G2L["25"]["PaddingTop"] = UDim.new(0, 20);
-G2L["25"]["PaddingRight"] = UDim.new(0, 10);
-G2L["25"]["PaddingLeft"] = UDim.new(0, 10);
-G2L["25"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["2d"] = Instance.new("UIPadding", G2L["2c"]);
+G2L["2d"]["PaddingTop"] = UDim.new(0, 20);
+G2L["2d"]["PaddingRight"] = UDim.new(0, 10);
+G2L["2d"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["2d"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Other
-G2L["26"] = Instance.new("TextButton", G2L["1f"]);
-G2L["26"]["RichText"] = true;
-G2L["26"]["BorderSizePixel"] = 0;
-G2L["26"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["26"]["TextSize"] = 18;
-G2L["26"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["26"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["26"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["26"]["BackgroundTransparency"] = 1;
-G2L["26"]["Size"] = UDim2.new(1, 0, 0, 40);
-G2L["26"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["26"]["Text"] = [[Other: None]];
-G2L["26"]["Name"] = [[Other]];
-G2L["26"]["Position"] = UDim2.new(0, 0, 0, 120);
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Other.UIPadding
-G2L["27"] = Instance.new("UIPadding", G2L["26"]);
-G2L["27"]["PaddingTop"] = UDim.new(0, 20);
-G2L["27"]["PaddingRight"] = UDim.new(0, 10);
-G2L["27"]["PaddingLeft"] = UDim.new(0, 10);
-G2L["27"]["PaddingBottom"] = UDim.new(0, 20);
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Underline
-G2L["28"] = Instance.new("Frame", G2L["1f"]);
-G2L["28"]["BorderSizePixel"] = 0;
-G2L["28"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
-G2L["28"]["Size"] = UDim2.new(1, 0, 0, 1);
-G2L["28"]["Position"] = UDim2.new(0, 0, 0, 170);
-G2L["28"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["28"]["Name"] = [[Underline]];
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity
-G2L["29"] = Instance.new("TextButton", G2L["1f"]);
-G2L["29"]["RichText"] = true;
-G2L["29"]["BorderSizePixel"] = 0;
-G2L["29"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["29"]["TextSize"] = 18;
-G2L["29"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["29"]["TextYAlignment"] = Enum.TextYAlignment.Top;
-G2L["29"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["29"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["29"]["BackgroundTransparency"] = 1;
-G2L["29"]["Size"] = UDim2.new(1, 0, 0, 40);
-G2L["29"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["29"]["Text"] = [[Velocity: 1000]];
-G2L["29"]["Name"] = [[MuzzleVelocity]];
-G2L["29"]["Position"] = UDim2.new(0, 0, 0, 180);
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.UIPadding
-G2L["2a"] = Instance.new("UIPadding", G2L["29"]);
-G2L["2a"]["PaddingTop"] = UDim.new(0, 5);
-G2L["2a"]["PaddingRight"] = UDim.new(0, 10);
-G2L["2a"]["PaddingLeft"] = UDim.new(0, 10);
-G2L["2a"]["PaddingBottom"] = UDim.new(0, 20);
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar
-G2L["2b"] = Instance.new("Frame", G2L["29"]);
-G2L["2b"]["BorderSizePixel"] = 0;
-G2L["2b"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
-G2L["2b"]["Size"] = UDim2.new(1, 0, 0, 2);
-G2L["2b"]["Position"] = UDim2.new(0, 0, 1, 10);
-G2L["2b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["2b"]["Name"] = [[FillBar]];
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill1
-G2L["2c"] = Instance.new("Frame", G2L["2b"]);
-G2L["2c"]["ZIndex"] = 3;
-G2L["2c"]["BorderSizePixel"] = 0;
-G2L["2c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["2c"]["Size"] = UDim2.new(0, 0, 1, 0);
-G2L["2c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["2c"]["Name"] = [[Fill1]];
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill2
-G2L["2d"] = Instance.new("Frame", G2L["2b"]);
-G2L["2d"]["ZIndex"] = 2;
-G2L["2d"]["BorderSizePixel"] = 0;
-G2L["2d"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["2d"]["Size"] = UDim2.new(0, 0, 1, 0);
-G2L["2d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["2d"]["Name"] = [[Fill2]];
-
-
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage
-G2L["2e"] = Instance.new("TextButton", G2L["1f"]);
+G2L["2e"] = Instance.new("TextButton", G2L["27"]);
 G2L["2e"]["RichText"] = true;
 G2L["2e"]["BorderSizePixel"] = 0;
 G2L["2e"]["TextXAlignment"] = Enum.TextXAlignment.Left;
 G2L["2e"]["TextSize"] = 18;
 G2L["2e"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["2e"]["TextYAlignment"] = Enum.TextYAlignment.Top;
 G2L["2e"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["2e"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
 G2L["2e"]["BackgroundTransparency"] = 1;
 G2L["2e"]["Size"] = UDim2.new(1, 0, 0, 40);
 G2L["2e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["2e"]["Text"] = [[Damage: 80 - 100]];
-G2L["2e"]["Name"] = [[Damage]];
-G2L["2e"]["Position"] = UDim2.new(0, 0, 0, 220);
+G2L["2e"]["Text"] = [[Other: None]];
+G2L["2e"]["Name"] = [[Other]];
+G2L["2e"]["Position"] = UDim2.new(0, 0, 0, 120);
 
 
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.UIPadding
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Other.UIPadding
 G2L["2f"] = Instance.new("UIPadding", G2L["2e"]);
-G2L["2f"]["PaddingTop"] = UDim.new(0, 5);
+G2L["2f"]["PaddingTop"] = UDim.new(0, 20);
 G2L["2f"]["PaddingRight"] = UDim.new(0, 10);
 G2L["2f"]["PaddingLeft"] = UDim.new(0, 10);
 G2L["2f"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.FillBar
-G2L["30"] = Instance.new("Frame", G2L["2e"]);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Underline
+G2L["30"] = Instance.new("Frame", G2L["27"]);
 G2L["30"]["BorderSizePixel"] = 0;
 G2L["30"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
-G2L["30"]["Size"] = UDim2.new(1, 0, 0, 2);
-G2L["30"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["30"]["Size"] = UDim2.new(1, 0, 0, 1);
+G2L["30"]["Position"] = UDim2.new(0, 0, 0, 170);
 G2L["30"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["30"]["Name"] = [[FillBar]];
+G2L["30"]["Name"] = [[Underline]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity
+G2L["31"] = Instance.new("TextButton", G2L["27"]);
+G2L["31"]["RichText"] = true;
+G2L["31"]["BorderSizePixel"] = 0;
+G2L["31"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["31"]["TextSize"] = 18;
+G2L["31"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["31"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["31"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["31"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["31"]["BackgroundTransparency"] = 1;
+G2L["31"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["31"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["31"]["Text"] = [[Velocity: 1000]];
+G2L["31"]["Name"] = [[MuzzleVelocity]];
+G2L["31"]["Position"] = UDim2.new(0, 0, 0, 180);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.UIPadding
+G2L["32"] = Instance.new("UIPadding", G2L["31"]);
+G2L["32"]["PaddingTop"] = UDim.new(0, 5);
+G2L["32"]["PaddingRight"] = UDim.new(0, 10);
+G2L["32"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["32"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar
+G2L["33"] = Instance.new("Frame", G2L["31"]);
+G2L["33"]["BorderSizePixel"] = 0;
+G2L["33"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["33"]["Size"] = UDim2.new(1, 0, 0, 2);
+G2L["33"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["33"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["33"]["Name"] = [[FillBar]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill1
+G2L["34"] = Instance.new("Frame", G2L["33"]);
+G2L["34"]["ZIndex"] = 3;
+G2L["34"]["BorderSizePixel"] = 0;
+G2L["34"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["34"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["34"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["34"]["Name"] = [[Fill1]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill2
+G2L["35"] = Instance.new("Frame", G2L["33"]);
+G2L["35"]["ZIndex"] = 2;
+G2L["35"]["BorderSizePixel"] = 0;
+G2L["35"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["35"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["35"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["35"]["Name"] = [[Fill2]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage
+G2L["36"] = Instance.new("TextButton", G2L["27"]);
+G2L["36"]["RichText"] = true;
+G2L["36"]["BorderSizePixel"] = 0;
+G2L["36"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["36"]["TextSize"] = 18;
+G2L["36"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["36"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["36"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["36"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["36"]["BackgroundTransparency"] = 1;
+G2L["36"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["36"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["36"]["Text"] = [[Damage: 80 - 100]];
+G2L["36"]["Name"] = [[Damage]];
+G2L["36"]["Position"] = UDim2.new(0, 0, 0, 220);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.UIPadding
+G2L["37"] = Instance.new("UIPadding", G2L["36"]);
+G2L["37"]["PaddingTop"] = UDim.new(0, 5);
+G2L["37"]["PaddingRight"] = UDim.new(0, 10);
+G2L["37"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["37"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.FillBar
+G2L["38"] = Instance.new("Frame", G2L["36"]);
+G2L["38"]["BorderSizePixel"] = 0;
+G2L["38"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["38"]["Size"] = UDim2.new(1, 0, 0, 2);
+G2L["38"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["38"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["38"]["Name"] = [[FillBar]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.FillBar.Fill1
-G2L["31"] = Instance.new("Frame", G2L["30"]);
-G2L["31"]["ZIndex"] = 3;
-G2L["31"]["BorderSizePixel"] = 0;
-G2L["31"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["31"]["Size"] = UDim2.new(0, 0, 1, 0);
-G2L["31"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["31"]["Name"] = [[Fill1]];
+G2L["39"] = Instance.new("Frame", G2L["38"]);
+G2L["39"]["ZIndex"] = 3;
+G2L["39"]["BorderSizePixel"] = 0;
+G2L["39"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["39"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["39"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["39"]["Name"] = [[Fill1]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.FillBar.Fill2
-G2L["32"] = Instance.new("Frame", G2L["30"]);
-G2L["32"]["ZIndex"] = 2;
-G2L["32"]["BorderSizePixel"] = 0;
-G2L["32"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["32"]["Size"] = UDim2.new(0, 0, 1, 0);
-G2L["32"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["32"]["Name"] = [[Fill2]];
+G2L["3a"] = Instance.new("Frame", G2L["38"]);
+G2L["3a"]["ZIndex"] = 2;
+G2L["3a"]["BorderSizePixel"] = 0;
+G2L["3a"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["3a"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["3a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3a"]["Name"] = [[Fill2]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center
-G2L["33"] = Instance.new("Frame", G2L["12"]);
-G2L["33"]["BorderSizePixel"] = 0;
-G2L["33"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["33"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
-G2L["33"]["Size"] = UDim2.new(0.55, 0, 1, 0);
-G2L["33"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
-G2L["33"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["33"]["Name"] = [[Center]];
-G2L["33"]["BackgroundTransparency"] = 1;
+G2L["3b"] = Instance.new("Frame", G2L["1a"]);
+G2L["3b"]["BorderSizePixel"] = 0;
+G2L["3b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3b"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+G2L["3b"]["Size"] = UDim2.new(0.55, 0, 1, 0);
+G2L["3b"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+G2L["3b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3b"]["Name"] = [[Center]];
+G2L["3b"]["BackgroundTransparency"] = 1;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.GunName
-G2L["34"] = Instance.new("TextLabel", G2L["33"]);
-G2L["34"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
-G2L["34"]["ZIndex"] = 2;
-G2L["34"]["BorderSizePixel"] = 0;
-G2L["34"]["TextSize"] = 30;
-G2L["34"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["34"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["34"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["34"]["BackgroundTransparency"] = 1;
-G2L["34"]["Size"] = UDim2.new(1, 0, 0, 50);
-G2L["34"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["34"]["Text"] = [[Sniper Rifle]];
-G2L["34"]["Name"] = [[GunName]];
+G2L["3c"] = Instance.new("TextLabel", G2L["3b"]);
+G2L["3c"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["3c"]["ZIndex"] = 2;
+G2L["3c"]["BorderSizePixel"] = 0;
+G2L["3c"]["TextSize"] = 30;
+G2L["3c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["3c"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3c"]["BackgroundTransparency"] = 1;
+G2L["3c"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["3c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3c"]["Text"] = [[Sniper Rifle]];
+G2L["3c"]["Name"] = [[GunName]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.ViewportFrame
-G2L["35"] = Instance.new("ViewportFrame", G2L["33"]);
-G2L["35"]["BorderSizePixel"] = 0;
-G2L["35"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["35"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["35"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["35"]["BackgroundTransparency"] = 1;
+G2L["3d"] = Instance.new("ViewportFrame", G2L["3b"]);
+G2L["3d"]["BorderSizePixel"] = 0;
+G2L["3d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3d"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["3d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3d"]["BackgroundTransparency"] = 1;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes
-G2L["36"] = Instance.new("Frame", G2L["33"]);
-G2L["36"]["BorderSizePixel"] = 0;
-G2L["36"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["36"]["AnchorPoint"] = Vector2.new(0, 1);
-G2L["36"]["Size"] = UDim2.new(1, 0, 0, 50);
-G2L["36"]["Position"] = UDim2.new(0, 0, 1, 0);
-G2L["36"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["36"]["Name"] = [[AttachmentTypes]];
-G2L["36"]["BackgroundTransparency"] = 1;
+G2L["3e"] = Instance.new("Frame", G2L["3b"]);
+G2L["3e"]["BorderSizePixel"] = 0;
+G2L["3e"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3e"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["3e"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["3e"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["3e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3e"]["Name"] = [[AttachmentTypes]];
+G2L["3e"]["BackgroundTransparency"] = 1;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UIListLayout
-G2L["37"] = Instance.new("UIListLayout", G2L["36"]);
-G2L["37"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
-G2L["37"]["Padding"] = UDim.new(0, 10);
-G2L["37"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
-G2L["37"]["FillDirection"] = Enum.FillDirection.Horizontal;
+G2L["3f"] = Instance.new("UIListLayout", G2L["3e"]);
+G2L["3f"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+G2L["3f"]["Padding"] = UDim.new(0, 10);
+G2L["3f"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+G2L["3f"]["FillDirection"] = Enum.FillDirection.Horizontal;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Barrel
-G2L["38"] = Instance.new("TextButton", G2L["36"]);
-G2L["38"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
-G2L["38"]["BorderSizePixel"] = 0;
-G2L["38"]["TextSize"] = 18;
-G2L["38"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["38"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["38"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["38"]["BackgroundTransparency"] = 0.5;
-G2L["38"]["Size"] = UDim2.new(0.25, 0, 0, 40);
-G2L["38"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["38"]["Text"] = [[Barrel]];
-G2L["38"]["Name"] = [[Barrel]];
-G2L["38"]["Visible"] = false;
+G2L["40"] = Instance.new("TextButton", G2L["3e"]);
+G2L["40"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["40"]["BorderSizePixel"] = 0;
+G2L["40"]["TextSize"] = 18;
+G2L["40"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["40"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["40"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["40"]["BackgroundTransparency"] = 0.5;
+G2L["40"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["40"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["40"]["Text"] = [[Barrel]];
+G2L["40"]["Name"] = [[Barrel]];
+G2L["40"]["Visible"] = false;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Barrel.UIPadding
-G2L["39"] = Instance.new("UIPadding", G2L["38"]);
-G2L["39"]["PaddingTop"] = UDim.new(0, 20);
-G2L["39"]["PaddingRight"] = UDim.new(0, 20);
-G2L["39"]["PaddingLeft"] = UDim.new(0, 20);
-G2L["39"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["41"] = Instance.new("UIPadding", G2L["40"]);
+G2L["41"]["PaddingTop"] = UDim.new(0, 20);
+G2L["41"]["PaddingRight"] = UDim.new(0, 20);
+G2L["41"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["41"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Barrel.Underline
-G2L["3a"] = Instance.new("Frame", G2L["38"]);
-G2L["3a"]["BorderSizePixel"] = 0;
-G2L["3a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["3a"]["AnchorPoint"] = Vector2.new(0.5, 0);
-G2L["3a"]["Size"] = UDim2.new(1, 40, 0, 1);
-G2L["3a"]["Position"] = UDim2.new(0.5, 0, 0, 20);
-G2L["3a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["3a"]["Name"] = [[Underline]];
+G2L["42"] = Instance.new("Frame", G2L["40"]);
+G2L["42"]["BorderSizePixel"] = 0;
+G2L["42"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["42"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["42"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["42"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["42"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["42"]["Name"] = [[Underline]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UnderBarrel
-G2L["3b"] = Instance.new("TextButton", G2L["36"]);
-G2L["3b"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
-G2L["3b"]["BorderSizePixel"] = 0;
-G2L["3b"]["TextSize"] = 18;
-G2L["3b"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["3b"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["3b"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["3b"]["BackgroundTransparency"] = 0.5;
-G2L["3b"]["Size"] = UDim2.new(0.25, 0, 0, 40);
-G2L["3b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["3b"]["Text"] = [[UnderBarrel]];
-G2L["3b"]["Name"] = [[UnderBarrel]];
-G2L["3b"]["Visible"] = false;
+G2L["43"] = Instance.new("TextButton", G2L["3e"]);
+G2L["43"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["43"]["BorderSizePixel"] = 0;
+G2L["43"]["TextSize"] = 18;
+G2L["43"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["43"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["43"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["43"]["BackgroundTransparency"] = 0.5;
+G2L["43"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["43"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["43"]["Text"] = [[UnderBarrel]];
+G2L["43"]["Name"] = [[UnderBarrel]];
+G2L["43"]["Visible"] = false;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UnderBarrel.UIPadding
-G2L["3c"] = Instance.new("UIPadding", G2L["3b"]);
-G2L["3c"]["PaddingTop"] = UDim.new(0, 20);
-G2L["3c"]["PaddingRight"] = UDim.new(0, 20);
-G2L["3c"]["PaddingLeft"] = UDim.new(0, 20);
-G2L["3c"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["44"] = Instance.new("UIPadding", G2L["43"]);
+G2L["44"]["PaddingTop"] = UDim.new(0, 20);
+G2L["44"]["PaddingRight"] = UDim.new(0, 20);
+G2L["44"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["44"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UnderBarrel.Underline
-G2L["3d"] = Instance.new("Frame", G2L["3b"]);
-G2L["3d"]["BorderSizePixel"] = 0;
-G2L["3d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["3d"]["AnchorPoint"] = Vector2.new(0.5, 0);
-G2L["3d"]["Size"] = UDim2.new(1, 40, 0, 1);
-G2L["3d"]["Position"] = UDim2.new(0.5, 0, 0, 20);
-G2L["3d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["3d"]["Name"] = [[Underline]];
+G2L["45"] = Instance.new("Frame", G2L["43"]);
+G2L["45"]["BorderSizePixel"] = 0;
+G2L["45"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["45"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["45"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["45"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["45"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["45"]["Name"] = [[Underline]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Sight
-G2L["3e"] = Instance.new("TextButton", G2L["36"]);
-G2L["3e"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
-G2L["3e"]["BorderSizePixel"] = 0;
-G2L["3e"]["TextSize"] = 18;
-G2L["3e"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["3e"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["3e"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["3e"]["BackgroundTransparency"] = 0.5;
-G2L["3e"]["Size"] = UDim2.new(0.25, 0, 0, 40);
-G2L["3e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["3e"]["Text"] = [[Sight]];
-G2L["3e"]["Name"] = [[Sight]];
-G2L["3e"]["Visible"] = false;
+G2L["46"] = Instance.new("TextButton", G2L["3e"]);
+G2L["46"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["46"]["BorderSizePixel"] = 0;
+G2L["46"]["TextSize"] = 18;
+G2L["46"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["46"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["46"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["46"]["BackgroundTransparency"] = 0.5;
+G2L["46"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["46"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["46"]["Text"] = [[Sight]];
+G2L["46"]["Name"] = [[Sight]];
+G2L["46"]["Visible"] = false;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Sight.UIPadding
-G2L["3f"] = Instance.new("UIPadding", G2L["3e"]);
-G2L["3f"]["PaddingTop"] = UDim.new(0, 20);
-G2L["3f"]["PaddingRight"] = UDim.new(0, 20);
-G2L["3f"]["PaddingLeft"] = UDim.new(0, 20);
-G2L["3f"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["47"] = Instance.new("UIPadding", G2L["46"]);
+G2L["47"]["PaddingTop"] = UDim.new(0, 20);
+G2L["47"]["PaddingRight"] = UDim.new(0, 20);
+G2L["47"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["47"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Sight.Underline
-G2L["40"] = Instance.new("Frame", G2L["3e"]);
-G2L["40"]["BorderSizePixel"] = 0;
-G2L["40"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["40"]["AnchorPoint"] = Vector2.new(0.5, 0);
-G2L["40"]["Size"] = UDim2.new(1, 40, 0, 1);
-G2L["40"]["Position"] = UDim2.new(0.5, 0, 0, 20);
-G2L["40"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["40"]["Name"] = [[Underline]];
+G2L["48"] = Instance.new("Frame", G2L["46"]);
+G2L["48"]["BorderSizePixel"] = 0;
+G2L["48"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["48"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["48"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["48"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["48"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["48"]["Name"] = [[Underline]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Other
-G2L["41"] = Instance.new("TextButton", G2L["36"]);
-G2L["41"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
-G2L["41"]["BorderSizePixel"] = 0;
-G2L["41"]["TextSize"] = 18;
-G2L["41"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["41"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["41"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["41"]["BackgroundTransparency"] = 0.5;
-G2L["41"]["Size"] = UDim2.new(0.25, 0, 0, 40);
-G2L["41"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["41"]["Text"] = [[Other]];
-G2L["41"]["Name"] = [[Other]];
-G2L["41"]["Visible"] = false;
+G2L["49"] = Instance.new("TextButton", G2L["3e"]);
+G2L["49"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["49"]["BorderSizePixel"] = 0;
+G2L["49"]["TextSize"] = 18;
+G2L["49"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["49"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["49"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["49"]["BackgroundTransparency"] = 0.5;
+G2L["49"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["49"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["49"]["Text"] = [[Other]];
+G2L["49"]["Name"] = [[Other]];
+G2L["49"]["Visible"] = false;
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Other.UIPadding
-G2L["42"] = Instance.new("UIPadding", G2L["41"]);
-G2L["42"]["PaddingTop"] = UDim.new(0, 20);
-G2L["42"]["PaddingRight"] = UDim.new(0, 20);
-G2L["42"]["PaddingLeft"] = UDim.new(0, 20);
-G2L["42"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["4a"] = Instance.new("UIPadding", G2L["49"]);
+G2L["4a"]["PaddingTop"] = UDim.new(0, 20);
+G2L["4a"]["PaddingRight"] = UDim.new(0, 20);
+G2L["4a"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["4a"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Other.Underline
-G2L["43"] = Instance.new("Frame", G2L["41"]);
-G2L["43"]["BorderSizePixel"] = 0;
-G2L["43"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["43"]["AnchorPoint"] = Vector2.new(0.5, 0);
-G2L["43"]["Size"] = UDim2.new(1, 40, 0, 1);
-G2L["43"]["Position"] = UDim2.new(0.5, 0, 0, 20);
-G2L["43"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["43"]["Name"] = [[Underline]];
+G2L["4b"] = Instance.new("Frame", G2L["49"]);
+G2L["4b"]["BorderSizePixel"] = 0;
+G2L["4b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["4b"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["4b"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["4b"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["4b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4b"]["Name"] = [[Underline]];
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.Finish
-G2L["44"] = Instance.new("TextButton", G2L["33"]);
-G2L["44"]["BorderSizePixel"] = 0;
-G2L["44"]["TextSize"] = 25;
-G2L["44"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["44"]["BackgroundColor3"] = Color3.fromRGB(141, 255, 109);
-G2L["44"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["44"]["AnchorPoint"] = Vector2.new(0.5, 1);
-G2L["44"]["BackgroundTransparency"] = 0.2;
-G2L["44"]["Size"] = UDim2.new(0, 200, 0, 30);
-G2L["44"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["44"]["Text"] = [[Finish]];
-G2L["44"]["Name"] = [[Finish]];
-G2L["44"]["Visible"] = false;
-G2L["44"]["Position"] = UDim2.new(0.5, 0, 1, -60);
+G2L["4c"] = Instance.new("TextButton", G2L["3b"]);
+G2L["4c"]["BorderSizePixel"] = 0;
+G2L["4c"]["TextSize"] = 25;
+G2L["4c"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4c"]["BackgroundColor3"] = Color3.fromRGB(141, 255, 109);
+G2L["4c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["4c"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["4c"]["BackgroundTransparency"] = 0.2;
+G2L["4c"]["Size"] = UDim2.new(0, 200, 0, 30);
+G2L["4c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4c"]["Text"] = [[Finish]];
+G2L["4c"]["Name"] = [[Finish]];
+G2L["4c"]["Visible"] = false;
+G2L["4c"]["Position"] = UDim2.new(0.5, 0, 1, -60);
 
 
 -- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.Finish.UICorner
-G2L["45"] = Instance.new("UICorner", G2L["44"]);
-G2L["45"]["CornerRadius"] = UDim.new(0, 15);
+G2L["4d"] = Instance.new("UICorner", G2L["4c"]);
+G2L["4d"]["CornerRadius"] = UDim.new(0, 15);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications
+G2L["4e"] = Instance.new("Frame", G2L["d"]);
+G2L["4e"]["Visible"] = false;
+G2L["4e"]["BorderSizePixel"] = 0;
+G2L["4e"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["4e"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["4e"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["4e"]["Position"] = UDim2.new(0.5, 0, 1, 0);
+G2L["4e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4e"]["Name"] = [[Modifications]];
+G2L["4e"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu
+G2L["4f"] = Instance.new("Frame", G2L["4e"]);
+G2L["4f"]["BorderSizePixel"] = 0;
+G2L["4f"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4f"]["Size"] = UDim2.new(0, 150, 1, 0);
+G2L["4f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4f"]["Name"] = [[ModMenu]];
+G2L["4f"]["BackgroundTransparency"] = 0.5;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.UICorner
+G2L["50"] = Instance.new("UICorner", G2L["4f"]);
+G2L["50"]["CornerRadius"] = UDim.new(0, 15);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Title
+G2L["51"] = Instance.new("TextLabel", G2L["4f"]);
+G2L["51"]["ZIndex"] = 2;
+G2L["51"]["BorderSizePixel"] = 0;
+G2L["51"]["TextSize"] = 20;
+G2L["51"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["51"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["51"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["51"]["BackgroundTransparency"] = 1;
+G2L["51"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["51"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["51"]["Text"] = [[Mods]];
+G2L["51"]["Name"] = [[Title]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.UIStroke
+G2L["52"] = Instance.new("UIStroke", G2L["4f"]);
+G2L["52"]["Transparency"] = 0.5;
+G2L["52"]["Thickness"] = 2;
+G2L["52"]["Color"] = Color3.fromRGB(255, 255, 255);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.UIStroke.UIGradient
+G2L["53"] = Instance.new("UIGradient", G2L["52"]);
+G2L["53"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll
+G2L["54"] = Instance.new("ScrollingFrame", G2L["4f"]);
+G2L["54"]["Active"] = true;
+G2L["54"]["BorderSizePixel"] = 0;
+G2L["54"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+G2L["54"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["54"]["Name"] = [[Scroll]];
+G2L["54"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["54"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+G2L["54"]["Size"] = UDim2.new(1, 0, 1, -50);
+G2L["54"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["54"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["54"]["ScrollBarThickness"] = 2;
+G2L["54"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.UIListLayout
+G2L["55"] = Instance.new("UIListLayout", G2L["54"]);
+G2L["55"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+G2L["55"]["Padding"] = UDim.new(0, 10);
+G2L["55"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.DamageModifier
+G2L["56"] = Instance.new("TextButton", G2L["54"]);
+G2L["56"]["RichText"] = true;
+G2L["56"]["BorderSizePixel"] = 0;
+G2L["56"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["56"]["TextSize"] = 18;
+G2L["56"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["56"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["56"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["56"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["56"]["BackgroundTransparency"] = 1;
+G2L["56"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["56"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["56"]["Text"] = [[Damage Multiplier]];
+G2L["56"]["Name"] = [[DamageModifier]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.DamageModifier.UIPadding
+G2L["57"] = Instance.new("UIPadding", G2L["56"]);
+G2L["57"]["PaddingTop"] = UDim.new(0, 5);
+G2L["57"]["PaddingRight"] = UDim.new(0, 10);
+G2L["57"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["57"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.DamageModifier.TextBox
+G2L["58"] = Instance.new("TextBox", G2L["56"]);
+G2L["58"]["CursorPosition"] = -1;
+G2L["58"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["58"]["PlaceholderColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["58"]["BorderSizePixel"] = 0;
+G2L["58"]["TextSize"] = 12;
+G2L["58"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["58"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["58"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["58"]["ClearTextOnFocus"] = false;
+G2L["58"]["PlaceholderText"] = [[Input Here]];
+G2L["58"]["Size"] = UDim2.new(1, 0, 0, 20);
+G2L["58"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["58"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["58"]["Text"] = [[]];
+G2L["58"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.VelocityModifier
+G2L["59"] = Instance.new("TextButton", G2L["54"]);
+G2L["59"]["RichText"] = true;
+G2L["59"]["BorderSizePixel"] = 0;
+G2L["59"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["59"]["TextSize"] = 18;
+G2L["59"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["59"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["59"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["59"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["59"]["BackgroundTransparency"] = 1;
+G2L["59"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["59"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["59"]["Text"] = [[Velocity Multiplier]];
+G2L["59"]["Name"] = [[VelocityModifier]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.VelocityModifier.UIPadding
+G2L["5a"] = Instance.new("UIPadding", G2L["59"]);
+G2L["5a"]["PaddingTop"] = UDim.new(0, 5);
+G2L["5a"]["PaddingRight"] = UDim.new(0, 10);
+G2L["5a"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["5a"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.VelocityModifier.TextBox
+G2L["5b"] = Instance.new("TextBox", G2L["59"]);
+G2L["5b"]["CursorPosition"] = -1;
+G2L["5b"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["5b"]["PlaceholderColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["5b"]["BorderSizePixel"] = 0;
+G2L["5b"]["TextSize"] = 12;
+G2L["5b"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["5b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["5b"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["5b"]["ClearTextOnFocus"] = false;
+G2L["5b"]["PlaceholderText"] = [[Input Here]];
+G2L["5b"]["Size"] = UDim2.new(1, 0, 0, 20);
+G2L["5b"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["5b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["5b"]["Text"] = [[]];
+G2L["5b"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.RecoilModifier
+G2L["5c"] = Instance.new("TextButton", G2L["54"]);
+G2L["5c"]["RichText"] = true;
+G2L["5c"]["BorderSizePixel"] = 0;
+G2L["5c"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["5c"]["TextSize"] = 18;
+G2L["5c"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["5c"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["5c"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["5c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["5c"]["BackgroundTransparency"] = 1;
+G2L["5c"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["5c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["5c"]["Text"] = [[Recoil Multiplier]];
+G2L["5c"]["Name"] = [[RecoilModifier]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.RecoilModifier.UIPadding
+G2L["5d"] = Instance.new("UIPadding", G2L["5c"]);
+G2L["5d"]["PaddingTop"] = UDim.new(0, 5);
+G2L["5d"]["PaddingRight"] = UDim.new(0, 10);
+G2L["5d"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["5d"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.RecoilModifier.TextBox
+G2L["5e"] = Instance.new("TextBox", G2L["5c"]);
+G2L["5e"]["CursorPosition"] = -1;
+G2L["5e"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["5e"]["PlaceholderColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["5e"]["BorderSizePixel"] = 0;
+G2L["5e"]["TextSize"] = 12;
+G2L["5e"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["5e"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["5e"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["5e"]["ClearTextOnFocus"] = false;
+G2L["5e"]["PlaceholderText"] = [[Input Here]];
+G2L["5e"]["Size"] = UDim2.new(1, 0, 0, 20);
+G2L["5e"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["5e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["5e"]["Text"] = [[]];
+G2L["5e"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.SpreadModifier
+G2L["5f"] = Instance.new("TextButton", G2L["54"]);
+G2L["5f"]["RichText"] = true;
+G2L["5f"]["BorderSizePixel"] = 0;
+G2L["5f"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["5f"]["TextSize"] = 18;
+G2L["5f"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["5f"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["5f"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["5f"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["5f"]["BackgroundTransparency"] = 1;
+G2L["5f"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["5f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["5f"]["Text"] = [[Spread Multiplier]];
+G2L["5f"]["Name"] = [[SpreadModifier]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.SpreadModifier.UIPadding
+G2L["60"] = Instance.new("UIPadding", G2L["5f"]);
+G2L["60"]["PaddingTop"] = UDim.new(0, 5);
+G2L["60"]["PaddingRight"] = UDim.new(0, 10);
+G2L["60"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["60"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.ModMenu.Scroll.SpreadModifier.TextBox
+G2L["61"] = Instance.new("TextBox", G2L["5f"]);
+G2L["61"]["CursorPosition"] = -1;
+G2L["61"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["61"]["PlaceholderColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["61"]["BorderSizePixel"] = 0;
+G2L["61"]["TextSize"] = 12;
+G2L["61"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["61"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["61"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["61"]["ClearTextOnFocus"] = false;
+G2L["61"]["PlaceholderText"] = [[Input Here]];
+G2L["61"]["Size"] = UDim2.new(1, 0, 0, 20);
+G2L["61"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["61"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["61"]["Text"] = [[]];
+G2L["61"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo
+G2L["62"] = Instance.new("Frame", G2L["4e"]);
+G2L["62"]["BorderSizePixel"] = 0;
+G2L["62"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["62"]["AnchorPoint"] = Vector2.new(1, 0);
+G2L["62"]["Size"] = UDim2.new(0, 150, 1, 0);
+G2L["62"]["Position"] = UDim2.new(1, 0, 0, 0);
+G2L["62"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["62"]["Name"] = [[GunInfo]];
+G2L["62"]["BackgroundTransparency"] = 0.5;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.UICorner
+G2L["63"] = Instance.new("UICorner", G2L["62"]);
+G2L["63"]["CornerRadius"] = UDim.new(0, 15);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Title
+G2L["64"] = Instance.new("TextLabel", G2L["62"]);
+G2L["64"]["ZIndex"] = 2;
+G2L["64"]["BorderSizePixel"] = 0;
+G2L["64"]["TextSize"] = 20;
+G2L["64"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["64"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["64"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["64"]["BackgroundTransparency"] = 1;
+G2L["64"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["64"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["64"]["Text"] = [[Gun Info]];
+G2L["64"]["Name"] = [[Title]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.UIStroke
+G2L["65"] = Instance.new("UIStroke", G2L["62"]);
+G2L["65"]["Transparency"] = 0.5;
+G2L["65"]["Thickness"] = 2;
+G2L["65"]["Color"] = Color3.fromRGB(255, 255, 255);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.UIStroke.UIGradient
+G2L["66"] = Instance.new("UIGradient", G2L["65"]);
+G2L["66"]["Rotation"] = 180;
+G2L["66"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll
+G2L["67"] = Instance.new("ScrollingFrame", G2L["62"]);
+G2L["67"]["Active"] = true;
+G2L["67"]["BorderSizePixel"] = 0;
+G2L["67"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+G2L["67"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["67"]["Name"] = [[Scroll]];
+G2L["67"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["67"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+G2L["67"]["Size"] = UDim2.new(1, 0, 1, -50);
+G2L["67"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["67"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["67"]["ScrollBarThickness"] = 2;
+G2L["67"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.MuzzleVelocity
+G2L["68"] = Instance.new("TextButton", G2L["67"]);
+G2L["68"]["RichText"] = true;
+G2L["68"]["BorderSizePixel"] = 0;
+G2L["68"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["68"]["TextSize"] = 18;
+G2L["68"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["68"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["68"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["68"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["68"]["BackgroundTransparency"] = 1;
+G2L["68"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["68"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["68"]["Text"] = [[Velocity: 1000]];
+G2L["68"]["Name"] = [[MuzzleVelocity]];
+G2L["68"]["Position"] = UDim2.new(0, 0, 0, 40);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.MuzzleVelocity.UIPadding
+G2L["69"] = Instance.new("UIPadding", G2L["68"]);
+G2L["69"]["PaddingTop"] = UDim.new(0, 5);
+G2L["69"]["PaddingRight"] = UDim.new(0, 10);
+G2L["69"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["69"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.MuzzleVelocity.FillBar
+G2L["6a"] = Instance.new("Frame", G2L["68"]);
+G2L["6a"]["BorderSizePixel"] = 0;
+G2L["6a"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["6a"]["Size"] = UDim2.new(1, 0, 0, 2);
+G2L["6a"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["6a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6a"]["Name"] = [[FillBar]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill1
+G2L["6b"] = Instance.new("Frame", G2L["6a"]);
+G2L["6b"]["ZIndex"] = 3;
+G2L["6b"]["BorderSizePixel"] = 0;
+G2L["6b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["6b"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["6b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6b"]["Name"] = [[Fill1]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill2
+G2L["6c"] = Instance.new("Frame", G2L["6a"]);
+G2L["6c"]["ZIndex"] = 2;
+G2L["6c"]["BorderSizePixel"] = 0;
+G2L["6c"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["6c"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["6c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6c"]["Name"] = [[Fill2]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Damage
+G2L["6d"] = Instance.new("TextButton", G2L["67"]);
+G2L["6d"]["RichText"] = true;
+G2L["6d"]["BorderSizePixel"] = 0;
+G2L["6d"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["6d"]["TextSize"] = 18;
+G2L["6d"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["6d"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["6d"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6d"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["6d"]["BackgroundTransparency"] = 1;
+G2L["6d"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["6d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6d"]["Text"] = [[Damage: 80 - 100]];
+G2L["6d"]["Name"] = [[Damage]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Damage.UIPadding
+G2L["6e"] = Instance.new("UIPadding", G2L["6d"]);
+G2L["6e"]["PaddingTop"] = UDim.new(0, 5);
+G2L["6e"]["PaddingRight"] = UDim.new(0, 10);
+G2L["6e"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["6e"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Damage.FillBar
+G2L["6f"] = Instance.new("Frame", G2L["6d"]);
+G2L["6f"]["BorderSizePixel"] = 0;
+G2L["6f"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["6f"]["Size"] = UDim2.new(1, 0, 0, 2);
+G2L["6f"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["6f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6f"]["Name"] = [[FillBar]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Damage.FillBar.Fill1
+G2L["70"] = Instance.new("Frame", G2L["6f"]);
+G2L["70"]["ZIndex"] = 3;
+G2L["70"]["BorderSizePixel"] = 0;
+G2L["70"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["70"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["70"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["70"]["Name"] = [[Fill1]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Damage.FillBar.Fill2
+G2L["71"] = Instance.new("Frame", G2L["6f"]);
+G2L["71"]["ZIndex"] = 2;
+G2L["71"]["BorderSizePixel"] = 0;
+G2L["71"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["71"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["71"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["71"]["Name"] = [[Fill2]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Accuracy
+G2L["72"] = Instance.new("TextButton", G2L["67"]);
+G2L["72"]["RichText"] = true;
+G2L["72"]["BorderSizePixel"] = 0;
+G2L["72"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["72"]["TextSize"] = 18;
+G2L["72"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["72"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["72"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["72"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["72"]["BackgroundTransparency"] = 1;
+G2L["72"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["72"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["72"]["Text"] = [[Accuracy: 1]];
+G2L["72"]["Name"] = [[Accuracy]];
+G2L["72"]["Position"] = UDim2.new(0, 0, 0, 80);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Accuracy.UIPadding
+G2L["73"] = Instance.new("UIPadding", G2L["72"]);
+G2L["73"]["PaddingTop"] = UDim.new(0, 5);
+G2L["73"]["PaddingRight"] = UDim.new(0, 10);
+G2L["73"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["73"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Accuracy.FillBar
+G2L["74"] = Instance.new("Frame", G2L["72"]);
+G2L["74"]["BorderSizePixel"] = 0;
+G2L["74"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["74"]["Size"] = UDim2.new(1, 0, 0, 2);
+G2L["74"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["74"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["74"]["Name"] = [[FillBar]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Accuracy.FillBar.Fill1
+G2L["75"] = Instance.new("Frame", G2L["74"]);
+G2L["75"]["ZIndex"] = 3;
+G2L["75"]["BorderSizePixel"] = 0;
+G2L["75"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["75"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["75"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["75"]["Name"] = [[Fill1]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.GunInfo.Scroll.Accuracy.FillBar.Fill2
+G2L["76"] = Instance.new("Frame", G2L["74"]);
+G2L["76"]["ZIndex"] = 2;
+G2L["76"]["BorderSizePixel"] = 0;
+G2L["76"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["76"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["76"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["76"]["Name"] = [[Fill2]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.Center
+G2L["77"] = Instance.new("Frame", G2L["4e"]);
+G2L["77"]["BorderSizePixel"] = 0;
+G2L["77"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["77"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+G2L["77"]["Size"] = UDim2.new(0.55, 0, 1, 0);
+G2L["77"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+G2L["77"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["77"]["Name"] = [[Center]];
+G2L["77"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.Center.GunName
+G2L["78"] = Instance.new("TextLabel", G2L["77"]);
+G2L["78"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["78"]["ZIndex"] = 2;
+G2L["78"]["BorderSizePixel"] = 0;
+G2L["78"]["TextSize"] = 30;
+G2L["78"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["78"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["78"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["78"]["BackgroundTransparency"] = 1;
+G2L["78"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["78"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["78"]["Text"] = [[Sniper Rifle]];
+G2L["78"]["Name"] = [[GunName]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.Center.ViewportFrame
+G2L["79"] = Instance.new("ViewportFrame", G2L["77"]);
+G2L["79"]["BorderSizePixel"] = 0;
+G2L["79"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["79"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["79"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["79"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.Center.Finish
+G2L["7a"] = Instance.new("TextButton", G2L["77"]);
+G2L["7a"]["BorderSizePixel"] = 0;
+G2L["7a"]["TextSize"] = 25;
+G2L["7a"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["7a"]["BackgroundColor3"] = Color3.fromRGB(141, 255, 109);
+G2L["7a"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["7a"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["7a"]["BackgroundTransparency"] = 0.2;
+G2L["7a"]["Size"] = UDim2.new(0, 200, 0, 30);
+G2L["7a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["7a"]["Text"] = [[Finish]];
+G2L["7a"]["Name"] = [[Finish]];
+G2L["7a"]["Visible"] = false;
+G2L["7a"]["Position"] = UDim2.new(0.5, 0, 1, -60);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Modifications.Center.Finish.UICorner
+G2L["7b"] = Instance.new("UICorner", G2L["7a"]);
+G2L["7b"]["CornerRadius"] = UDim.new(0, 15);
 
 
 -- StarterGui.AttachmentMenu.Scripts
-G2L["46"] = Instance.new("Folder", G2L["1"]);
-G2L["46"]["Name"] = [[Scripts]];
+G2L["7c"] = Instance.new("Folder", G2L["1"]);
+G2L["7c"]["Name"] = [[Scripts]];
 
 
 -- StarterGui.AttachmentMenu.Scripts.Handler
-G2L["47"] = Instance.new("LocalScript", G2L["46"]);
-G2L["47"]["Name"] = [[Handler]];
+G2L["7d"] = Instance.new("LocalScript", G2L["7c"]);
+G2L["7d"]["Name"] = [[Handler]];
 
 
 -- StarterGui.AttachmentMenu.Scripts.Handler.TabControl
-G2L["48"] = Instance.new("ModuleScript", G2L["47"]);
-G2L["48"]["Name"] = [[TabControl]];
+G2L["7e"] = Instance.new("ModuleScript", G2L["7d"]);
+G2L["7e"]["Name"] = [[TabControl]];
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates
-G2L["49"] = Instance.new("Folder", G2L["46"]);
-G2L["49"]["Name"] = [[Templates]];
+G2L["7f"] = Instance.new("Folder", G2L["7c"]);
+G2L["7f"]["Name"] = [[Templates]];
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates.Gun
-G2L["4a"] = Instance.new("TextButton", G2L["49"]);
-G2L["4a"]["BorderSizePixel"] = 0;
-G2L["4a"]["TextTransparency"] = 1;
-G2L["4a"]["TextSize"] = 1;
-G2L["4a"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4a"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4a"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["4a"]["BackgroundTransparency"] = 0.5;
-G2L["4a"]["Size"] = UDim2.new(0, 200, 0, 50);
-G2L["4a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4a"]["Text"] = [[]];
-G2L["4a"]["Name"] = [[Gun]];
-G2L["4a"]["Visible"] = false;
+G2L["80"] = Instance.new("TextButton", G2L["7f"]);
+G2L["80"]["BorderSizePixel"] = 0;
+G2L["80"]["TextTransparency"] = 1;
+G2L["80"]["TextSize"] = 1;
+G2L["80"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["80"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["80"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["80"]["BackgroundTransparency"] = 0.5;
+G2L["80"]["Size"] = UDim2.new(0, 200, 0, 50);
+G2L["80"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["80"]["Text"] = [[]];
+G2L["80"]["Name"] = [[Gun]];
+G2L["80"]["Visible"] = false;
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates.Gun.UICorner
-G2L["4b"] = Instance.new("UICorner", G2L["4a"]);
-G2L["4b"]["CornerRadius"] = UDim.new(0, 15);
+G2L["81"] = Instance.new("UICorner", G2L["80"]);
+G2L["81"]["CornerRadius"] = UDim.new(0, 15);
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates.Gun.GunName
-G2L["4c"] = Instance.new("TextLabel", G2L["4a"]);
-G2L["4c"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
-G2L["4c"]["ZIndex"] = 2;
-G2L["4c"]["BorderSizePixel"] = 0;
-G2L["4c"]["TextSize"] = 14;
-G2L["4c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["4c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["4c"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["4c"]["BackgroundTransparency"] = 1;
-G2L["4c"]["AnchorPoint"] = Vector2.new(0, 1);
-G2L["4c"]["Size"] = UDim2.new(1, 0, 0, 35);
-G2L["4c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4c"]["Text"] = [[Sniper Rifle]];
-G2L["4c"]["Name"] = [[GunName]];
-G2L["4c"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["82"] = Instance.new("TextLabel", G2L["80"]);
+G2L["82"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["82"]["ZIndex"] = 2;
+G2L["82"]["BorderSizePixel"] = 0;
+G2L["82"]["TextSize"] = 14;
+G2L["82"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["82"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["82"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["82"]["BackgroundTransparency"] = 1;
+G2L["82"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["82"]["Size"] = UDim2.new(1, 0, 0, 35);
+G2L["82"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["82"]["Text"] = [[Sniper Rifle]];
+G2L["82"]["Name"] = [[GunName]];
+G2L["82"]["Position"] = UDim2.new(0, 0, 1, 0);
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates.Gun.ViewportFrame
-G2L["4d"] = Instance.new("ViewportFrame", G2L["4a"]);
-G2L["4d"]["BorderSizePixel"] = 0;
-G2L["4d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["4d"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["4d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4d"]["BackgroundTransparency"] = 1;
+G2L["83"] = Instance.new("ViewportFrame", G2L["80"]);
+G2L["83"]["BorderSizePixel"] = 0;
+G2L["83"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["83"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["83"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["83"]["BackgroundTransparency"] = 1;
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates.Attachment
-G2L["4e"] = Instance.new("TextButton", G2L["49"]);
-G2L["4e"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
-G2L["4e"]["BorderSizePixel"] = 0;
-G2L["4e"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["4e"]["TextSize"] = 18;
-G2L["4e"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
-G2L["4e"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4e"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["4e"]["BackgroundTransparency"] = 1;
-G2L["4e"]["Size"] = UDim2.new(1, 0, 0, 40);
-G2L["4e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4e"]["Text"] = [[Barrel]];
-G2L["4e"]["Name"] = [[Attachment]];
-G2L["4e"]["Visible"] = false;
+G2L["84"] = Instance.new("TextButton", G2L["7f"]);
+G2L["84"]["BorderSizePixel"] = 0;
+G2L["84"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["84"]["TextSize"] = 18;
+G2L["84"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["84"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["84"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["84"]["BackgroundTransparency"] = 1;
+G2L["84"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["84"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["84"]["Text"] = [[Barrel]];
+G2L["84"]["Name"] = [[Attachment]];
+G2L["84"]["Visible"] = false;
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates.Attachment.UIPadding
-G2L["4f"] = Instance.new("UIPadding", G2L["4e"]);
-G2L["4f"]["PaddingTop"] = UDim.new(0, 20);
-G2L["4f"]["PaddingRight"] = UDim.new(0, 20);
-G2L["4f"]["PaddingLeft"] = UDim.new(0, 20);
-G2L["4f"]["PaddingBottom"] = UDim.new(0, 20);
+G2L["85"] = Instance.new("UIPadding", G2L["84"]);
+G2L["85"]["PaddingTop"] = UDim.new(0, 20);
+G2L["85"]["PaddingRight"] = UDim.new(0, 20);
+G2L["85"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["85"]["PaddingBottom"] = UDim.new(0, 20);
 
 
 -- StarterGui.AttachmentMenu.Scripts.Templates.Attachment.Underline
-G2L["50"] = Instance.new("Frame", G2L["4e"]);
-G2L["50"]["BorderSizePixel"] = 0;
-G2L["50"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
-G2L["50"]["AnchorPoint"] = Vector2.new(0.5, 0);
-G2L["50"]["Size"] = UDim2.new(1, 0, 0, 1);
-G2L["50"]["Position"] = UDim2.new(0.5, 0, 0, 20);
-G2L["50"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["50"]["Name"] = [[Underline]];
+G2L["86"] = Instance.new("Frame", G2L["84"]);
+G2L["86"]["BorderSizePixel"] = 0;
+G2L["86"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["86"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["86"]["Size"] = UDim2.new(1, 0, 0, 1);
+G2L["86"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["86"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["86"]["Name"] = [[Underline]];
 
 
 -- StarterGui.AttachmentMenu.Scripts.ToolStorage
-G2L["51"] = Instance.new("Folder", G2L["46"]);
-G2L["51"]["Name"] = [[ToolStorage]];
+G2L["87"] = Instance.new("Folder", G2L["7c"]);
+G2L["87"]["Name"] = [[ToolStorage]];
 
 
 -- Require G2L wrapper
@@ -895,9 +1523,9 @@ local function require(Module:ModuleScript)
     return G2L_REQUIRE(Module);
 end
 
-G2L_MODULES[G2L["48"]] = {
+G2L_MODULES[G2L["7e"]] = {
 Closure = function()
-    local script = G2L["48"];local TabControl = {}
+    local script = G2L["7e"];local TabControl = {}
 TabControl.__index = TabControl
 
 function TabControl.new(config)
@@ -986,8 +1614,8 @@ return TabControl
 end;
 };
 -- StarterGui.AttachmentMenu.Scripts.Handler
-local function C_47()
-local script = G2L["47"];
+local function C_7d()
+local script = G2L["7d"];
 	local Players = game:GetService("Players")
 	local ReplicatedStorage = game:GetService("ReplicatedStorage")
 	local UserInputService = game:GetService("UserInputService")
@@ -1008,6 +1636,7 @@ local script = G2L["47"];
 	
 	local tabControl = require(script.TabControl).new()
 	local attTabControl = require(script.TabControl).new()
+	local modSelTabControl = require(script.TabControl).new()
 	local utils = require(acsModules.Utilities)
 	
 	local main = graphical.Main
@@ -1016,11 +1645,13 @@ local script = G2L["47"];
 	local pages = menu.Pages
 	
 	local guns = pages.Guns
-	local attachments = pages.Attachments
+	local attachments = pages:WaitForChild("Attachments")
+	local modifications = pages:WaitForChild("Modifications")
 	
 	local localPlayer = Players.LocalPlayer
 	
 	local freeMode = true
+	local mainMode = "Attachments"
 	
 	local predefinedAttachments = {
 		-- Barrel Attachments
@@ -1111,6 +1742,28 @@ local script = G2L["47"];
 	end, function()
 		attachments.Visible = false
 	end)
+	local modificationsTab = tabControl:AddTab(nil, "Modifications", function()
+		modifications.Visible = true
+		top.Back.Visible = true
+	end, function()
+		modifications.Visible = false
+	end)
+	local attachmentsModTab = modSelTabControl:AddTab(guns.ModSelection.Attachments, "AttachmentMod", function()
+		mainMode = "Attachments"
+		guns.ModSelection.Attachments.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+		guns.ModSelection.Attachments.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end, function()
+		guns.ModSelection.Attachments.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		guns.ModSelection.Attachments.TextColor3 = Color3.fromRGB(150, 150, 150)
+	end)
+	local modificationsModTab = modSelTabControl:AddTab(guns.ModSelection.Modifications, "ModificationsMod", function()
+		mainMode = "Modifications"
+		guns.ModSelection.Modifications.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+		guns.ModSelection.Modifications.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end, function()
+		guns.ModSelection.Modifications.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		guns.ModSelection.Modifications.TextColor3 = Color3.fromRGB(150, 150, 150)
+	end)
 	
 	top.Close.Activated:Connect(function()
 		close(true)
@@ -1120,11 +1773,19 @@ local script = G2L["47"];
 		top.Back.Visible = false
 		close()
 	end)
-	pages.Attachments.Center.Finish.Activated:Connect(function()
+	attachments.Center.Finish.Activated:Connect(function()
 		close(true)
 	end)
+	guns.ModSelection.Attachments.Activated:Connect(function()
+		mainMode = "Attachments"
+	end)
+	guns.ModSelection.Modifications.Activated:Connect(function()
+		mainMode = "Modifications"
+	end)
+	
+	
 	function close(closeMenu)
-		if storage.weapon then
+		if storage.weapon and storage.weapon.Parent ~= nil then
 			storage.weapon.Parent = localPlayer.Backpack
 		end
 	
@@ -1157,7 +1818,12 @@ local script = G2L["47"];
 				end
 	
 				loadAttachment(storage.model)
-				setupViewport(pages.Attachments.Center.ViewportFrame, storage.model, true)
+				
+				if mainMode == "Attachments" then
+					setupViewport(attachments.Center.ViewportFrame, storage.model, true) else
+					setupViewport(modifications.Center.ViewportFrame, storage.model, true)
+				end
+				
 				updateGunInfo()
 				
 				local function canVisible(button)
@@ -1173,10 +1839,10 @@ local script = G2L["47"];
 					end
 				end
 	
-				canVisible(pages.Attachments.Center.AttachmentTypes.Barrel)
-				canVisible(pages.Attachments.Center.AttachmentTypes.Other)
-				canVisible(pages.Attachments.Center.AttachmentTypes.Sight)
-				canVisible(pages.Attachments.Center.AttachmentTypes.UnderBarrel)
+				canVisible(attachments.Center.AttachmentTypes.Barrel)
+				canVisible(attachments.Center.AttachmentTypes.Other)
+				canVisible(attachments.Center.AttachmentTypes.Sight)
+				canVisible(attachments.Center.AttachmentTypes.UnderBarrel)
 			else
 				storage.weapon = nil
 				storage.gunData = nil
@@ -1259,7 +1925,9 @@ local script = G2L["47"];
 					attachmentTypes[attType]:SetPrimaryPartCFrame(weapon.Nodes[name].CFrame)
 					
 					if name == "Sight" then
-						weapon.AimPart.CFrame = attachmentTypes[attType].AimPos.CFrame
+						if weapon:FindFirstChild("AimPart") and attachmentTypes[attType]:FindFirstChild("AimPos") then
+							weapon.AimPart.CFrame = attachmentTypes[attType].AimPos.CFrame
+						end
 					end
 	
 					setMods(attachmentData[attType])
@@ -1332,8 +2000,23 @@ local script = G2L["47"];
 			deleteAtt("Other", "OtherAtt")
 		end
 	end
+	function calculateAccuracy()
+		local baseSpread = (modTable.MinSpread + modTable.MaxSpread) / 2
+		local spreadFactor = 1 / baseSpread
+	
+		local recoilFactor = 1 / (
+			(modTable.gunRecoilMod.RecoilUp + modTable.gunRecoilMod.RecoilTilt +
+				modTable.gunRecoilMod.RecoilLeft + modTable.gunRecoilMod.RecoilRight) / 4
+		)
+	
+		local aimFactor = modTable.AimInaccuracyDecrease / modTable.AimInaccuracyStepAmount
+	
+		local accuracyScore = (spreadFactor + recoilFactor + aimFactor) / 3
+		return accuracyScore
+	end
 	function updateGunInfo()
-		local infoFrame = pages.Attachments.GunInfo.Scroll
+		local infoFrame = attachments.GunInfo.Scroll
+		local modInfoFrame = modifications.GunInfo.Scroll
 		
 		local function fillUpdate(button, value1, value2, maxValue)
 			local fillBar = button:FindFirstChild("FillBar")
@@ -1363,23 +2046,41 @@ local script = G2L["47"];
 		end
 		
 		if storage.gunData then
-			pages.Attachments.GunInfo.Visible = true
-			pages.Attachments.Center.GunName.Visible = true
+			local accuracyScore = math.clamp(calculateAccuracy() * 10, 0, 100)
+			
+			attachments.GunInfo.Visible = true
+			attachments.Center.GunName.Visible = true
+			
+			modifications.GunInfo.Visible = true
+			modifications.Center.GunName.Visible = true
+			
 			infoFrame.Optic.Text = `{ezRichText("Optic: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.SightAtt}`
 			infoFrame.Barrel.Text = `{ezRichText("Barrel: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.BarrelAtt}`
 			infoFrame.UnderBarrel.Text = `{ezRichText("UnderBarrel: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.UnderBarrelAtt}`
 			infoFrame.Other.Text = `{ezRichText("Other: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.OtherAtt}`
 			
-			infoFrame.Damage.Text = `{ezRichText("Damage: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.LimbDamage[1]} - {storage.gunData.LimbDamage[2]}`
-			infoFrame.MuzzleVelocity.Text = `{ezRichText("Velocity: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.MuzzleVelocity}`
+			infoFrame.Damage.Text = `{ezRichText("Damage: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{math.round(storage.gunData.LimbDamage[1] * modTable.DamageMod)} - {math.round(storage.gunData.LimbDamage[2] * modTable.DamageMod)}`
+			infoFrame.MuzzleVelocity.Text = `{ezRichText("Velocity: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{math.round(storage.gunData.MuzzleVelocity * modTable.MuzzleVelocity)}`
 			
-			pages.Attachments.Center.GunName.Text = storage.gunData.gunName
+			modInfoFrame.Damage.Text = `{ezRichText("Damage: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{math.round(storage.gunData.LimbDamage[1] * modTable.DamageMod)} - {math.round(storage.gunData.LimbDamage[2] * modTable.DamageMod)}`
+			modInfoFrame.MuzzleVelocity.Text = `{ezRichText("Velocity: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{math.round(storage.gunData.MuzzleVelocity * modTable.MuzzleVelocity)}`
+			modInfoFrame.Accuracy.Text = `{ezRichText("Accuracy: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{math.round(accuracyScore)}`
 			
-			fillUpdate(infoFrame.Damage, storage.gunData.LimbDamage[1], storage.gunData.LimbDamage[2], 100)
-			fillUpdate(infoFrame.MuzzleVelocity, storage.gunData.MuzzleVelocity, storage.gunData.MuzzleVelocity, 3000)
+			attachments.Center.GunName.Text = storage.gunData.gunName
+			modifications.Center.GunName.Text = storage.gunData.gunName
+			
+			fillUpdate(infoFrame.Damage, storage.gunData.LimbDamage[1] * modTable.DamageMod, storage.gunData.LimbDamage[2] * modTable.DamageMod, 100)
+			fillUpdate(infoFrame.MuzzleVelocity, storage.gunData.MuzzleVelocity * modTable.MuzzleVelocity, storage.gunData.MuzzleVelocity * modTable.MuzzleVelocity, 3000)
+			
+			fillUpdate(modInfoFrame.Damage, storage.gunData.LimbDamage[1] * modTable.DamageMod, storage.gunData.LimbDamage[2] * modTable.DamageMod, 100)
+			fillUpdate(modInfoFrame.MuzzleVelocity, storage.gunData.MuzzleVelocity * modTable.MuzzleVelocity, storage.gunData.MuzzleVelocity * modTable.MuzzleVelocity, 3000)
+			fillUpdate(modInfoFrame.Accuracy, accuracyScore, accuracyScore, 100)
 		else
-			pages.Attachments.GunInfo.Visible = false
-			pages.Attachments.Center.GunName.Visible = false
+			attachments.GunInfo.Visible = false
+			attachments.Center.GunName.Visible = false
+			
+			modifications.GunInfo.Visible = false
+			modifications.Center.GunName.Visible = false
 		end
 	end
 	function setAttachment(attType, attName)
@@ -1424,6 +2125,8 @@ local script = G2L["47"];
 		-- Connect input
 		local inputBegan = UserInputService.InputBegan:Connect(function(input, gp)
 			if gp then return end
+			if not pages then return end
+			if not modifications then return end
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				local mousePos = UserInputService:GetMouseLocation()
 				local vpPos = viewportFrame.AbsolutePosition
@@ -1438,6 +2141,8 @@ local script = G2L["47"];
 		end)
 	
 		local inputChanged = UserInputService.InputChanged:Connect(function(input)
+			if not pages then return end
+			if not modifications then return end
 			if state.dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 				local delta = input.Position - state.lastPos
 				state.rotationY += delta.X * 0.3
@@ -1449,6 +2154,8 @@ local script = G2L["47"];
 		end)
 	
 		local inputEnded = UserInputService.InputEnded:Connect(function(input)
+			if not pages then return end
+			if not modifications then return end
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				state.dragging = false
 			end
@@ -1505,13 +2212,15 @@ local script = G2L["47"];
 		return viewport
 	end
 	
-	function determineType(model)
+	function determineType(model, getName)
 		if not (model and model:IsA("Model")) then
 			return nil
 		end
 		
-		if freeMode then
-			return "Free"
+		if not getName then
+			if freeMode then
+				return "Free"
+			end
 		end
 	
 		local predefinedType = predefinedAttachments[model.Name]
@@ -1556,9 +2265,9 @@ local script = G2L["47"];
 		end
 	end
 	function createAttSection(name, attType)
-		local attButton = pages.Attachments.Center.AttachmentTypes:FindFirstChild(name)
+		local attButton = attachments.Center.AttachmentTypes:FindFirstChild(name)
 		if attButton then
-			local frame = Instance.new("Frame", pages.Attachments.AttachmentMenu.Scroll)
+			local frame = Instance.new("Frame", attachments.AttachmentMenu.Scroll)
 			frame.BackgroundTransparency = 1
 			frame.Size = UDim2.new(1,0,0,0)
 			frame.AutomaticSize = Enum.AutomaticSize.Y
@@ -1576,18 +2285,18 @@ local script = G2L["47"];
 					temp.Parent = frame
 					
 					temp.Activated:Connect(function()
-						pages.Attachments.Center.Finish.Visible = true
+						attachments.Center.Finish.Visible = true
 						setAttachment(attType, attachment.Name)
 					end)
 				elseif typeAtt == "Free" then
 					local temp = templates.Attachment:Clone()
-					temp.Name = attachment.Name
-					temp.Text = attachment.Name
+					temp.Name = `{attachment.Name} ({determineType(attachment, true)})`
+					temp.Text = `{attachment.Name} ({determineType(attachment, true)})`
 					temp.Visible = true
 					temp.Parent = frame
 	
 					temp.Activated:Connect(function()
-						pages.Attachments.Center.Finish.Visible = true
+						attachments.Center.Finish.Visible = true
 						setAttachment(attType, attachment.Name)
 					end)
 				end
@@ -1597,7 +2306,7 @@ local script = G2L["47"];
 				frame.Visible = true
 				attButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 				attButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-				pages.Attachments.AttachmentMenu.Visible = true
+				attachments.AttachmentMenu.Visible = true
 			end, function()
 				frame.Visible = false
 				attButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -1609,6 +2318,25 @@ local script = G2L["47"];
 			return frame
 		end
 		return nil
+	end
+	function setupModButton(button, minValue, maxValue, startValue, func)
+		if not startValue then
+			startValue = 1
+		end
+		
+		minValue = tonumber(minValue)
+		maxValue = tonumber(maxValue)
+		startValue = tonumber(startValue)
+		
+		local textbox = button:FindFirstChild("TextBox")
+		if textbox then
+			textbox.FocusLost:Connect(function()
+				local value = tonumber(textbox.Text)
+				value = math.clamp(value, minValue, maxValue)
+				
+				func(value)
+			end)
+		end
 	end
 	function updateGuns()
 		for _, button in ipairs(pages.Guns.Scroll:GetChildren()) do
@@ -1635,7 +2363,11 @@ local script = G2L["47"];
 					temp.Activated:Connect(function()
 						tool.Parent = toolStorage
 						setupGun()
-						tabControl:SwitchTab(attachmentsTab)
+						
+						if mainMode == "Attachments" then
+							tabControl:SwitchTab(attachmentsTab) else
+							tabControl:SwitchTab(modificationsTab)
+						end
 					end)
 				end
 			end
@@ -1647,7 +2379,19 @@ local script = G2L["47"];
 	createAttSection("Sight", "SightAtt")
 	createAttSection("UnderBarrel", "UnderBarrelAtt")
 	
+	setupModButton(modifications.ModMenu.Scroll.DamageModifier, 0, math.huge, 1, function(value)
+		modTable.DamageMod = value
+		updateGunInfo()
+	end)
+	setupModButton(modifications.ModMenu.Scroll.VelocityModifier, 0, math.huge, 1, function(value)
+		modTable.MuzzleVelocity = value
+		updateGunInfo()
+	end)
+	
 	updateGuns()
+	localPlayer.CharacterAdded:Connect(function()
+		updateGuns()
+	end)
 	localPlayer.Backpack.ChildAdded:Connect(function(tool)
 		if tool:IsA("Tool") then
 			updateGuns()
@@ -1659,6 +2403,6 @@ local script = G2L["47"];
 		end
 	end)
 end;
-task.spawn(C_47);
+task.spawn(C_7d);
 
 return G2L["1"]
