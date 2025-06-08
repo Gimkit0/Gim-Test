@@ -7,725 +7,1019 @@
  Y888P  ~Y8888P' Y888888P      888888D      Y88888P ~Y8888P' YP   YP  CONVERTER 
 ]=]
 
--- Instances: 56 | Scripts: 1 | Modules: 0 | Tags: 0
+-- Instances: 79 | Scripts: 1 | Modules: 1 | Tags: 0
 local G2L = {};
 
--- StarterGui.Gunsmith
+-- StarterGui.AttachmentMenu
 G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
-G2L["1"]["Name"] = [[Gunsmith]];
+G2L["1"]["IgnoreGuiInset"] = true;
+G2L["1"]["ScreenInsets"] = Enum.ScreenInsets.DeviceSafeInsets;
+G2L["1"]["Name"] = [[AttachmentMenu]];
 
 
--- StarterGui.Gunsmith.Main
-G2L["2"] = Instance.new("Frame", G2L["1"]);
-G2L["2"]["Visible"] = false;
-G2L["2"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["2"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
-G2L["2"]["Size"] = UDim2.new(1, 0, 0.75, 0);
-G2L["2"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
-G2L["2"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["2"]["Name"] = [[Main]];
-G2L["2"]["BackgroundTransparency"] = 1;
+-- StarterGui.AttachmentMenu.Graphical
+G2L["2"] = Instance.new("Folder", G2L["1"]);
+G2L["2"]["Name"] = [[Graphical]];
 
 
--- StarterGui.Gunsmith.Main.ViewportFrame
-G2L["3"] = Instance.new("ViewportFrame", G2L["2"]);
-G2L["3"]["SizeConstraint"] = Enum.SizeConstraint.RelativeXX;
-G2L["3"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main
+G2L["3"] = Instance.new("Frame", G2L["2"]);
+G2L["3"]["BorderSizePixel"] = 0;
+G2L["3"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["3"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
 G2L["3"]["Size"] = UDim2.new(1, 0, 1, 0);
 G2L["3"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
-G2L["3"]["BorderColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3"]["Name"] = [[Main]];
 G2L["3"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Main.GunInfos
-G2L["4"] = Instance.new("Frame", G2L["2"]);
+-- StarterGui.AttachmentMenu.Graphical.Main.Background
+G2L["4"] = Instance.new("Frame", G2L["3"]);
+G2L["4"]["ZIndex"] = -10;
+G2L["4"]["BorderSizePixel"] = 0;
 G2L["4"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["4"]["AnchorPoint"] = Vector2.new(1, 0.5);
-G2L["4"]["Size"] = UDim2.new(0.15, 0, 0.6, 0);
-G2L["4"]["Position"] = UDim2.new(1, 0, 0.5, 0);
-G2L["4"]["BorderColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["4"]["Name"] = [[GunInfos]];
-G2L["4"]["BackgroundTransparency"] = 0.75;
+G2L["4"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["4"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4"]["Name"] = [[Background]];
+G2L["4"]["BackgroundTransparency"] = 0.45;
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Gname
-G2L["5"] = Instance.new("TextLabel", G2L["4"]);
-G2L["5"]["TextWrapped"] = true;
-G2L["5"]["TextStrokeTransparency"] = 0.75;
-G2L["5"]["TextSize"] = 14;
-G2L["5"]["TextScaled"] = true;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu
+G2L["5"] = Instance.new("Frame", G2L["3"]);
+G2L["5"]["BorderSizePixel"] = 0;
 G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["5"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["5"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["5"]["BorderMode"] = Enum.BorderMode.Inset;
+G2L["5"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["5"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["5"]["Name"] = [[Menu]];
 G2L["5"]["BackgroundTransparency"] = 1;
-G2L["5"]["Size"] = UDim2.new(1, 0, 0.2, 0);
-G2L["5"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["5"]["Text"] = [[Gun Name]];
-G2L["5"]["Name"] = [[Gname]];
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Sight
-G2L["6"] = Instance.new("TextLabel", G2L["4"]);
-G2L["6"]["TextWrapped"] = true;
-G2L["6"]["TextStrokeTransparency"] = 0.75;
-G2L["6"]["TextSize"] = 14;
-G2L["6"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["6"]["TextScaled"] = true;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Top
+G2L["6"] = Instance.new("Frame", G2L["5"]);
+G2L["6"]["BorderSizePixel"] = 0;
 G2L["6"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["6"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["6"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["6"]["BorderMode"] = Enum.BorderMode.Inset;
+G2L["6"]["Size"] = UDim2.new(1, 0, 0.25, 0);
+G2L["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["6"]["Name"] = [[Top]];
 G2L["6"]["BackgroundTransparency"] = 1;
-G2L["6"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["6"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["6"]["Text"] = [[Optic:]];
-G2L["6"]["Name"] = [[Sight]];
-G2L["6"]["Position"] = UDim2.new(0, 0, 0.25, 0);
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Barrel
-G2L["7"] = Instance.new("TextLabel", G2L["4"]);
-G2L["7"]["TextWrapped"] = true;
-G2L["7"]["TextStrokeTransparency"] = 0.75;
-G2L["7"]["TextSize"] = 14;
-G2L["7"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["7"]["TextScaled"] = true;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Top.Title
+G2L["7"] = Instance.new("TextLabel", G2L["6"]);
+G2L["7"]["BorderSizePixel"] = 0;
+G2L["7"]["TextSize"] = 45;
 G2L["7"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["7"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["7"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["7"]["BorderMode"] = Enum.BorderMode.Inset;
+G2L["7"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+G2L["7"]["TextColor3"] = Color3.fromRGB(236, 236, 236);
 G2L["7"]["BackgroundTransparency"] = 1;
-G2L["7"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["7"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["7"]["Text"] = [[Barrel:]];
-G2L["7"]["Name"] = [[Barrel]];
-G2L["7"]["Position"] = UDim2.new(0, 0, 0.3, 0);
+G2L["7"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["7"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["7"]["Text"] = [[Server's Attachment Menu]];
+G2L["7"]["Name"] = [[Title]];
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Under
-G2L["8"] = Instance.new("TextLabel", G2L["4"]);
-G2L["8"]["TextWrapped"] = true;
-G2L["8"]["TextStrokeTransparency"] = 0.75;
-G2L["8"]["TextSize"] = 14;
-G2L["8"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["8"]["TextScaled"] = true;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Top.Title.Line
+G2L["8"] = Instance.new("ImageLabel", G2L["7"]);
 G2L["8"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["8"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["8"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["8"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["8"]["BackgroundTransparency"] = 1;
-G2L["8"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
+-- [ERROR] cannot convert ImageContent, please report to "https://github.com/uniquadev/GuiToLuaConverter/issues"
+G2L["8"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["8"]["Image"] = [[http://www.roblox.com/asset/?id=241779220]];
+G2L["8"]["Size"] = UDim2.new(0.5, 0, 0, 5);
 G2L["8"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["8"]["Text"] = [[UnderBarrel:]];
-G2L["8"]["Name"] = [[Under]];
-G2L["8"]["Position"] = UDim2.new(0, 0, 0.35, 0);
+G2L["8"]["BackgroundTransparency"] = 1;
+G2L["8"]["Name"] = [[Line]];
+G2L["8"]["Position"] = UDim2.new(0.5, 0, 0.75, 0);
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Other
-G2L["9"] = Instance.new("TextLabel", G2L["4"]);
-G2L["9"]["TextWrapped"] = true;
-G2L["9"]["TextStrokeTransparency"] = 0.75;
-G2L["9"]["TextSize"] = 14;
-G2L["9"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["9"]["TextScaled"] = true;
-G2L["9"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["9"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Top.Close
+G2L["9"] = Instance.new("TextButton", G2L["6"]);
+G2L["9"]["BorderSizePixel"] = 0;
+G2L["9"]["Modal"] = true;
+G2L["9"]["TextSize"] = 50;
 G2L["9"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["9"]["BorderMode"] = Enum.BorderMode.Inset;
+G2L["9"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
+G2L["9"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Medium, Enum.FontStyle.Normal);
+G2L["9"]["AnchorPoint"] = Vector2.new(0, 0.5);
 G2L["9"]["BackgroundTransparency"] = 1;
-G2L["9"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["9"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["9"]["Text"] = [[Other:]];
-G2L["9"]["Name"] = [[Other]];
-G2L["9"]["Position"] = UDim2.new(0, 0, 0.4, 0);
+G2L["9"]["Size"] = UDim2.new(0, 50, 0, 50);
+G2L["9"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["9"]["Text"] = [[X]];
+G2L["9"]["Name"] = [[Close]];
+G2L["9"]["Position"] = UDim2.new(0.8, 0, 0.5, 0);
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Muzzle
-G2L["a"] = Instance.new("TextLabel", G2L["4"]);
-G2L["a"]["TextWrapped"] = true;
-G2L["a"]["TextStrokeTransparency"] = 0.75;
-G2L["a"]["TextSize"] = 14;
-G2L["a"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-G2L["a"]["TextScaled"] = true;
-G2L["a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["a"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["a"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["a"]["BackgroundTransparency"] = 1;
-G2L["a"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["a"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["a"]["Text"] = [[Muzzle Velocity:]];
-G2L["a"]["Name"] = [[Muzzle]];
-G2L["a"]["Position"] = UDim2.new(0, 0, 0.5, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Top.Close.UICorner
+G2L["a"] = Instance.new("UICorner", G2L["9"]);
+G2L["a"]["CornerRadius"] = UDim.new(1, 0);
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Att
-G2L["b"] = Instance.new("TextLabel", G2L["4"]);
-G2L["b"]["TextWrapped"] = true;
-G2L["b"]["TextStrokeTransparency"] = 0.75;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages
+G2L["b"] = Instance.new("Frame", G2L["5"]);
 G2L["b"]["BorderSizePixel"] = 0;
-G2L["b"]["TextSize"] = 14;
-G2L["b"]["TextScaled"] = true;
-G2L["b"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["b"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["b"]["TextColor3"] = Color3.fromRGB(201, 201, 201);
-G2L["b"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["b"]["BackgroundTransparency"] = 0.75;
-G2L["b"]["Size"] = UDim2.new(1, 0, 0.05, 0);
-G2L["b"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["b"]["Text"] = [[Attachments]];
-G2L["b"]["Name"] = [[Att]];
-G2L["b"]["Position"] = UDim2.new(0, 0, 0.2, 0);
+G2L["b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["b"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["b"]["Size"] = UDim2.new(0.85, 0, 0.65, 0);
+G2L["b"]["Position"] = UDim2.new(0.5, 0, 1, -70);
+G2L["b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["b"]["Name"] = [[Pages]];
+G2L["b"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Main.GunInfos.Stats
-G2L["c"] = Instance.new("TextLabel", G2L["4"]);
-G2L["c"]["TextWrapped"] = true;
-G2L["c"]["TextStrokeTransparency"] = 0.75;
-G2L["c"]["TextSize"] = 14;
-G2L["c"]["TextScaled"] = true;
-G2L["c"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["c"]["TextColor3"] = Color3.fromRGB(201, 201, 201);
-G2L["c"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["c"]["BackgroundTransparency"] = 0.75;
-G2L["c"]["Size"] = UDim2.new(1, 0, 0.05, 0);
-G2L["c"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["c"]["Text"] = [[Statistics]];
-G2L["c"]["Name"] = [[Stats]];
-G2L["c"]["Position"] = UDim2.new(0, 0, 0.45, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns
+G2L["c"] = Instance.new("Frame", G2L["b"]);
+G2L["c"]["Visible"] = false;
+G2L["c"]["BorderSizePixel"] = 0;
+G2L["c"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["c"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["c"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["c"]["Position"] = UDim2.new(0.5, 0, 1, 0);
+G2L["c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["c"]["Name"] = [[Guns]];
+G2L["c"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Main.GunInfos.UICorner
-G2L["d"] = Instance.new("UICorner", G2L["4"]);
-G2L["d"]["CornerRadius"] = UDim.new(0.1, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.Scroll
+G2L["d"] = Instance.new("ScrollingFrame", G2L["c"]);
+G2L["d"]["Active"] = true;
+G2L["d"]["BorderSizePixel"] = 0;
+G2L["d"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+G2L["d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["d"]["Name"] = [[Scroll]];
+G2L["d"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+G2L["d"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["d"]["ScrollBarThickness"] = 2;
+G2L["d"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Main.GunInfos.B
-G2L["e"] = Instance.new("TextLabel", G2L["4"]);
-G2L["e"]["TextWrapped"] = true;
-G2L["e"]["TextStrokeTransparency"] = 0.75;
-G2L["e"]["TextSize"] = 14;
-G2L["e"]["TextXAlignment"] = Enum.TextXAlignment.Right;
-G2L["e"]["TextScaled"] = true;
-G2L["e"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["e"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["e"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["e"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["e"]["BackgroundTransparency"] = 1;
-G2L["e"]["AnchorPoint"] = Vector2.new(1, 0);
-G2L["e"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["e"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["e"]["Text"] = [[]];
-G2L["e"]["Name"] = [[B]];
-G2L["e"]["Position"] = UDim2.new(1, 0, 0.3, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.Scroll.UIPadding
+G2L["e"] = Instance.new("UIPadding", G2L["d"]);
+G2L["e"]["PaddingTop"] = UDim.new(0, 20);
+G2L["e"]["PaddingRight"] = UDim.new(0, 20);
+G2L["e"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["e"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.Main.GunInfos.MV
-G2L["f"] = Instance.new("TextLabel", G2L["4"]);
-G2L["f"]["TextWrapped"] = true;
-G2L["f"]["TextStrokeTransparency"] = 0.75;
-G2L["f"]["TextSize"] = 14;
-G2L["f"]["TextXAlignment"] = Enum.TextXAlignment.Right;
-G2L["f"]["TextScaled"] = true;
-G2L["f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["f"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["f"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["f"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["f"]["BackgroundTransparency"] = 1;
-G2L["f"]["AnchorPoint"] = Vector2.new(1, 0);
-G2L["f"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["f"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["f"]["Text"] = [[]];
-G2L["f"]["Name"] = [[MV]];
-G2L["f"]["Position"] = UDim2.new(1, 0, 0.5, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Guns.Scroll.UIGridLayout
+G2L["f"] = Instance.new("UIGridLayout", G2L["d"]);
+G2L["f"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+G2L["f"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+G2L["f"]["CellPadding"] = UDim2.new(0, 10, 0, 10);
 
 
--- StarterGui.Gunsmith.Main.GunInfos.O
-G2L["10"] = Instance.new("TextLabel", G2L["4"]);
-G2L["10"]["TextWrapped"] = true;
-G2L["10"]["TextStrokeTransparency"] = 0.75;
-G2L["10"]["TextSize"] = 14;
-G2L["10"]["TextXAlignment"] = Enum.TextXAlignment.Right;
-G2L["10"]["TextScaled"] = true;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments
+G2L["10"] = Instance.new("Frame", G2L["b"]);
+G2L["10"]["Visible"] = false;
+G2L["10"]["BorderSizePixel"] = 0;
 G2L["10"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["10"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["10"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["10"]["BorderMode"] = Enum.BorderMode.Inset;
+G2L["10"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["10"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["10"]["Position"] = UDim2.new(0.5, 0, 1, 0);
+G2L["10"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["10"]["Name"] = [[Attachments]];
 G2L["10"]["BackgroundTransparency"] = 1;
-G2L["10"]["AnchorPoint"] = Vector2.new(1, 0);
-G2L["10"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["10"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["10"]["Text"] = [[]];
-G2L["10"]["Name"] = [[O]];
-G2L["10"]["Position"] = UDim2.new(1, 0, 0.4, 0);
 
 
--- StarterGui.Gunsmith.Main.GunInfos.S
-G2L["11"] = Instance.new("TextLabel", G2L["4"]);
-G2L["11"]["TextWrapped"] = true;
-G2L["11"]["TextStrokeTransparency"] = 0.75;
-G2L["11"]["TextSize"] = 14;
-G2L["11"]["TextXAlignment"] = Enum.TextXAlignment.Right;
-G2L["11"]["TextScaled"] = true;
-G2L["11"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["11"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["11"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["11"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["11"]["BackgroundTransparency"] = 1;
-G2L["11"]["AnchorPoint"] = Vector2.new(1, 0);
-G2L["11"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["11"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["11"]["Text"] = [[]];
-G2L["11"]["Name"] = [[S]];
-G2L["11"]["Position"] = UDim2.new(1, 0, 0.25, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu
+G2L["11"] = Instance.new("Frame", G2L["10"]);
+G2L["11"]["Visible"] = false;
+G2L["11"]["BorderSizePixel"] = 0;
+G2L["11"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["11"]["Size"] = UDim2.new(0, 150, 1, 0);
+G2L["11"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["11"]["Name"] = [[AttachmentMenu]];
+G2L["11"]["BackgroundTransparency"] = 0.5;
 
 
--- StarterGui.Gunsmith.Main.GunInfos.UB
-G2L["12"] = Instance.new("TextLabel", G2L["4"]);
-G2L["12"]["TextWrapped"] = true;
-G2L["12"]["TextStrokeTransparency"] = 0.75;
-G2L["12"]["TextSize"] = 14;
-G2L["12"]["TextXAlignment"] = Enum.TextXAlignment.Right;
-G2L["12"]["TextScaled"] = true;
-G2L["12"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["12"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["12"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["12"]["BorderMode"] = Enum.BorderMode.Inset;
-G2L["12"]["BackgroundTransparency"] = 1;
-G2L["12"]["AnchorPoint"] = Vector2.new(1, 0);
-G2L["12"]["Size"] = UDim2.new(0.5, 0, 0.05, 0);
-G2L["12"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["12"]["Text"] = [[]];
-G2L["12"]["Name"] = [[UB]];
-G2L["12"]["Position"] = UDim2.new(1, 0, 0.35, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.UICorner
+G2L["12"] = Instance.new("UICorner", G2L["11"]);
+G2L["12"]["CornerRadius"] = UDim.new(0, 15);
 
 
--- StarterGui.Gunsmith.Main.Attachments
-G2L["13"] = Instance.new("Frame", G2L["2"]);
-G2L["13"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["13"]["AnchorPoint"] = Vector2.new(0, 0.5);
-G2L["13"]["Size"] = UDim2.new(0.15, 0, 0.6, 0);
-G2L["13"]["Position"] = UDim2.new(0, 0, 0.5, 0);
-G2L["13"]["BorderColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["13"]["Name"] = [[Attachments]];
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.Title
+G2L["13"] = Instance.new("TextLabel", G2L["11"]);
+G2L["13"]["ZIndex"] = 2;
+G2L["13"]["BorderSizePixel"] = 0;
+G2L["13"]["TextSize"] = 20;
+G2L["13"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["13"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["13"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["13"]["BackgroundTransparency"] = 1;
+G2L["13"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["13"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["13"]["Text"] = [[Attachments]];
+G2L["13"]["Name"] = [[Title]];
 
 
--- StarterGui.Gunsmith.Main.Attachments.Sight
-G2L["14"] = Instance.new("TextButton", G2L["13"]);
-G2L["14"]["TextWrapped"] = true;
-G2L["14"]["TextStrokeTransparency"] = 0.75;
-G2L["14"]["Modal"] = true;
-G2L["14"]["TextSize"] = 14;
-G2L["14"]["TextScaled"] = true;
-G2L["14"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["14"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["14"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["14"]["BackgroundTransparency"] = 0.75;
-G2L["14"]["Size"] = UDim2.new(1, 0, 0.1, 0);
-G2L["14"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["14"]["Text"] = [[Optic]];
-G2L["14"]["Name"] = [[Sight]];
-G2L["14"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.UIStroke
+G2L["14"] = Instance.new("UIStroke", G2L["11"]);
+G2L["14"]["Transparency"] = 0.5;
+G2L["14"]["Thickness"] = 2;
+G2L["14"]["Color"] = Color3.fromRGB(255, 255, 255);
 
 
--- StarterGui.Gunsmith.Main.Attachments.Sight.UICorner
-G2L["15"] = Instance.new("UICorner", G2L["14"]);
-G2L["15"]["CornerRadius"] = UDim.new(0.1, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.UIStroke.UIGradient
+G2L["15"] = Instance.new("UIGradient", G2L["14"]);
+G2L["15"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
 
 
--- StarterGui.Gunsmith.Main.Attachments.UIListLayout
-G2L["16"] = Instance.new("UIListLayout", G2L["13"]);
-G2L["16"]["Padding"] = UDim.new(0.025, 0);
-G2L["16"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.Scroll
+G2L["16"] = Instance.new("ScrollingFrame", G2L["11"]);
+G2L["16"]["Active"] = true;
+G2L["16"]["BorderSizePixel"] = 0;
+G2L["16"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+G2L["16"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["16"]["Name"] = [[Scroll]];
+G2L["16"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["16"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+G2L["16"]["Size"] = UDim2.new(1, 0, 1, -50);
+G2L["16"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["16"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["16"]["ScrollBarThickness"] = 2;
+G2L["16"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Main.Attachments.Barrel
-G2L["17"] = Instance.new("TextButton", G2L["13"]);
-G2L["17"]["TextWrapped"] = true;
-G2L["17"]["TextStrokeTransparency"] = 0.75;
-G2L["17"]["Modal"] = true;
-G2L["17"]["TextSize"] = 14;
-G2L["17"]["TextScaled"] = true;
-G2L["17"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["17"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["17"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["17"]["BackgroundTransparency"] = 0.75;
-G2L["17"]["Size"] = UDim2.new(1, 0, 0.1, 0);
-G2L["17"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["17"]["Text"] = [[Barrel]];
-G2L["17"]["Name"] = [[Barrel]];
-G2L["17"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.AttachmentMenu.Scroll.UIListLayout
+G2L["17"] = Instance.new("UIListLayout", G2L["16"]);
+G2L["17"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+G2L["17"]["Padding"] = UDim.new(0, 10);
+G2L["17"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
 
 
--- StarterGui.Gunsmith.Main.Attachments.Barrel.UICorner
-G2L["18"] = Instance.new("UICorner", G2L["17"]);
-G2L["18"]["CornerRadius"] = UDim.new(0.1, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo
+G2L["18"] = Instance.new("Frame", G2L["10"]);
+G2L["18"]["BorderSizePixel"] = 0;
+G2L["18"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["18"]["AnchorPoint"] = Vector2.new(1, 0);
+G2L["18"]["Size"] = UDim2.new(0, 150, 1, 0);
+G2L["18"]["Position"] = UDim2.new(1, 0, 0, 0);
+G2L["18"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["18"]["Name"] = [[GunInfo]];
+G2L["18"]["BackgroundTransparency"] = 0.5;
 
 
--- StarterGui.Gunsmith.Main.Attachments.Under
-G2L["19"] = Instance.new("TextButton", G2L["13"]);
-G2L["19"]["TextWrapped"] = true;
-G2L["19"]["TextStrokeTransparency"] = 0.75;
-G2L["19"]["Modal"] = true;
-G2L["19"]["TextSize"] = 14;
-G2L["19"]["TextScaled"] = true;
-G2L["19"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["19"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["19"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["19"]["BackgroundTransparency"] = 0.75;
-G2L["19"]["Size"] = UDim2.new(1, 0, 0.1, 0);
-G2L["19"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["19"]["Text"] = [[UnderBarrel]];
-G2L["19"]["Name"] = [[Under]];
-G2L["19"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.UICorner
+G2L["19"] = Instance.new("UICorner", G2L["18"]);
+G2L["19"]["CornerRadius"] = UDim.new(0, 15);
 
 
--- StarterGui.Gunsmith.Main.Attachments.Under.UICorner
-G2L["1a"] = Instance.new("UICorner", G2L["19"]);
-G2L["1a"]["CornerRadius"] = UDim.new(0.1, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Title
+G2L["1a"] = Instance.new("TextLabel", G2L["18"]);
+G2L["1a"]["ZIndex"] = 2;
+G2L["1a"]["BorderSizePixel"] = 0;
+G2L["1a"]["TextSize"] = 20;
+G2L["1a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["1a"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["1a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["1a"]["BackgroundTransparency"] = 1;
+G2L["1a"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["1a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1a"]["Text"] = [[Gun Info]];
+G2L["1a"]["Name"] = [[Title]];
 
 
--- StarterGui.Gunsmith.Main.Attachments.Other
-G2L["1b"] = Instance.new("TextButton", G2L["13"]);
-G2L["1b"]["TextWrapped"] = true;
-G2L["1b"]["TextStrokeTransparency"] = 0.75;
-G2L["1b"]["Modal"] = true;
-G2L["1b"]["TextSize"] = 14;
-G2L["1b"]["TextScaled"] = true;
-G2L["1b"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1b"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1b"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["1b"]["BackgroundTransparency"] = 0.75;
-G2L["1b"]["Size"] = UDim2.new(1, 0, 0.1, 0);
-G2L["1b"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["1b"]["Text"] = [[Other]];
-G2L["1b"]["Name"] = [[Other]];
-G2L["1b"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.UIStroke
+G2L["1b"] = Instance.new("UIStroke", G2L["18"]);
+G2L["1b"]["Transparency"] = 0.5;
+G2L["1b"]["Thickness"] = 2;
+G2L["1b"]["Color"] = Color3.fromRGB(255, 255, 255);
 
 
--- StarterGui.Gunsmith.Main.Attachments.Other.UICorner
-G2L["1c"] = Instance.new("UICorner", G2L["1b"]);
-G2L["1c"]["CornerRadius"] = UDim.new(0.1, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.UIStroke.UIGradient
+G2L["1c"] = Instance.new("UIGradient", G2L["1b"]);
+G2L["1c"]["Rotation"] = 180;
+G2L["1c"]["Color"] = ColorSequence.new{ColorSequenceKeypoint.new(0.000, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(0.750, Color3.fromRGB(0, 0, 0)),ColorSequenceKeypoint.new(1.000, Color3.fromRGB(255, 255, 255))};
 
 
--- StarterGui.Gunsmith.Main.SightAtt
-G2L["1d"] = Instance.new("ScrollingFrame", G2L["2"]);
-G2L["1d"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll
+G2L["1d"] = Instance.new("ScrollingFrame", G2L["18"]);
 G2L["1d"]["Active"] = true;
+G2L["1d"]["BorderSizePixel"] = 0;
+G2L["1d"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
 G2L["1d"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1d"]["Name"] = [[SightAtt]];
-G2L["1d"]["Size"] = UDim2.new(0.15, 0, 0.8, 0);
-G2L["1d"]["ScrollBarImageColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1d"]["Position"] = UDim2.new(0.155, 0, 0.2, 0);
-G2L["1d"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
+G2L["1d"]["Name"] = [[Scroll]];
+G2L["1d"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["1d"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+G2L["1d"]["Size"] = UDim2.new(1, 0, 1, -50);
+G2L["1d"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["1d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1d"]["ScrollBarThickness"] = 2;
 G2L["1d"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Main.SightAtt.UIListLayout
-G2L["1e"] = Instance.new("UIListLayout", G2L["1d"]);
-G2L["1e"]["Padding"] = UDim.new(0.01, 0);
-G2L["1e"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Optic
+G2L["1e"] = Instance.new("TextButton", G2L["1d"]);
+G2L["1e"]["RichText"] = true;
+G2L["1e"]["BorderSizePixel"] = 0;
+G2L["1e"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["1e"]["TextSize"] = 18;
+G2L["1e"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["1e"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1e"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["1e"]["BackgroundTransparency"] = 1;
+G2L["1e"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["1e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["1e"]["Text"] = [[Optic: None]];
+G2L["1e"]["Name"] = [[Optic]];
 
 
--- StarterGui.Gunsmith.Main.BarrelAtt
-G2L["1f"] = Instance.new("ScrollingFrame", G2L["2"]);
-G2L["1f"]["Visible"] = false;
-G2L["1f"]["Active"] = true;
-G2L["1f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["1f"]["Name"] = [[BarrelAtt]];
-G2L["1f"]["Size"] = UDim2.new(0.15, 0, 0.8, 0);
-G2L["1f"]["ScrollBarImageColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["1f"]["Position"] = UDim2.new(0.155, 0, 0.2, 0);
-G2L["1f"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["1f"]["BackgroundTransparency"] = 1;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Optic.UIPadding
+G2L["1f"] = Instance.new("UIPadding", G2L["1e"]);
+G2L["1f"]["PaddingTop"] = UDim.new(0, 20);
+G2L["1f"]["PaddingRight"] = UDim.new(0, 10);
+G2L["1f"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["1f"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.Main.BarrelAtt.UIListLayout
-G2L["20"] = Instance.new("UIListLayout", G2L["1f"]);
-G2L["20"]["Padding"] = UDim.new(0.01, 0);
-G2L["20"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Barrel
+G2L["20"] = Instance.new("TextButton", G2L["1d"]);
+G2L["20"]["RichText"] = true;
+G2L["20"]["BorderSizePixel"] = 0;
+G2L["20"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["20"]["TextSize"] = 18;
+G2L["20"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["20"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["20"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["20"]["BackgroundTransparency"] = 1;
+G2L["20"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["20"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["20"]["Text"] = [[Barrel: None]];
+G2L["20"]["Name"] = [[Barrel]];
+G2L["20"]["Position"] = UDim2.new(0, 0, 0, 40);
 
 
--- StarterGui.Gunsmith.Main.UnderBarrelAtt
-G2L["21"] = Instance.new("ScrollingFrame", G2L["2"]);
-G2L["21"]["Visible"] = false;
-G2L["21"]["Active"] = true;
-G2L["21"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["21"]["Name"] = [[UnderBarrelAtt]];
-G2L["21"]["Size"] = UDim2.new(0.15, 0, 0.8, 0);
-G2L["21"]["ScrollBarImageColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["21"]["Position"] = UDim2.new(0.155, 0, 0.2, 0);
-G2L["21"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["21"]["BackgroundTransparency"] = 1;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Barrel.UIPadding
+G2L["21"] = Instance.new("UIPadding", G2L["20"]);
+G2L["21"]["PaddingTop"] = UDim.new(0, 20);
+G2L["21"]["PaddingRight"] = UDim.new(0, 10);
+G2L["21"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["21"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.Main.UnderBarrelAtt.UIListLayout
-G2L["22"] = Instance.new("UIListLayout", G2L["21"]);
-G2L["22"]["Padding"] = UDim.new(0.01, 0);
-G2L["22"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.UnderBarrel
+G2L["22"] = Instance.new("TextButton", G2L["1d"]);
+G2L["22"]["RichText"] = true;
+G2L["22"]["BorderSizePixel"] = 0;
+G2L["22"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["22"]["TextSize"] = 18;
+G2L["22"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["22"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["22"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["22"]["BackgroundTransparency"] = 1;
+G2L["22"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["22"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["22"]["Text"] = [[UnderBarrel: None]];
+G2L["22"]["Name"] = [[UnderBarrel]];
+G2L["22"]["Position"] = UDim2.new(0, 0, 0, 80);
 
 
--- StarterGui.Gunsmith.Main.OtherAtt
-G2L["23"] = Instance.new("ScrollingFrame", G2L["2"]);
-G2L["23"]["Visible"] = false;
-G2L["23"]["Active"] = true;
-G2L["23"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["23"]["Name"] = [[OtherAtt]];
-G2L["23"]["Size"] = UDim2.new(0.15, 0, 0.8, 0);
-G2L["23"]["ScrollBarImageColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["23"]["Position"] = UDim2.new(0.155, 0, 0.2, 0);
-G2L["23"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["23"]["BackgroundTransparency"] = 1;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.UnderBarrel.UIPadding
+G2L["23"] = Instance.new("UIPadding", G2L["22"]);
+G2L["23"]["PaddingTop"] = UDim.new(0, 20);
+G2L["23"]["PaddingRight"] = UDim.new(0, 10);
+G2L["23"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["23"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.Main.OtherAtt.UIListLayout
-G2L["24"] = Instance.new("UIListLayout", G2L["23"]);
-G2L["24"]["Padding"] = UDim.new(0.01, 0);
-G2L["24"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Other
+G2L["24"] = Instance.new("TextButton", G2L["1d"]);
+G2L["24"]["RichText"] = true;
+G2L["24"]["BorderSizePixel"] = 0;
+G2L["24"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["24"]["TextSize"] = 18;
+G2L["24"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["24"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["24"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["24"]["BackgroundTransparency"] = 1;
+G2L["24"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["24"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["24"]["Text"] = [[Other: None]];
+G2L["24"]["Name"] = [[Other]];
+G2L["24"]["Position"] = UDim2.new(0, 0, 0, 120);
 
 
--- StarterGui.Gunsmith.Main.Finish
-G2L["25"] = Instance.new("TextButton", G2L["2"]);
-G2L["25"]["TextWrapped"] = true;
-G2L["25"]["TextStrokeTransparency"] = 0.75;
-G2L["25"]["SizeConstraint"] = Enum.SizeConstraint.RelativeXX;
-G2L["25"]["TextSize"] = 14;
-G2L["25"]["TextScaled"] = true;
-G2L["25"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["25"]["BackgroundColor3"] = Color3.fromRGB(86, 255, 0);
-G2L["25"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["25"]["AnchorPoint"] = Vector2.new(1, 0);
-G2L["25"]["BackgroundTransparency"] = 0.75;
-G2L["25"]["Size"] = UDim2.new(0.15, 0, 0.025, 0);
-G2L["25"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["25"]["Text"] = [[Finish]];
-G2L["25"]["Name"] = [[Finish]];
-G2L["25"]["Position"] = UDim2.new(1, 0, 0.825, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Other.UIPadding
+G2L["25"] = Instance.new("UIPadding", G2L["24"]);
+G2L["25"]["PaddingTop"] = UDim.new(0, 20);
+G2L["25"]["PaddingRight"] = UDim.new(0, 10);
+G2L["25"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["25"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.Main.Finish.UICorner
-G2L["26"] = Instance.new("UICorner", G2L["25"]);
-G2L["26"]["CornerRadius"] = UDim.new(0.5, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Underline
+G2L["26"] = Instance.new("Frame", G2L["1d"]);
+G2L["26"]["BorderSizePixel"] = 0;
+G2L["26"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["26"]["Size"] = UDim2.new(1, 0, 0, 1);
+G2L["26"]["Position"] = UDim2.new(0, 0, 0, 170);
+G2L["26"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["26"]["Name"] = [[Underline]];
 
 
--- StarterGui.Gunsmith.Main.Finish.AttValue
-G2L["27"] = Instance.new("StringValue", G2L["25"]);
-G2L["27"]["Name"] = [[AttValue]];
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity
+G2L["27"] = Instance.new("TextButton", G2L["1d"]);
+G2L["27"]["RichText"] = true;
+G2L["27"]["BorderSizePixel"] = 0;
+G2L["27"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["27"]["TextSize"] = 18;
+G2L["27"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["27"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["27"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["27"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["27"]["BackgroundTransparency"] = 1;
+G2L["27"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["27"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["27"]["Text"] = [[Velocity: 1000]];
+G2L["27"]["Name"] = [[MuzzleVelocity]];
+G2L["27"]["Position"] = UDim2.new(0, 0, 0, 180);
 
 
--- StarterGui.Gunsmith.Vars
-G2L["28"] = Instance.new("Folder", G2L["1"]);
-G2L["28"]["Name"] = [[Vars]];
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.UIPadding
+G2L["28"] = Instance.new("UIPadding", G2L["27"]);
+G2L["28"]["PaddingTop"] = UDim.new(0, 5);
+G2L["28"]["PaddingRight"] = UDim.new(0, 10);
+G2L["28"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["28"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.Vars.ToolStorage
-G2L["29"] = Instance.new("Folder", G2L["28"]);
-G2L["29"]["Name"] = [[ToolStorage]];
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar
+G2L["29"] = Instance.new("Frame", G2L["27"]);
+G2L["29"]["BorderSizePixel"] = 0;
+G2L["29"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["29"]["Size"] = UDim2.new(1, 0, 0, 2);
+G2L["29"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["29"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["29"]["Name"] = [[FillBar]];
 
 
--- StarterGui.Gunsmith.Vars.Ref
-G2L["2a"] = Instance.new("Folder", G2L["28"]);
-G2L["2a"]["Name"] = [[Ref]];
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill1
+G2L["2a"] = Instance.new("Frame", G2L["29"]);
+G2L["2a"]["ZIndex"] = 3;
+G2L["2a"]["BorderSizePixel"] = 0;
+G2L["2a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["2a"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["2a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2a"]["Name"] = [[Fill1]];
 
 
--- StarterGui.Gunsmith.Vars.Ref.GunButton
-G2L["2b"] = Instance.new("TextButton", G2L["2a"]);
-G2L["2b"]["TextWrapped"] = true;
-G2L["2b"]["TextStrokeTransparency"] = 0.75;
-G2L["2b"]["Modal"] = true;
-G2L["2b"]["TextSize"] = 14;
-G2L["2b"]["TextScaled"] = true;
-G2L["2b"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["2b"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["2b"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["2b"]["BackgroundTransparency"] = 0.5;
-G2L["2b"]["Size"] = UDim2.new(1, 0, 0.1, 0);
-G2L["2b"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["2b"]["Text"] = [[Gun Name]];
-G2L["2b"]["Name"] = [[GunButton]];
-G2L["2b"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.MuzzleVelocity.FillBar.Fill2
+G2L["2b"] = Instance.new("Frame", G2L["29"]);
+G2L["2b"]["ZIndex"] = 2;
+G2L["2b"]["BorderSizePixel"] = 0;
+G2L["2b"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["2b"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["2b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2b"]["Name"] = [[Fill2]];
 
 
--- StarterGui.Gunsmith.Vars.Ref.GunButton.UICorner
-G2L["2c"] = Instance.new("UICorner", G2L["2b"]);
-G2L["2c"]["CornerRadius"] = UDim.new(0.1, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage
+G2L["2c"] = Instance.new("TextButton", G2L["1d"]);
+G2L["2c"]["RichText"] = true;
+G2L["2c"]["BorderSizePixel"] = 0;
+G2L["2c"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["2c"]["TextSize"] = 18;
+G2L["2c"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["2c"]["TextYAlignment"] = Enum.TextYAlignment.Top;
+G2L["2c"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["2c"]["BackgroundTransparency"] = 1;
+G2L["2c"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["2c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2c"]["Text"] = [[Damage: 80 - 100]];
+G2L["2c"]["Name"] = [[Damage]];
+G2L["2c"]["Position"] = UDim2.new(0, 0, 0, 220);
 
 
--- StarterGui.Gunsmith.Vars.Ref.AttachmentButton
-G2L["2d"] = Instance.new("TextButton", G2L["2a"]);
-G2L["2d"]["TextWrapped"] = true;
-G2L["2d"]["TextStrokeTransparency"] = 0.75;
-G2L["2d"]["TextSize"] = 14;
-G2L["2d"]["TextScaled"] = true;
-G2L["2d"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["2d"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["2d"]["FontFace"] = Font.new([[rbxasset://fonts/families/Zekton.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-G2L["2d"]["BackgroundTransparency"] = 0.75;
-G2L["2d"]["Size"] = UDim2.new(0.9, 0, 0.03, 0);
-G2L["2d"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["2d"]["Text"] = [[Compensator]];
-G2L["2d"]["Name"] = [[AttachmentButton]];
-G2L["2d"]["Visible"] = false;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.UIPadding
+G2L["2d"] = Instance.new("UIPadding", G2L["2c"]);
+G2L["2d"]["PaddingTop"] = UDim.new(0, 5);
+G2L["2d"]["PaddingRight"] = UDim.new(0, 10);
+G2L["2d"]["PaddingLeft"] = UDim.new(0, 10);
+G2L["2d"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.Vars.Ref.AttachmentButton.UICorner
-G2L["2e"] = Instance.new("UICorner", G2L["2d"]);
-G2L["2e"]["CornerRadius"] = UDim.new(0.5, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.FillBar
+G2L["2e"] = Instance.new("Frame", G2L["2c"]);
+G2L["2e"]["BorderSizePixel"] = 0;
+G2L["2e"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["2e"]["Size"] = UDim2.new(1, 0, 0, 2);
+G2L["2e"]["Position"] = UDim2.new(0, 0, 1, 10);
+G2L["2e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2e"]["Name"] = [[FillBar]];
 
 
--- StarterGui.Gunsmith.Vars.Ref.AttachmentButton.AttValue
-G2L["2f"] = Instance.new("StringValue", G2L["2d"]);
-G2L["2f"]["Name"] = [[AttValue]];
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.FillBar.Fill1
+G2L["2f"] = Instance.new("Frame", G2L["2e"]);
+G2L["2f"]["ZIndex"] = 3;
+G2L["2f"]["BorderSizePixel"] = 0;
+G2L["2f"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["2f"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["2f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["2f"]["Name"] = [[Fill1]];
 
 
--- StarterGui.Gunsmith.Selections
-G2L["30"] = Instance.new("Frame", G2L["1"]);
-G2L["30"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["30"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
-G2L["30"]["Size"] = UDim2.new(0.5, 0, 0.5, 0);
-G2L["30"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
-G2L["30"]["BorderColor3"] = Color3.fromRGB(28, 43, 54);
-G2L["30"]["Name"] = [[Selections]];
-G2L["30"]["BackgroundTransparency"] = 0.5;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.GunInfo.Scroll.Damage.FillBar.Fill2
+G2L["30"] = Instance.new("Frame", G2L["2e"]);
+G2L["30"]["ZIndex"] = 2;
+G2L["30"]["BorderSizePixel"] = 0;
+G2L["30"]["BackgroundColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["30"]["Size"] = UDim2.new(0, 0, 1, 0);
+G2L["30"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["30"]["Name"] = [[Fill2]];
 
 
--- StarterGui.Gunsmith.Selections.Pack
-G2L["31"] = Instance.new("ScrollingFrame", G2L["30"]);
-G2L["31"]["Active"] = true;
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center
+G2L["31"] = Instance.new("Frame", G2L["10"]);
 G2L["31"]["BorderSizePixel"] = 0;
-G2L["31"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
-G2L["31"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["31"]["Name"] = [[Pack]];
-G2L["31"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
-G2L["31"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["31"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["31"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
+G2L["31"]["Size"] = UDim2.new(0.55, 0, 1, 0);
+G2L["31"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
 G2L["31"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["31"]["ScrollBarThickness"] = 2;
+G2L["31"]["Name"] = [[Center]];
 G2L["31"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Selections.Pack.UIGridLayout
-G2L["32"] = Instance.new("UIGridLayout", G2L["31"]);
-G2L["32"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
-G2L["32"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
-G2L["32"]["CellPadding"] = UDim2.new(0.015, 0, 0.015, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.GunName
+G2L["32"] = Instance.new("TextLabel", G2L["31"]);
+G2L["32"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["32"]["ZIndex"] = 2;
+G2L["32"]["BorderSizePixel"] = 0;
+G2L["32"]["TextSize"] = 30;
+G2L["32"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["32"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["32"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["32"]["BackgroundTransparency"] = 1;
+G2L["32"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["32"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["32"]["Text"] = [[Sniper Rifle]];
+G2L["32"]["Name"] = [[GunName]];
 
 
--- StarterGui.Gunsmith.Selections.Pack.UIPadding
-G2L["33"] = Instance.new("UIPadding", G2L["31"]);
-G2L["33"]["PaddingTop"] = UDim.new(0, 10);
-G2L["33"]["PaddingRight"] = UDim.new(0, 10);
-G2L["33"]["PaddingLeft"] = UDim.new(0, 10);
-G2L["33"]["PaddingBottom"] = UDim.new(0, 10);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.ViewportFrame
+G2L["33"] = Instance.new("ViewportFrame", G2L["31"]);
+G2L["33"]["BorderSizePixel"] = 0;
+G2L["33"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["33"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["33"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["33"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Selections.UICorner
-G2L["34"] = Instance.new("UICorner", G2L["30"]);
-G2L["34"]["CornerRadius"] = UDim.new(0, 5);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes
+G2L["34"] = Instance.new("Frame", G2L["31"]);
+G2L["34"]["BorderSizePixel"] = 0;
+G2L["34"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["34"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["34"]["Size"] = UDim2.new(1, 0, 0, 50);
+G2L["34"]["Position"] = UDim2.new(0, 0, 1, 0);
+G2L["34"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["34"]["Name"] = [[AttachmentTypes]];
+G2L["34"]["BackgroundTransparency"] = 1;
 
 
--- StarterGui.Gunsmith.Selections.DropShadow
-G2L["35"] = Instance.new("ImageLabel", G2L["30"]);
-G2L["35"]["ZIndex"] = -5;
-G2L["35"]["BorderSizePixel"] = 0;
-G2L["35"]["SliceCenter"] = Rect.new(49, 49, 450, 450);
-G2L["35"]["ScaleType"] = Enum.ScaleType.Slice;
-G2L["35"]["ImageTransparency"] = 0.5;
--- [ERROR] cannot convert ImageContent, please report to "https://github.com/uniquadev/GuiToLuaConverter/issues"
-G2L["35"]["ImageColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["35"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
-G2L["35"]["Image"] = [[rbxassetid://6014261993]];
-G2L["35"]["Size"] = UDim2.new(1, 47, 1, 47);
-G2L["35"]["BackgroundTransparency"] = 1;
-G2L["35"]["Name"] = [[DropShadow]];
-G2L["35"]["Position"] = UDim2.new(0.5, 0, 0.5, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UIListLayout
+G2L["35"] = Instance.new("UIListLayout", G2L["34"]);
+G2L["35"]["HorizontalAlignment"] = Enum.HorizontalAlignment.Center;
+G2L["35"]["Padding"] = UDim.new(0, 10);
+G2L["35"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+G2L["35"]["FillDirection"] = Enum.FillDirection.Horizontal;
 
 
--- StarterGui.Gunsmith.Selections.Close
-G2L["36"] = Instance.new("TextButton", G2L["30"]);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Barrel
+G2L["36"] = Instance.new("TextButton", G2L["34"]);
+G2L["36"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
 G2L["36"]["BorderSizePixel"] = 0;
-G2L["36"]["TextSize"] = 25;
-G2L["36"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["36"]["BackgroundColor3"] = Color3.fromRGB(255, 0, 0);
-G2L["36"]["FontFace"] = Font.new([[rbxasset://fonts/families/GothamSSm.json]], Enum.FontWeight.Medium, Enum.FontStyle.Normal);
-G2L["36"]["AnchorPoint"] = Vector2.new(0.5, 0.5);
-G2L["36"]["Size"] = UDim2.new(0, 50, 0, 50);
+G2L["36"]["TextSize"] = 18;
+G2L["36"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["36"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["36"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["36"]["BackgroundTransparency"] = 0.5;
+G2L["36"]["Size"] = UDim2.new(0.25, 0, 0, 40);
 G2L["36"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["36"]["Text"] = [[X]];
-G2L["36"]["Name"] = [[Close]];
-G2L["36"]["Position"] = UDim2.new(1, 0, 0, 0);
+G2L["36"]["Text"] = [[Barrel]];
+G2L["36"]["Name"] = [[Barrel]];
+G2L["36"]["Visible"] = false;
 
 
--- StarterGui.Gunsmith.Selections.Close.UICorner
-G2L["37"] = Instance.new("UICorner", G2L["36"]);
-G2L["37"]["CornerRadius"] = UDim.new(1, 0);
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Barrel.UIPadding
+G2L["37"] = Instance.new("UIPadding", G2L["36"]);
+G2L["37"]["PaddingTop"] = UDim.new(0, 20);
+G2L["37"]["PaddingRight"] = UDim.new(0, 20);
+G2L["37"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["37"]["PaddingBottom"] = UDim.new(0, 20);
 
 
--- StarterGui.Gunsmith.NewClient
-G2L["38"] = Instance.new("LocalScript", G2L["1"]);
-G2L["38"]["Name"] = [[NewClient]];
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Barrel.Underline
+G2L["38"] = Instance.new("Frame", G2L["36"]);
+G2L["38"]["BorderSizePixel"] = 0;
+G2L["38"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["38"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["38"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["38"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["38"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["38"]["Name"] = [[Underline]];
 
 
--- StarterGui.Gunsmith.NewClient
-local function C_38()
-local script = G2L["38"];
-	local TweenService 		= game:GetService("TweenService")
-	local Run 				= game:GetService("RunService")
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UnderBarrel
+G2L["39"] = Instance.new("TextButton", G2L["34"]);
+G2L["39"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["39"]["BorderSizePixel"] = 0;
+G2L["39"]["TextSize"] = 18;
+G2L["39"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["39"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["39"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["39"]["BackgroundTransparency"] = 0.5;
+G2L["39"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["39"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["39"]["Text"] = [[UnderBarrel]];
+G2L["39"]["Name"] = [[UnderBarrel]];
+G2L["39"]["Visible"] = false;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UnderBarrel.UIPadding
+G2L["3a"] = Instance.new("UIPadding", G2L["39"]);
+G2L["3a"]["PaddingTop"] = UDim.new(0, 20);
+G2L["3a"]["PaddingRight"] = UDim.new(0, 20);
+G2L["3a"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["3a"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.UnderBarrel.Underline
+G2L["3b"] = Instance.new("Frame", G2L["39"]);
+G2L["3b"]["BorderSizePixel"] = 0;
+G2L["3b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3b"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["3b"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["3b"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["3b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3b"]["Name"] = [[Underline]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Sight
+G2L["3c"] = Instance.new("TextButton", G2L["34"]);
+G2L["3c"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["3c"]["BorderSizePixel"] = 0;
+G2L["3c"]["TextSize"] = 18;
+G2L["3c"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["3c"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["3c"]["BackgroundTransparency"] = 0.5;
+G2L["3c"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["3c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3c"]["Text"] = [[Sight]];
+G2L["3c"]["Name"] = [[Sight]];
+G2L["3c"]["Visible"] = false;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Sight.UIPadding
+G2L["3d"] = Instance.new("UIPadding", G2L["3c"]);
+G2L["3d"]["PaddingTop"] = UDim.new(0, 20);
+G2L["3d"]["PaddingRight"] = UDim.new(0, 20);
+G2L["3d"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["3d"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Sight.Underline
+G2L["3e"] = Instance.new("Frame", G2L["3c"]);
+G2L["3e"]["BorderSizePixel"] = 0;
+G2L["3e"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["3e"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["3e"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["3e"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["3e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3e"]["Name"] = [[Underline]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Other
+G2L["3f"] = Instance.new("TextButton", G2L["34"]);
+G2L["3f"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["3f"]["BorderSizePixel"] = 0;
+G2L["3f"]["TextSize"] = 18;
+G2L["3f"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["3f"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3f"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["3f"]["BackgroundTransparency"] = 0.5;
+G2L["3f"]["Size"] = UDim2.new(0.25, 0, 0, 40);
+G2L["3f"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["3f"]["Text"] = [[Other]];
+G2L["3f"]["Name"] = [[Other]];
+G2L["3f"]["Visible"] = false;
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Other.UIPadding
+G2L["40"] = Instance.new("UIPadding", G2L["3f"]);
+G2L["40"]["PaddingTop"] = UDim.new(0, 20);
+G2L["40"]["PaddingRight"] = UDim.new(0, 20);
+G2L["40"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["40"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.AttachmentTypes.Other.Underline
+G2L["41"] = Instance.new("Frame", G2L["3f"]);
+G2L["41"]["BorderSizePixel"] = 0;
+G2L["41"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["41"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["41"]["Size"] = UDim2.new(1, 40, 0, 1);
+G2L["41"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["41"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["41"]["Name"] = [[Underline]];
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.Finish
+G2L["42"] = Instance.new("TextButton", G2L["31"]);
+G2L["42"]["BorderSizePixel"] = 0;
+G2L["42"]["TextSize"] = 25;
+G2L["42"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["42"]["BackgroundColor3"] = Color3.fromRGB(141, 255, 109);
+G2L["42"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["42"]["AnchorPoint"] = Vector2.new(0.5, 1);
+G2L["42"]["BackgroundTransparency"] = 0.2;
+G2L["42"]["Size"] = UDim2.new(0, 200, 0, 30);
+G2L["42"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["42"]["Text"] = [[Finish]];
+G2L["42"]["Name"] = [[Finish]];
+G2L["42"]["Visible"] = false;
+G2L["42"]["Position"] = UDim2.new(0.5, 0, 1, -60);
+
+
+-- StarterGui.AttachmentMenu.Graphical.Main.Menu.Pages.Attachments.Center.Finish.UICorner
+G2L["43"] = Instance.new("UICorner", G2L["42"]);
+G2L["43"]["CornerRadius"] = UDim.new(0, 15);
+
+
+-- StarterGui.AttachmentMenu.Scripts
+G2L["44"] = Instance.new("Folder", G2L["1"]);
+G2L["44"]["Name"] = [[Scripts]];
+
+
+-- StarterGui.AttachmentMenu.Scripts.Handler
+G2L["45"] = Instance.new("LocalScript", G2L["44"]);
+G2L["45"]["Name"] = [[Handler]];
+
+
+-- StarterGui.AttachmentMenu.Scripts.Handler.TabControl
+G2L["46"] = Instance.new("ModuleScript", G2L["45"]);
+G2L["46"]["Name"] = [[TabControl]];
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates
+G2L["47"] = Instance.new("Folder", G2L["44"]);
+G2L["47"]["Name"] = [[Templates]];
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates.Gun
+G2L["48"] = Instance.new("TextButton", G2L["47"]);
+G2L["48"]["BorderSizePixel"] = 0;
+G2L["48"]["TextTransparency"] = 1;
+G2L["48"]["TextSize"] = 1;
+G2L["48"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["48"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["48"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["48"]["BackgroundTransparency"] = 0.5;
+G2L["48"]["Size"] = UDim2.new(0, 200, 0, 50);
+G2L["48"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["48"]["Text"] = [[]];
+G2L["48"]["Name"] = [[Gun]];
+G2L["48"]["Visible"] = false;
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates.Gun.UICorner
+G2L["49"] = Instance.new("UICorner", G2L["48"]);
+G2L["49"]["CornerRadius"] = UDim.new(0, 15);
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates.Gun.GunName
+G2L["4a"] = Instance.new("TextLabel", G2L["48"]);
+G2L["4a"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["4a"]["ZIndex"] = 2;
+G2L["4a"]["BorderSizePixel"] = 0;
+G2L["4a"]["TextSize"] = 14;
+G2L["4a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["4a"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["4a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["4a"]["BackgroundTransparency"] = 1;
+G2L["4a"]["AnchorPoint"] = Vector2.new(0, 1);
+G2L["4a"]["Size"] = UDim2.new(1, 0, 0, 35);
+G2L["4a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4a"]["Text"] = [[Sniper Rifle]];
+G2L["4a"]["Name"] = [[GunName]];
+G2L["4a"]["Position"] = UDim2.new(0, 0, 1, 0);
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates.Gun.ViewportFrame
+G2L["4b"] = Instance.new("ViewportFrame", G2L["48"]);
+G2L["4b"]["BorderSizePixel"] = 0;
+G2L["4b"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["4b"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["4b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4b"]["BackgroundTransparency"] = 1;
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates.Attachment
+G2L["4c"] = Instance.new("TextButton", G2L["47"]);
+G2L["4c"]["TextTruncate"] = Enum.TextTruncate.AtEnd;
+G2L["4c"]["BorderSizePixel"] = 0;
+G2L["4c"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+G2L["4c"]["TextSize"] = 18;
+G2L["4c"]["TextColor3"] = Color3.fromRGB(151, 151, 151);
+G2L["4c"]["BackgroundColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4c"]["FontFace"] = Font.new([[rbxasset://fonts/families/Sarpanch.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+G2L["4c"]["BackgroundTransparency"] = 1;
+G2L["4c"]["Size"] = UDim2.new(1, 0, 0, 40);
+G2L["4c"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4c"]["Text"] = [[Barrel]];
+G2L["4c"]["Name"] = [[Attachment]];
+G2L["4c"]["Visible"] = false;
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates.Attachment.UIPadding
+G2L["4d"] = Instance.new("UIPadding", G2L["4c"]);
+G2L["4d"]["PaddingTop"] = UDim.new(0, 20);
+G2L["4d"]["PaddingRight"] = UDim.new(0, 20);
+G2L["4d"]["PaddingLeft"] = UDim.new(0, 20);
+G2L["4d"]["PaddingBottom"] = UDim.new(0, 20);
+
+
+-- StarterGui.AttachmentMenu.Scripts.Templates.Attachment.Underline
+G2L["4e"] = Instance.new("Frame", G2L["4c"]);
+G2L["4e"]["BorderSizePixel"] = 0;
+G2L["4e"]["BackgroundColor3"] = Color3.fromRGB(101, 101, 101);
+G2L["4e"]["AnchorPoint"] = Vector2.new(0.5, 0);
+G2L["4e"]["Size"] = UDim2.new(1, 0, 0, 1);
+G2L["4e"]["Position"] = UDim2.new(0.5, 0, 0, 20);
+G2L["4e"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["4e"]["Name"] = [[Underline]];
+
+
+-- StarterGui.AttachmentMenu.Scripts.ToolStorage
+G2L["4f"] = Instance.new("Folder", G2L["44"]);
+G2L["4f"]["Name"] = [[ToolStorage]];
+
+
+-- Require G2L wrapper
+local G2L_REQUIRE = require;
+local G2L_MODULES = {};
+local function require(Module:ModuleScript)
+    local ModuleState = G2L_MODULES[Module];
+    if ModuleState then
+        if not ModuleState.Required then
+            ModuleState.Required = true;
+            ModuleState.Value = ModuleState.Closure();
+        end
+        return ModuleState.Value;
+    end;
+    return G2L_REQUIRE(Module);
+end
+
+G2L_MODULES[G2L["46"]] = {
+Closure = function()
+    local script = G2L["46"];local TabControl = {}
+TabControl.__index = TabControl
+
+function TabControl.new(config)
+	local self = setmetatable({}, TabControl)
 	
-	local plr 			= game.Players.LocalPlayer
-	local RS 			= game.ReplicatedStorage
-	local Engine 		= RS:WaitForChild("ACS_Engine")
-	local Mods 			= Engine:WaitForChild("Modules")
-	local GunModels 	= Engine:WaitForChild("GunModels")
-	local AttModels 	= Engine:WaitForChild("AttModels")
-	local AttModules  	= Engine:WaitForChild("AttModules")
-	local Rules			= Engine:WaitForChild("GameRules")
-	local Events        = Engine:WaitForChild("Events")
+	self.CurrentTab = nil
+	self.LastActivatedTab = nil
 	
-	local Ultil			= require(Mods:WaitForChild("Utilities"))
+	self.TabSessions = {}
 	
-	--local WT 				= script.Parent.Vars.Model.Value
-	local WT_Tool 			= script.Parent.Vars.ToolStorage
-	--local WT_Evt 			= WT.Configuration.Events
-	
-	local Gun, GunData
-	
-	local viewportFrame 	= script.Parent.Main.ViewportFrame
-	
-	local viewportCamera 	= Instance.new("Camera")
-	viewportFrame.CurrentCamera = viewportCamera
-	viewportCamera.Parent 	= viewportFrame
-	
-	local model
-	local orientation, size
-	
-	local SightAtt, BarrelAtt, UnderBarrelAtt, OtherAtt
-	local SightData, BarrelData, UnderBarrelData, OtherData
-	
-	local a = 90
-	
-	--[[
-	local require = function(module)
-		if typeof(module) == "Instance" then
-			if module.Parent and module.Parent:FindFirstChild("__"..module.Name.."__") then
-				return require(module.Parent:FindFirstChild("__"..module.Name.."__"))
-			end
-			local clone = module:Clone()
-			clone.Name = "__"..clone.Name.."__"
-			clone.Parent = module.Parent
-			
-			return require(clone)
+	return self
+end
+
+function TabControl:_validateConfig(defaults, newConfig)
+	for key, value in pairs(defaults) do
+		if newConfig[key] == nil then
+			newConfig[key] = value
 		end
 	end
-	]]
+	return newConfig
+end
+
+function TabControl:AddTab(button, name, onActivate, onDeactivate, selected)
+	local active = false
 	
-	--------------------mods
+	if selected == nil then
+		selected = true
+	end
 	
-	local ModTable = {
+	local session = {
+		name = name,
+		temp = button,
+		
+		onActive = function(currentTab)
+			self.CurrentTab = currentTab
+			currentTab.active = true
+			active = true
+			if type(onActivate) == "function" then
+				onActivate(currentTab)
+			end
+		end,
+		onDeactive = function(currentTab)
+			active = false
+			currentTab.active = false
+			if type(onDeactivate) == "function" then
+				onDeactivate(currentTab)
+			end
+		end,
+		
+		active = active,
+	}
 	
+	if (not self.CurrentTab) and selected then
+		session.onActive(session)
+	end
+	
+	if typeof(button) == "Instance" then
+		if button:IsA("TextButton") or button:IsA("ImageButton") then
+			button.Activated:Connect(function()
+				if active then
+					return
+				else
+					if self.CurrentTab then
+						self.CurrentTab.onDeactive(self.CurrentTab)
+					end
+					session.onActive(session)
+				end
+			end)
+		end
+	end
+	
+	return session
+end
+
+function TabControl:SwitchTab(session)
+	if self.CurrentTab == session and type(session) ~= "table" then
+		return
+	end
+	self.CurrentTab.onDeactive(self.CurrentTab)
+	session.onActive(session)
+	self.CurrentTab = session
+end
+
+return TabControl
+
+end;
+};
+-- StarterGui.AttachmentMenu.Scripts.Handler
+local function C_45()
+local script = G2L["45"];
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local UserInputService = game:GetService("UserInputService")
+	local RunService = game:GetService("RunService")
+	
+	local engine = ReplicatedStorage:FindFirstChild("ACS_Engine")
+	local acsModules = engine:WaitForChild("Modules")
+	local attachmentModules = engine:WaitForChild("AttModules")
+	local attachmentModels = engine:WaitForChild("AttModels")
+	local gunModels = engine:WaitForChild("GunModels")
+	
+	local scripts = script.Parent
+	local gui = scripts.Parent
+	local graphical = gui.Graphical
+	
+	local toolStorage = scripts.ToolStorage
+	local templates = scripts.Templates
+	
+	local tabControl = require(script.TabControl).new()
+	local attTabControl = require(script.TabControl).new()
+	local utils = require(acsModules.Utilities)
+	
+	local main = graphical.Main
+	local menu = main.Menu
+	local top = menu.Top
+	local pages = menu.Pages
+	
+	local guns = pages.Guns
+	local attachments = pages.Attachments
+	
+	local localPlayer = Players.LocalPlayer
+	
+	local predefinedAttachments = {
+		-- Barrel Attachments
+		["Muzzle Brake"] = "BarrelAtt",
+		["Compensator"] = "BarrelAtt",
+		["Suppressor"] = "BarrelAtt",
+		["Flash Hider"] = "BarrelAtt",
+	
+		-- Sight Attachments
+		["Red Dot"] = "SightAtt",
+		["ACOG Scope"] = "SightAtt",
+		["Sniper Scope"] = "SightAtt",
+	
+		-- Underbarrel Attachments
+		["Vertical Grip"] = "UnderBarrelAtt",
+		["Angled Grip"] = "UnderBarrelAtt",
+		["Bipod"] = "UnderBarrelAtt",
+		["Laser Sight"] = "UnderBarrelAtt",
+		["Flashlight"] = "UnderBarrelAtt",
+	
+		-- Other Attachments
+		["Infrared Module"] = "OtherAtt"
+	}
+	local modTable = {
 		camRecoilMod 	= {
 			RecoilUp 	= 1,
 			RecoilLeft 	= 1,
@@ -756,498 +1050,463 @@ local script = G2L["38"];
 		,WalkMult 					= 1
 		,adsTime 					= 1		
 		,MuzzleVelocity 			= 1
-	}  
+	}
+	local storage = {
+		model = nil,
+		weapon = nil,
+		gunData = nil,
+		
+		orientation = nil,
+		size = nil,
+		
+		mainViewport = nil,
+	}
+	local attachmentData = {
+		SightAtt = nil,
+		BarrelAtt = nil,
+		UnderBarrelAtt = nil,
+		OtherAtt = nil,
+	}
+	local attachmentTypes = {
+		SightAtt = nil,
+		BarrelAtt = nil,
+		UnderBarrelAtt = nil,
+		OtherAtt = nil,
+	}
+	local rotationStates = {}
 	
-	--------------------mods
+	local gunsTab = tabControl:AddTab(nil, "Guns", function()
+		guns.Visible = true
+	end, function()
+		guns.Visible = false
+	end)
+	local attachmentsTab = tabControl:AddTab(nil, "Attachments", function()
+		attachments.Visible = true
+	end, function()
+		attachments.Visible = false
+	end)
 	
+	top.Close.Activated:Connect(function()
+		close()
+	end)
+	pages.Attachments.Center.Finish.Activated:Connect(function()
+		close()
+	end)
+	function close()
+		if storage.weapon then
+			storage.weapon.Parent = localPlayer.Backpack
+		end
 	
-	function UnSetGun()
-		model:Destroy()
-		model = nil
-		Gun = nil
-		GunData = nil
-		resetMods()
+		unsetWeapon()
+		updateGunInfo()
+		gui:Destroy()
 	end
+	function setupGun()
+		for _, tool in pairs(toolStorage:GetChildren()) do
+			if tool:IsA("Tool") and require(tool.ACS_Settings).Type == 'Gun' then
+				storage.weapon = tool
+				storage.gunData = require(tool.ACS_Settings)
 	
-	local equipEvent = nil
-	local unequipEvent = nil
-	function SetupGun()
-		for Arg1, Child in pairs(WT_Tool:GetChildren()) do
-			if Child:IsA("Tool") and require(Child.ACS_Settings).Type == 'Gun' then
-				Gun 		= Child
-				GunData 	= require(Child.ACS_Settings)
-	
-				model				= GunModels:FindFirstChild(Child.Name):Clone()
-				model.PrimaryPart 	= model.Handle
-	
-				for L_213_forvar1, L_214_forvar2 in pairs(model.Nodes:GetChildren()) do
-					if L_214_forvar2:IsA('BasePart') then
-						Ultil.Weld(L_214_forvar2, model:WaitForChild("Handle"))
-						L_214_forvar2.Anchored = false
-						L_214_forvar2.CanCollide = false
-					end
-				end;
-	
-				loadAttachment(model)
-	
-				orientation, size 	= model:GetBoundingBox()
-				model.Parent 		= viewportFrame
-	
-				model:SetPrimaryPartCFrame(CFrame.new(0,0,0) * CFrame.Angles(math.rad(0),math.rad(a),math.rad(0)))
-	
-				viewportCamera.CFrame = CFrame.new(size*1.5, model.PrimaryPart.Position)
-	
-				GunInfoUpdate()
-	
-				if model.Nodes:FindFirstChild("Sight") ~= nil then
-					script.Parent.Main.Attachments.Sight.Visible = true
-				else
-					script.Parent.Main.Attachments.Sight.Visible = false
-				end
-	
-				if model.Nodes:FindFirstChild("Barrel") ~= nil then
-					script.Parent.Main.Attachments.Barrel.Visible = true
-				else
-					script.Parent.Main.Attachments.Barrel.Visible = false
-				end
-	
-				if model.Nodes:FindFirstChild("UnderBarrel") ~= nil then
-					script.Parent.Main.Attachments.Under.Visible = true
-				else
-					script.Parent.Main.Attachments.Under.Visible = false
-				end
-	
-				if model.Nodes:FindFirstChild("Other") ~= nil then
-					script.Parent.Main.Attachments.Other.Visible = true
-				else
-					script.Parent.Main.Attachments.Other.Visible = false
-				end
-				if equipEvent then
-					equipEvent:Disconnect()
-					equipEvent = nil
-				end
-				if unequipEvent then
-					unequipEvent:Disconnect()
-					unequipEvent = nil
-				end
+				storage.model = gunModels:WaitForChild(tool.Name):Clone()
+				storage.model.PrimaryPart = storage.model.Handle
 				
-				--[[
-				local animData = require(Gun.ACS_Animations)
-				equipEvent = Gun.Equipped:Connect(function()
-					local viewModel = workspace.CurrentCamera:FindFirstChild("Viewmodel")
-					
-					Events:WaitForChild("Equip"):FireServer(Gun, 1, GunData, animData)
-					if viewModel then
-						local viewGun = viewModel:FindFirstChild(GunData.gunName)
-						if viewGun then
-							loadAttachment(viewGun)
+				local nodes = storage.model:FindFirstChild("Nodes")
+				
+				if nodes then
+					for L_213_forvar1, L_214_forvar2 in pairs(nodes:GetChildren()) do
+						if L_214_forvar2:IsA('BasePart') then
+							utils.Weld(L_214_forvar2, storage.model:WaitForChild("Handle"))
+							L_214_forvar2.Anchored = false
+							L_214_forvar2.CanCollide = false
 						end
+					end;
+				end
+	
+				loadAttachment(storage.model)
+				setupViewport(pages.Attachments.Center.ViewportFrame, storage.model, true)
+				updateGunInfo()
+				
+				local function canVisible(button)
+					if nodes then
+						local name = button.Name
+						if nodes:FindFirstChild(name) then
+							button.Visible = true
+						else
+							button.Visible = false
+						end
+					else
+						button.Visible = false
 					end
-				end)
-				unequipEvent = Gun.Unequipped:Connect(function()
-					Events:WaitForChild("Equip"):FireServer(Gun, 2, GunData, animData)
-				end)
-				Gun.Destroying:Connect(function()
-					script.Parent:Destroy()
-				end)
-				]]
+				end
+	
+				canVisible(pages.Attachments.Center.AttachmentTypes.Barrel)
+				canVisible(pages.Attachments.Center.AttachmentTypes.Other)
+				canVisible(pages.Attachments.Center.AttachmentTypes.Sight)
+				canVisible(pages.Attachments.Center.AttachmentTypes.UnderBarrel)
 			else
-				Gun 		= nil
-				GunData		= nil
-				model 		= nil
-				orientation = nil 
-				size 		= nil
-				GunInfoUpdate()
+				storage.weapon = nil
+				storage.gunData = nil
+				storage.model = nil
+				
+				updateGunInfo()
 			end
 		end
 	
 	end
-	
+	function unsetWeapon()
+		if storage.model then
+			storage.model:Destroy()
+			storage.model = nil
+		end
+		storage.weapon = nil
+		storage.gunData = nil
+		
+		resetMods()
+	end
 	function resetMods()
+		modTable.camRecoilMod.RecoilUp 		= 1
+		modTable.camRecoilMod.RecoilLeft 	= 1
+		modTable.camRecoilMod.RecoilRight 	= 1
 	
-		ModTable.camRecoilMod.RecoilUp 		= 1
-		ModTable.camRecoilMod.RecoilLeft 	= 1
-		ModTable.camRecoilMod.RecoilRight 	= 1
+		modTable.gunRecoilMod.RecoilUp 		= 1
+		modTable.gunRecoilMod.RecoilTilt 	= 1
+		modTable.gunRecoilMod.RecoilLeft 	= 1
+		modTable.gunRecoilMod.RecoilRight 	= 1
 	
-		ModTable.gunRecoilMod.RecoilUp 		= 1
-		ModTable.gunRecoilMod.RecoilTilt 	= 1
-		ModTable.gunRecoilMod.RecoilLeft 	= 1
-		ModTable.gunRecoilMod.RecoilRight 	= 1
+		modTable.AimRM			= 1
+		modTable.SpreadRM 		= 1
+		modTable.DamageMod 		= 1
+		modTable.minDamageMod 	= 1
 	
-		ModTable.AimRM			= 1
-		ModTable.SpreadRM 		= 1
-		ModTable.DamageMod 		= 1
-		ModTable.minDamageMod 	= 1
+		modTable.MinRecoilPower 		= 1
+		modTable.MaxRecoilPower 		= 1
+		modTable.RecoilPowerStepAmount 	= 1
 	
-		ModTable.MinRecoilPower 		= 1
-		ModTable.MaxRecoilPower 		= 1
-		ModTable.RecoilPowerStepAmount 	= 1
-	
-		ModTable.MinSpread 					= 1
-		ModTable.MaxSpread 					= 1
-		ModTable.AimInaccuracyStepAmount 	= 1
-		ModTable.AimInaccuracyDecrease 		= 1
-		ModTable.WalkMult 					= 1
-		ModTable.MuzzleVelocity 			= 1
-	
+		modTable.MinSpread 					= 1
+		modTable.MaxSpread 					= 1
+		modTable.AimInaccuracyStepAmount 	= 1
+		modTable.AimInaccuracyDecrease 		= 1
+		modTable.WalkMult 					= 1
+		modTable.MuzzleVelocity 			= 1
 	end
+	function setMods(data)
+		modTable.camRecoilMod.RecoilUp 		= modTable.camRecoilMod.RecoilUp * data.camRecoil.RecoilUp
+		modTable.camRecoilMod.RecoilLeft 	= modTable.camRecoilMod.RecoilLeft * data.camRecoil.RecoilLeft
+		modTable.camRecoilMod.RecoilRight 	= modTable.camRecoilMod.RecoilRight * data.camRecoil.RecoilRight
 	
-	function setMods(ModData)
+		modTable.gunRecoilMod.RecoilUp 		= modTable.gunRecoilMod.RecoilUp * data.gunRecoil.RecoilUp
+		modTable.gunRecoilMod.RecoilTilt 	= modTable.gunRecoilMod.RecoilTilt * data.gunRecoil.RecoilTilt
+		modTable.gunRecoilMod.RecoilLeft 	= modTable.gunRecoilMod.RecoilLeft * data.gunRecoil.RecoilLeft
+		modTable.gunRecoilMod.RecoilRight 	= modTable.gunRecoilMod.RecoilRight * data.gunRecoil.RecoilRight
 	
-		ModTable.camRecoilMod.RecoilUp 		= ModTable.camRecoilMod.RecoilUp * ModData.camRecoil.RecoilUp
-		ModTable.camRecoilMod.RecoilLeft 	= ModTable.camRecoilMod.RecoilLeft * ModData.camRecoil.RecoilLeft
-		ModTable.camRecoilMod.RecoilRight 	= ModTable.camRecoilMod.RecoilRight * ModData.camRecoil.RecoilRight
+		modTable.AimRM						= modTable.AimRM * data.AimRecoilReduction
+		modTable.SpreadRM 					= modTable.SpreadRM * data.AimSpreadReduction
+		modTable.DamageMod 					= modTable.DamageMod * data.DamageMod
+		modTable.minDamageMod 				= modTable.minDamageMod * data.minDamageMod
 	
-		ModTable.gunRecoilMod.RecoilUp 		= ModTable.gunRecoilMod.RecoilUp * ModData.gunRecoil.RecoilUp
-		ModTable.gunRecoilMod.RecoilTilt 	= ModTable.gunRecoilMod.RecoilTilt * ModData.gunRecoil.RecoilTilt
-		ModTable.gunRecoilMod.RecoilLeft 	= ModTable.gunRecoilMod.RecoilLeft * ModData.gunRecoil.RecoilLeft
-		ModTable.gunRecoilMod.RecoilRight 	= ModTable.gunRecoilMod.RecoilRight * ModData.gunRecoil.RecoilRight
+		modTable.MinRecoilPower 			= modTable.MinRecoilPower * data.MinRecoilPower
+		modTable.MaxRecoilPower 			= modTable.MaxRecoilPower * data.MaxRecoilPower
+		modTable.RecoilPowerStepAmount 		= modTable.RecoilPowerStepAmount * data.RecoilPowerStepAmount
 	
-		ModTable.AimRM						= ModTable.AimRM * ModData.AimRecoilReduction
-		ModTable.SpreadRM 					= ModTable.SpreadRM * ModData.AimSpreadReduction
-		ModTable.DamageMod 					= ModTable.DamageMod * ModData.DamageMod
-		ModTable.minDamageMod 				= ModTable.minDamageMod * ModData.minDamageMod
-	
-		ModTable.MinRecoilPower 			= ModTable.MinRecoilPower * ModData.MinRecoilPower
-		ModTable.MaxRecoilPower 			= ModTable.MaxRecoilPower * ModData.MaxRecoilPower
-		ModTable.RecoilPowerStepAmount 		= ModTable.RecoilPowerStepAmount * ModData.RecoilPowerStepAmount
-	
-		ModTable.MinSpread 					= ModTable.MinSpread * ModData.MinSpread
-		ModTable.MaxSpread 					= ModTable.MaxSpread * ModData.MaxSpread
-		ModTable.AimInaccuracyStepAmount 	= ModTable.AimInaccuracyStepAmount * ModData.AimInaccuracyStepAmount
-		ModTable.AimInaccuracyDecrease 		= ModTable.AimInaccuracyDecrease * ModData.AimInaccuracyDecrease
-		ModTable.WalkMult 					= ModTable.WalkMult * ModData.WalkMult
-		ModTable.MuzzleVelocity 			= ModTable.MuzzleVelocity * ModData.MuzzleVelocityMod
+		modTable.MinSpread 					= modTable.MinSpread * data.MinSpread
+		modTable.MaxSpread 					= modTable.MaxSpread * data.MaxSpread
+		modTable.AimInaccuracyStepAmount 	= modTable.AimInaccuracyStepAmount * data.AimInaccuracyStepAmount
+		modTable.AimInaccuracyDecrease 		= modTable.AimInaccuracyDecrease * data.AimInaccuracyDecrease
+		modTable.WalkMult 					= modTable.WalkMult * data.WalkMult
+		modTable.MuzzleVelocity 			= modTable.MuzzleVelocity * data.MuzzleVelocityMod
 	end
-	
 	function loadAttachment(weapon)
-		if weapon and weapon:FindFirstChild("Nodes") ~= nil then
+		if weapon and weapon:FindFirstChild("Nodes") then
+			local function setAtt(name, attType, weldFunc)
+				if weapon.Nodes:FindFirstChild(name) and storage.gunData[attType] ~= "" then
+					attachmentData[attType] =  require(attachmentModules[storage.gunData[attType]])
+					attachmentTypes[attType] = attachmentModels[storage.gunData[attType]]:Clone()
+					attachmentTypes[attType].Parent = weapon
+					attachmentTypes[attType]:SetPrimaryPartCFrame(weapon.Nodes[name].CFrame)
+					
+					if name == "Sight" then
+						weapon.AimPart.CFrame = attachmentTypes[attType].AimPos.CFrame
+					end
 	
-			--load sight Att
-			if weapon.Nodes:FindFirstChild("Sight") ~= nil and GunData.SightAtt ~= "" then
-	
-				SightData =  require(AttModules[GunData.SightAtt])
-				SightAtt = AttModels[GunData.SightAtt]:Clone()
-				SightAtt.Parent = weapon
-				SightAtt:SetPrimaryPartCFrame(weapon.Nodes.Sight.CFrame)
-				weapon.AimPart.CFrame = SightAtt.AimPos.CFrame
-	
-				setMods(SightData)
-	
+					setMods(attachmentData[attType])
+					
+					if type(weldFunc) == "function" then
+						weldFunc(weapon, attachmentTypes[attType])
+					end
+				end
+			end
+			setAtt("Sight", "SightAtt", function(weapon, attachment)
 				for L_209_forvar1, L_210_forvar2 in pairs(weapon:GetChildren()) do
 					if L_210_forvar2.Name == "IS" then
 						L_210_forvar2.Transparency = 1
 					end
 				end
 	
-				for L_209_forvar1, L_210_forvar2 in pairs(SightAtt:GetChildren()) do
+				for L_209_forvar1, L_210_forvar2 in pairs(attachment:GetChildren()) do
 					if L_210_forvar2:IsA('BasePart') then
-						Ultil.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
+						utils.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
 						L_210_forvar2.Anchored = false
 						L_210_forvar2.CanCollide = false
 					end
 				end
-			end
+			end)
 	
-			--load Barrel Att
-			if weapon.Nodes:FindFirstChild("Barrel") ~= nil and GunData.BarrelAtt ~= "" then
-	
-				BarrelData =  require(AttModules[GunData.BarrelAtt])
-				BarrelAtt = AttModels[GunData.BarrelAtt]:Clone()
-				BarrelAtt.Parent = weapon
-				BarrelAtt:SetPrimaryPartCFrame(weapon.Nodes.Barrel.CFrame)
-	
-				setMods(BarrelData)
-	
-				for L_209_forvar1, L_210_forvar2 in pairs(BarrelAtt:GetChildren()) do
+			setAtt("Barrel", "BarrelAtt", function(weapon, attachment)
+				for L_209_forvar1, L_210_forvar2 in pairs(attachment:GetChildren()) do
 					if L_210_forvar2:IsA('BasePart') then
-						Ultil.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
+						utils.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
 						L_210_forvar2.Anchored = false
 						L_210_forvar2.CanCollide = false
 					end
 				end
-			end
+			end)
 	
-			--load Under Barrel Att
-			if weapon.Nodes:FindFirstChild("UnderBarrel") ~= nil and GunData.UnderBarrelAtt ~= "" then
-	
-				UnderBarrelData =  require(AttModules[GunData.UnderBarrelAtt])
-				UnderBarrelAtt = AttModels[GunData.UnderBarrelAtt]:Clone()
-				UnderBarrelAtt.Parent = weapon
-				UnderBarrelAtt:SetPrimaryPartCFrame(weapon.Nodes.UnderBarrel.CFrame)
-	
-				setMods(UnderBarrelData)
-	
-				for L_209_forvar1, L_210_forvar2 in pairs(UnderBarrelAtt:GetChildren()) do
+			setAtt("UnderBarrel", "UnderBarrelAtt", function(weapon, attachment)
+				for L_209_forvar1, L_210_forvar2 in pairs(attachment:GetChildren()) do
 					if L_210_forvar2:IsA('BasePart') then
-						Ultil.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
+						utils.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
 						L_210_forvar2.Anchored = false
 						L_210_forvar2.CanCollide = false
 					end
 				end
-			end
+			end)
 	
-			if weapon.Nodes:FindFirstChild("Other") ~= nil and GunData.OtherAtt ~= "" then
-	
-				OtherData =  require(AttModules[GunData.OtherAtt])
-				OtherAtt = AttModels[GunData.OtherAtt]:Clone()
-				OtherAtt.Parent = weapon
-				OtherAtt:SetPrimaryPartCFrame(weapon.Nodes.Other.CFrame)
-	
-				setMods(OtherData)
-	
-				for L_209_forvar1, L_210_forvar2 in pairs(OtherAtt:GetChildren()) do
+			setAtt("Other", "OtherAtt", function(weapon, attachment)
+				for L_209_forvar1, L_210_forvar2 in pairs(attachment:GetChildren()) do
 					if L_210_forvar2:IsA('BasePart') then
-						Ultil.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
+						utils.Weld(L_210_forvar2, weapon:WaitForChild("Handle"))
 						L_210_forvar2.Anchored = false
 						L_210_forvar2.CanCollide = false
 					end
 				end
-			end
-	
+			end)
 		end
 	end
-	
 	function unloadAttachment(weapon)
-		if weapon and weapon:FindFirstChild("Nodes") ~= nil then
+		if weapon and weapon:FindFirstChild("Nodes") then
+			local function deleteAtt(name, attType)
+				if weapon.Nodes:FindFirstChild(name) and attachmentTypes[attType] then
+					attachmentTypes[attType]:Destroy()
+					attachmentTypes[attType] = nil
+					attachmentData[attType] = nil
+				end
+			end
+			
+			deleteAtt("Sight", "SightAtt")
+			deleteAtt("Barrel", "BarrelAtt")
+			deleteAtt("UnderBarrel", "UnderBarrelAtt")
+			deleteAtt("Other", "OtherAtt")
+		end
+	end
+	function updateGunInfo()
+		local infoFrame = pages.Attachments.GunInfo.Scroll
+		
+		local function fillUpdate(button, value1, value2, maxValue)
+			local fillBar = button:FindFirstChild("FillBar")
+			if fillBar then
+				local percent1 = math.clamp(value1 / maxValue, 0, 1)
+				local percent2 = math.clamp(value2 / maxValue, 0, 1)
 	
-			--load sight Att
-			if weapon.Nodes:FindFirstChild("Sight") ~= nil and GunData.SightAtt ~= "" then
+				fillBar.Fill1.Size = UDim2.new(percent1, 0, 1, 0)
+				fillBar.Fill2.Size = UDim2.new(percent2, 0, 1, 0)
+			end
+		end
+		
+		local function ezRichText(text, props)
+			local richText = text
 	
-				SightAtt:Destroy()
-				SightAtt = nil
-				SightData = nil
-	
+			if props.bold then
+				richText = `<b>{richText}</b>`
+			end
+			if props.italic then
+				richText = `<i>{richText}</i>`
+			end
+			if props.color then
+				richText = `<font color="#{props.color:ToHex()}">{richText}</font>`
 			end
 	
-			--load Barrel Att
-			if weapon.Nodes:FindFirstChild("Barrel") ~= nil and GunData.BarrelAtt ~= "" then
+			return richText
+		end
+		
+		if storage.gunData then
+			pages.Attachments.GunInfo.Visible = true
+			pages.Attachments.Center.GunName.Visible = true
+			infoFrame.Optic.Text = `{ezRichText("Optic: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.SightAtt}`
+			infoFrame.Barrel.Text = `{ezRichText("Barrel: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.BarrelAtt}`
+			infoFrame.UnderBarrel.Text = `{ezRichText("UnderBarrel: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.UnderBarrelAtt}`
+			infoFrame.Other.Text = `{ezRichText("Other: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.OtherAtt}`
+			
+			infoFrame.Damage.Text = `{ezRichText("Damage: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.LimbDamage[1]} - {storage.gunData.LimbDamage[2]}`
+			infoFrame.MuzzleVelocity.Text = `{ezRichText("Velocity: ", {color = Color3.fromRGB(255, 255, 255), bold = true})}{storage.gunData.MuzzleVelocity}`
+			
+			pages.Attachments.Center.GunName.Text = storage.gunData.gunName
+			
+			fillUpdate(infoFrame.Damage, storage.gunData.LimbDamage[1], storage.gunData.LimbDamage[2], 100)
+			fillUpdate(infoFrame.MuzzleVelocity, storage.gunData.MuzzleVelocity, storage.gunData.MuzzleVelocity, 3000)
+		else
+			pages.Attachments.GunInfo.Visible = false
+			pages.Attachments.Center.GunName.Visible = false
+		end
+	end
+	function setAttachment(attType, attName)
+		if storage.gunData[attType] == attName then
+			storage.gunData[attType] = "" else
+			storage.gunData[attType] = attName
+		end
+		unsetWeapon()
+		setupGun()
+		updateGunInfo()
+	end
+	function rotateHandler(viewportFrame, model)
+		if not model then
+			return
+		end
+		if not model.PrimaryPart then
+			model.PrimaryPart = model:FindFirstChildWhichIsA("BasePart") or model:FindFirstChild("Handle")
+		end
 	
-				BarrelAtt:Destroy()
-				BarrelAtt = nil
-				BarrelData = nil
+		local centerCFrame = select(1, model:GetBoundingBox())
+		local state = rotationStates[model.Name] or {
+			rotationX = 0,
+			rotationY = 0,
+			zoomDistance = 0,
+			dragging = false,
+			lastPos = nil,
+			connections = {},
+		}
+		rotationStates[model.Name] = state
 	
+		local function updateModelTransform()
+			local rotation = CFrame.Angles(math.rad(state.rotationX), math.rad(state.rotationY), 0)
+			local offset = Vector3.new(0, 0, state.zoomDistance)
+			local camPosition = (centerCFrame.Position + rotation:VectorToWorldSpace(offset))
+	
+			viewportFrame.CurrentCamera.CFrame = CFrame.new(camPosition, centerCFrame.Position)
+			if model and model.PrimaryPart then
+				model:SetPrimaryPartCFrame(centerCFrame * rotation)
 			end
+		end
 	
-			--load Under Barrel Att
-			if weapon.Nodes:FindFirstChild("UnderBarrel") ~= nil and GunData.UnderBarrelAtt ~= "" then
+		-- Connect input
+		local inputBegan = UserInputService.InputBegan:Connect(function(input, gp)
+			if gp then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				local mousePos = UserInputService:GetMouseLocation()
+				local vpPos = viewportFrame.AbsolutePosition
+				local vpSize = viewportFrame.AbsoluteSize
 	
-				UnderBarrelAtt:Destroy()
-				UnderBarrelAtt = nil
-				UnderBarrelData = nil
-	
+				if mousePos.X >= vpPos.X and mousePos.X <= vpPos.X + vpSize.X and
+					mousePos.Y >= vpPos.Y and mousePos.Y <= vpPos.Y + vpSize.Y then
+					state.dragging = true
+					state.lastPos = input.Position
+				end
 			end
+		end)
 	
-			if weapon.Nodes:FindFirstChild("Other") ~= nil and GunData.OtherAtt ~= "" then
-	
-				OtherAtt:Destroy()
-				OtherAtt = nil
-				OtherData = nil
-	
+		local inputChanged = UserInputService.InputChanged:Connect(function(input)
+			if state.dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+				local delta = input.Position - state.lastPos
+				state.rotationY += delta.X * 0.3
+				state.rotationX += delta.Y * 0.3
+				state.rotationX = math.clamp(state.rotationX, -80, 80)
+				state.lastPos = input.Position
+				updateModelTransform()
 			end
+		end)
 	
+		local inputEnded = UserInputService.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				state.dragging = false
+			end
+		end)
+		
+		--[[
+		local wheelMoved = UserInputService.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseWheel then
+				state.zoomDistance -= input.Position.Z * 0.5
+				state.zoomDistance = math.clamp(state.zoomDistance, 1, 50)
+				updateModelTransform()
+			end
+		end)
+		]]
+	
+		-- Initial transform
+		updateModelTransform()
+	
+		-- Store connections for cleanup
+		table.insert(state.connections, inputBegan)
+		table.insert(state.connections, inputChanged)
+		table.insert(state.connections, inputEnded)
+		--table.insert(state.connections, wheelMoved)
+	
+		-- Return a disconnect function
+		return function()
+			for _, conn in ipairs(state.connections) do
+				if conn.Connected then conn:Disconnect() end
+			end
+			state.connections = {}
 		end
 	end
+	function setupViewport(viewport, model, rotate)
+		local viewportCamera = Instance.new("Camera")
+		viewport.CurrentCamera = viewportCamera
+		viewportCamera.Parent = viewport
 	
-	function GunInfoUpdate()
-		if GunData then
-			script.Parent.Main.GunInfos.Visible 	= true
-			script.Parent.Main.GunInfos.Gname.Text	= GunData.gunName
-			script.Parent.Main.GunInfos.S.Text	 	= GunData.SightAtt
-			script.Parent.Main.GunInfos.B.Text 		= GunData.BarrelAtt
-			script.Parent.Main.GunInfos.UB.Text 	= GunData.UnderBarrelAtt
-			script.Parent.Main.GunInfos.O.Text 		= GunData.OtherAtt
-			script.Parent.Main.GunInfos.MV.Text 	= GunData.MuzzleVelocity * ModTable.MuzzleVelocity 
-		else
-			script.Parent.Main.GunInfos.Visible 	= false
-			script.Parent.Main.GunInfos.Gname.Text	= "---"
-			script.Parent.Main.GunInfos.S.Text	 	= ""
-			script.Parent.Main.GunInfos.B.Text 		= ""
-			script.Parent.Main.GunInfos.UB.Text 	= ""
-			script.Parent.Main.GunInfos.O.Text 		= ""
-			script.Parent.Main.GunInfos.MV.Text 	= ""
+		if not model.PrimaryPart then
+			model.PrimaryPart = model:FindFirstChildWhichIsA("BasePart") or model:FindFirstChild("Handle")
 		end
+	
+		local centerCFrame, size = model:GetBoundingBox()
+		model:SetPrimaryPartCFrame(centerCFrame)
+		model.Parent = viewport
+	
+		local cameraDistance = math.max(size.X, size.Y, size.Z) * 1
+		local cameraPosition = centerCFrame.Position + Vector3.new(0, 0, cameraDistance)
+		viewportCamera.CFrame = CFrame.new(cameraPosition, centerCFrame.Position)
+	
+		if rotate then
+			rotateHandler(viewport, model)
+		end
+	
+		return viewport
 	end
 	
-	function SetSight(SightName)
-	
-		if GunData.SightAtt == SightName then
-			GunData.SightAtt = ""
-		else
-			GunData.SightAtt = SightName
-		end
-		UnSetGun()
-		SetupGun()
-		GunInfoUpdate()
-	end
-	
-	function SetBarrel(SightName)
-		if GunData.BarrelAtt == SightName then
-			GunData.BarrelAtt = ""
-		else
-			GunData.BarrelAtt = SightName
-		end
-		UnSetGun()
-		SetupGun()
-		GunInfoUpdate()
-	end
-	
-	function SetUnderBarrel(SightName)
-	
-		if GunData.UnderBarrelAtt == SightName then
-			GunData.UnderBarrelAtt = ""
-		else
-			GunData.UnderBarrelAtt = SightName
-		end
-		UnSetGun()
-		SetupGun()
-		GunInfoUpdate()
-	end
-	
-	function SetOther(SightName)
-	
-		if GunData.OtherAtt == SightName then
-			GunData.OtherAtt = ""
-		else
-			GunData.OtherAtt = SightName
-		end
-		UnSetGun()
-		SetupGun()
-		GunInfoUpdate()
-	end
-	
-	Run.Heartbeat:Connect(function()
-	
-		if Gun then
-			a = a + 1
-			model:SetPrimaryPartCFrame(CFrame.new(0,0,0) * CFrame.Angles(math.rad(0),math.rad(a),math.rad(0)))
-		end
-	
-	end)
-	
-	script.Parent.Main.Finish.MouseButton1Click:Connect(function()
-		Gun.Parent = plr.Backpack
-		--UnSetGun()
-		GunInfoUpdate()
-		script.Parent.Enabled = false
-		--script.Parent:Destroy()
-	end)
-	
-	script.Parent.Main.Attachments.Sight.MouseButton1Click:Connect(function()
-		if script.Parent.Main.SightAtt.Visible then
-			script.Parent.Main.SightAtt.Visible = false
-		else
-			script.Parent.Main.SightAtt.Visible = true
-			script.Parent.Main.BarrelAtt.Visible = false
-			script.Parent.Main.UnderBarrelAtt.Visible = false
-			script.Parent.Main.OtherAtt.Visible = false
-		end
-	end)
-	
-	script.Parent.Main.Attachments.Barrel.MouseButton1Click:Connect(function()
-		if script.Parent.Main.BarrelAtt.Visible then
-			script.Parent.Main.BarrelAtt.Visible = false
-		else
-			script.Parent.Main.SightAtt.Visible = false
-			script.Parent.Main.BarrelAtt.Visible = true
-			script.Parent.Main.UnderBarrelAtt.Visible = false
-			script.Parent.Main.OtherAtt.Visible = false
-		end
-	end)
-	
-	script.Parent.Main.Attachments.Under.MouseButton1Click:Connect(function()
-		if script.Parent.Main.UnderBarrelAtt.Visible then
-			script.Parent.Main.UnderBarrelAtt.Visible = false
-		else
-			script.Parent.Main.SightAtt.Visible = false
-			script.Parent.Main.BarrelAtt.Visible = false
-			script.Parent.Main.UnderBarrelAtt.Visible = true
-			script.Parent.Main.OtherAtt.Visible = false
-		end
-	end)
-	
-	script.Parent.Main.Attachments.Other.MouseButton1Click:Connect(function()
-		if script.Parent.Main.OtherAtt.Visible then
-			script.Parent.Main.OtherAtt.Visible = false
-		else
-			script.Parent.Main.SightAtt.Visible = false
-			script.Parent.Main.BarrelAtt.Visible = false
-			script.Parent.Main.UnderBarrelAtt.Visible = false
-			script.Parent.Main.OtherAtt.Visible = true
-		end
-	end)
-	
-	-- Table mapping specific model names to attachment types
-	local predefinedAttachments = {
-		-- Barrel Attachments
-		["Muzzle Brake"] = "BarrelAtt",
-		["Compensator"] = "BarrelAtt",
-		["Suppressor"] = "BarrelAtt",
-		["Flash Hider"] = "BarrelAtt",
-	
-		-- Sight Attachments
-		["Red Dot"] = "SightAtt",
-		["ACOG Scope"] = "SightAtt",
-		["Sniper Scope"] = "SightAtt",
-	
-		-- Underbarrel Attachments
-		["Vertical Grip"] = "UnderBarrelAtt",
-		["Angled Grip"] = "UnderBarrelAtt",
-		["Bipod"] = "UnderBarrelAtt",
-		["Laser Sight"] = "UnderBarrelAtt",
-		["Flashlight"] = "UnderBarrelAtt",
-	
-		-- Other Attachments
-		["Infrared Module"] = "OtherAtt"
-	}
-	
-	
-	local function determineType(model)
+	function determineType(model)
 		if not (model and model:IsA("Model")) then
 			return nil
 		end
-		
+	
 		local predefinedType = predefinedAttachments[model.Name]
 		if predefinedType then
 			return predefinedType
 		end
 	
-		local attModuleScript = AttModules:FindFirstChild(model.Name)
+		local attModuleScript = attachmentModels:FindFirstChild(model.Name)
 		if attModuleScript then
 			local success, attModule = pcall(require, attModuleScript)
 			if success and type(attModule) == "table" then
-				-- Check for UnderBarrel attributes
 				if attModule.IsBipod
 					or attModule.EnableLaser
 					or attModule.EnableFlashlight
 				then
 					return "UnderBarrelAtt"
 				end
-	
-				-- Check for Sight attributes
 				if (attModule.SightZoom and attModule.SightZoom > 0)
 					or (attModule.SightZoom2 and attModule.SightZoom2 > 0)
 				then
 					return "SightAtt"
 				end
-	
-				-- Check for Barrel attributes
 				if attModule.IsSuppressor
 					or attModule.IsFlashHider
 				then
 					return "BarrelAtt"
 				end
-	
-				-- Check for Other attributes
 				if attModule.InfraRed then
 					return "OtherAtt"
 				end
-			else
-				warn("Failed to load attachment module for model: " .. model.Name)
 			end
 		end
 	
-		-- Fallback based on child parts
 		if model:FindFirstChild("LaserPoint") or model:FindFirstChild("FlashPoint") then
 			return "UnderBarrelAtt"
 		elseif model:FindFirstChild("AimPos") or model:FindFirstChild("SightMark") then
@@ -1255,80 +1514,100 @@ local script = G2L["38"];
 		elseif model:FindFirstChild("BarrelPos") then
 			return "BarrelAtt"
 		else
-			warn("Could not determine attachment type for model: " .. model.Name)
 			return "OtherAtt"
 		end
 	end
+	function createAttSection(name, attType)
+		local attButton = pages.Attachments.Center.AttachmentTypes:FindFirstChild(name)
+		if attButton then
+			local frame = Instance.new("Frame", pages.Attachments.AttachmentMenu.Scroll)
+			frame.BackgroundTransparency = 1
+			frame.Size = UDim2.new(1,0,0,0)
+			frame.AutomaticSize = Enum.AutomaticSize.Y
+			frame.Name = attType
 	
+			local list = Instance.new("UIListLayout", frame)
 	
-	for _, attachment in ipairs(AttModels:GetChildren()) do
-		local typeAtt = determineType(attachment)
-		if typeAtt and script.Parent.Main:FindFirstChild(typeAtt) then
-			local temp = script.Parent.Vars.Ref.AttachmentButton:Clone()
-			temp.Name = attachment.Name
-			temp.Text = attachment.Name
-			temp.AttValue.Value = attachment.Name
-			temp.Visible = true
-			temp.Parent = script.Parent.Main[typeAtt]
+			for _, attachment in ipairs(attachmentModels:GetChildren()) do
+				local typeAtt = determineType(attachment)
+				if typeAtt and frame.Name == typeAtt then
+					local temp = templates.Attachment:Clone()
+					temp.Name = attachment.Name
+					temp.Text = attachment.Name
+					temp.Visible = true
+					temp.Parent = frame
+					
+					temp.Activated:Connect(function()
+						pages.Attachments.Center.Finish.Visible = true
+						setAttachment(attType, attachment.Name)
+					end)
+				end
+			end
+			
+			attTabControl:AddTab(attButton, name, function()
+				frame.Visible = true
+				attButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+				attButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+				pages.Attachments.AttachmentMenu.Visible = true
+			end, function()
+				frame.Visible = false
+				attButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+				attButton.TextColor3 = Color3.fromRGB(150, 150, 150)
+			end, false)
+			
+			frame.Visible = false
+	
+			return frame
+		end
+		return nil
+	end
+	function updateGuns()
+		for _, button in ipairs(pages.Guns.Scroll:GetChildren()) do
+			if button:IsA("TextButton") then
+				button:Destroy()
+			end
+		end
+		
+		for _, tool in ipairs(localPlayer.Backpack:GetChildren()) do
+			if tool:IsA("Tool") and tool:FindFirstChild("ACS_Settings") then
+				local temp = templates.Gun:Clone()
+				temp.GunName.Text = tool.Name
+				temp.Name = tool.Name
+				temp.Visible = true
+				temp.Parent = pages.Guns.Scroll
+				
+				local gunModel = gunModels:FindFirstChild(tool.Name)
+				if gunModel then
+					gunModel = gunModel:Clone()
+					setupViewport(temp.ViewportFrame, gunModel, false)
+				end
+				
+				temp.Activated:Connect(function()
+					tool.Parent = toolStorage
+					setupGun()
+					tabControl:SwitchTab(attachmentsTab)
+				end)
+			end
 		end
 	end
 	
-	for _, Child in pairs(script.Parent.Main.SightAtt:GetChildren()) do
-		if Child:IsA("TextButton") and Child:FindFirstChild("AttValue") ~= nil then
-			Child.MouseButton1Click:Connect(function()
-				SetSight(Child.AttValue.Value)
-			end	)
+	createAttSection("Barrel", "BarrelAtt")
+	createAttSection("Other", "OtherAtt")
+	createAttSection("Sight", "SightAtt")
+	createAttSection("UnderBarrel", "UnderBarrelAtt")
+	
+	updateGuns()
+	localPlayer.Backpack.ChildAdded:Connect(function(tool)
+		if tool:IsA("Tool") then
+			updateGuns()
 		end
-	end
-	
-	for _, Child in pairs(script.Parent.Main.BarrelAtt:GetChildren()) do
-		if Child:IsA("TextButton") and Child:FindFirstChild("AttValue") ~= nil then
-			Child.MouseButton1Click:Connect(function()
-				SetBarrel(Child.AttValue.Value)
-			end	)
-		end
-	end
-	
-	for _, Child in pairs(script.Parent.Main.UnderBarrelAtt:GetChildren()) do
-		if Child:IsA("TextButton") and Child:FindFirstChild("AttValue") ~= nil then
-			Child.MouseButton1Click:Connect(function()
-				SetUnderBarrel(Child.AttValue.Value)
-			end	)
-		end
-	end
-	
-	for _, Child in pairs(script.Parent.Main.OtherAtt:GetChildren()) do
-		if Child:IsA("TextButton") and Child:FindFirstChild("AttValue") ~= nil then
-			Child.MouseButton1Click:Connect(function()
-				SetOther(Child.AttValue.Value)
-			end	)
-		end
-	end
-	
-	local selections = script.Parent.Selections
-	local pack = selections.Pack
-	
-	selections.Close.Activated:Connect(function()
-		script.Parent.Enabled = false
 	end)
-	
-	for _, Child in pairs(plr.Backpack:GetChildren()) do
-		if Child:IsA("Tool") then
-	
-			local Button = script.Parent.Vars.Ref.GunButton:Clone()
-			Button.Text = Child.Name
-			Button.Parent = pack
-			Button.Visible = true
-	
-			Button.MouseButton1Click:Connect(function()
-				Child.Parent = script.Parent.Vars.ToolStorage
-				SetupGun()
-				selections.Visible = false
-				script.Parent.Main.Visible = true
-			end	)
+	localPlayer.Backpack.ChildRemoved:Connect(function(tool)
+		if tool:IsA("Tool") then
+			updateGuns()
 		end
-	end
+	end)
 end;
-task.spawn(C_38);
+task.spawn(C_45);
 
 return G2L["1"]
