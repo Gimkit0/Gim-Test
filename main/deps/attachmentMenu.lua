@@ -707,6 +707,7 @@ local script = G2L["38"];
 	
 	local a = 90
 	
+	--[[
 	local require = function(module)
 		if typeof(module) == "Instance" then
 			if module.Parent and module.Parent:FindFirstChild("__"..module.Name.."__") then
@@ -719,6 +720,7 @@ local script = G2L["38"];
 			return require(clone)
 		end
 	end
+	]]
 	
 	--------------------mods
 	
@@ -829,6 +831,7 @@ local script = G2L["38"];
 					unequipEvent = nil
 				end
 				
+				--[[
 				local animData = require(Gun.ACS_Animations)
 				equipEvent = Gun.Equipped:Connect(function()
 					local viewModel = workspace.CurrentCamera:FindFirstChild("Viewmodel")
@@ -847,6 +850,7 @@ local script = G2L["38"];
 				Gun.Destroying:Connect(function()
 					script.Parent:Destroy()
 				end)
+				]]
 			else
 				Gun 		= nil
 				GunData		= nil
@@ -1173,42 +1177,89 @@ local script = G2L["38"];
 		end
 	end)
 	
-	local function determineType(model)
-		if model and model:IsA("Model") then
-			local attModule = AttModules:FindFirstChild(model.Name)
-			if attModule then
-				attModule = require(AttModules[model.Name])
+	-- Table mapping specific model names to attachment types
+	local predefinedAttachments = {
+		-- Barrel Attachments
+		["Muzzle Brake"] = "BarrelAtt",
+		["Compensator"] = "BarrelAtt",
+		["Suppressor"] = "BarrelAtt",
+		["Flash Hider"] = "BarrelAtt",
 	
+		-- Sight Attachments
+		["Red Dot"] = "SightAtt",
+		["ACOG Scope"] = "SightAtt",
+		["Sniper Scope"] = "SightAtt",
+	
+		-- Underbarrel Attachments
+		["Vertical Grip"] = "UnderBarrelAtt",
+		["Angled Grip"] = "UnderBarrelAtt",
+		["Bipod"] = "UnderBarrelAtt",
+		["Laser Sight"] = "UnderBarrelAtt",
+		["Flashlight"] = "UnderBarrelAtt",
+	
+		-- Other Attachments
+		["Infrared Module"] = "OtherAtt"
+	}
+	
+	
+	local function determineType(model)
+		if not (model and model:IsA("Model")) then
+			return nil
+		end
+		
+		local predefinedType = predefinedAttachments[model.Name]
+		if predefinedType then
+			return predefinedType
+		end
+	
+		local attModuleScript = AttModules:FindFirstChild(model.Name)
+		if attModuleScript then
+			local success, attModule = pcall(require, attModuleScript)
+			if success and type(attModule) == "table" then
+				-- Check for UnderBarrel attributes
 				if attModule.IsBipod
 					or attModule.EnableLaser
 					or attModule.EnableFlashlight
 				then
 					return "UnderBarrelAtt"
-				elseif attModule.SightZoom > 0
-					or attModule.SightZoom2 > 0
+				end
+	
+				-- Check for Sight attributes
+				if (attModule.SightZoom and attModule.SightZoom > 0)
+					or (attModule.SightZoom2 and attModule.SightZoom2 > 0)
 				then
 					return "SightAtt"
-				elseif attModule.IsSuppressor
+				end
+	
+				-- Check for Barrel attributes
+				if attModule.IsSuppressor
 					or attModule.IsFlashHider
 				then
 					return "BarrelAtt"
-				elseif attModule.InfraRed then
+				end
+	
+				-- Check for Other attributes
+				if attModule.InfraRed then
 					return "OtherAtt"
 				end
-			end
-	
-			if model:FindFirstChild("LaserPoint") or model:FindFirstChild("FlashPoint") then
-				return "UnderBarrelAtt"
-			elseif model:FindFirstChild("AimPos") or model:FindFirstChild("SightMark") then
-				return "SightAtt"
-			elseif model:FindFirstChild("BarrelPos") then
-				return "BarrelAtt"
 			else
-				return "OtherAtt"
+				warn("Failed to load attachment module for model: " .. model.Name)
 			end
 		end
-		return nil
+	
+		-- Fallback based on child parts
+		if model:FindFirstChild("LaserPoint") or model:FindFirstChild("FlashPoint") then
+			return "UnderBarrelAtt"
+		elseif model:FindFirstChild("AimPos") or model:FindFirstChild("SightMark") then
+			return "SightAtt"
+		elseif model:FindFirstChild("BarrelPos") then
+			return "BarrelAtt"
+		else
+			warn("Could not determine attachment type for model: " .. model.Name)
+			return "OtherAtt"
+		end
 	end
+	
 	
 	for _, attachment in ipairs(AttModels:GetChildren()) do
 		local typeAtt = determineType(attachment)
