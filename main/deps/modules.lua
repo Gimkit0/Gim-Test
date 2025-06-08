@@ -5535,6 +5535,7 @@ function modules.UniversalCommands()
 			end
 			local function explode(pos, hit, extraVector, material, config)
 				events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
+				events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
 			end
 			local function pvpMode(player)
 				if getACSVersion() == "1.7.5" then
@@ -5644,6 +5645,13 @@ function modules.UniversalCommands()
 					-- 関数 --
 					for index, player in next, users do
 						events.Whizz:FireServer(player, accessId)
+						
+						if getACSVersion() == "1.7.5" then
+							events.Suppression:FireServer(player, accessId)
+						elseif getACSVersion() == "2.0.1" then
+							events.Suppression:FireServer(player, 1, accessId)
+						end
+						
 					end
 				end,
 			})
