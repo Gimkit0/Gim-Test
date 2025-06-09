@@ -5407,7 +5407,8 @@ function modules.UniversalCommands()
 			end
 			return false
 		end, function()
-			local engineFolder = self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine") or self.Services.ReplicatedStorage:FindFirstChild("ACS_bt")
+			local engineFolder = self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine")
+				or self.Services.ReplicatedStorage:FindFirstChild("ACS_BT")
 			local events = engineFolder:FindFirstChild("Eventos") or engineFolder:FindFirstChild("Events")
 			
 			local pvpEnabled = {}
