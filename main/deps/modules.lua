@@ -5534,8 +5534,10 @@ function modules.UniversalCommands()
 				end
 			end
 			local function explode(pos, hit, extraVector, material, config)
-				events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
-				events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
+				self.spawn(function()
+					events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
+					events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
+				end)
 			end
 			local function pvpMode(player)
 				if getACSVersion() == "1.7.5" then
