@@ -5996,71 +5996,61 @@ function modules.UniversalCommands()
 							local hrp = self.fetchHrp(player.Character)
 							local origin = hrp.CFrame.p
 
-							local heightSteps = 10
-							local verticalSpacing = 15
-
 							self.spawn(function()
-								for i = 1, (20 * explosionRadius) do
-									for i = 0, heightSteps do
+								for i = 1, (5 * explosionRadius) do
+									local scaledHeightSteps = math.floor(5 * explosionRadius)
+									local verticalSpacing = 10 * explosionRadius
+									local maxStemRadius = 40 * explosionRadius
+									local stemBoomSize = 80 * explosionRadius
+
+									-- Build the stem with tapering
+									for i = 1, scaledHeightSteps do
 										local y = i * verticalSpacing
-										explode(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-											ExplosiveHit = true,
-											ExPressure = causeTerrainDamage and 5000000 or 0,
-											ExpRadius = 100,
-											DestroyJointRadiusPercent = 100,
-											ExplosionDamage = math.huge,
-										})
-										task.wait()
+										local radius = math.max(5, maxStemRadius - (i * (maxStemRadius / scaledHeightSteps)))
+										local numBooms = math.clamp(8 + i * 2, 8, 30)
+
+										for j = 1, numBooms do
+											local angle = j * ((math.pi * 2) / numBooms)
+											local x = radius * math.cos(angle)
+											local z = radius * math.sin(angle)
+
+											explode(Vector3.new(origin.X + x, origin.Y + y, origin.Z + z), hrp, Vector3.new(0, 0, 0), Enum.Material.Mud, {
+												ExplosiveHit = true,
+												ExPressure = causeTerrainDamage and 5000000 or 0,
+												ExpRadius = stemBoomSize,
+												DestroyJointRadiusPercent = 100,
+												ExplosionDamage = math.huge,
+											})
+										end
+										task.wait(0.1)
 									end
-									local capHeight = origin.Y + heightSteps * verticalSpacing
-									local numRings = 4
-									local ringSpacing = 20
 
-									for ring = 1, numRings do
-										local radius = ring * 30
-										local numBooms = 30
+									-- Cap with dome shape
+									local capHeight = origin.Y + scaledHeightSteps * verticalSpacing
+									local domeLayers = math.floor(5 * explosionRadius)
+									local domeLayerSpacing = 40 * explosionRadius
+									local domeBoomSize = 100 * explosionRadius
+
+									for layer = 1, domeLayers do
+										local layerRadius = layer * domeLayerSpacing
+										local yOffset = -((layer - 1) ^ 2) + (domeLayers ^ 2)
+										local numBooms = math.floor(30 + layer * 6 * explosionRadius)
+
 										for i = 1, numBooms do
 											local angle = i * ((math.pi * 2) / numBooms)
-											local x = radius * math.cos(angle)
-											local z = radius * math.sin(angle)
+											local x = layerRadius * math.cos(angle)
+											local z = layerRadius * math.sin(angle)
 
-											explode(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+											explode(Vector3.new(origin.X + x, capHeight + yOffset, origin.Z + z), hrp, Vector3.new(0, 0, 0), Enum.Material.Mud, {
 												ExplosiveHit = true,
 												ExPressure = causeTerrainDamage and 5000000 or 0,
-												ExpRadius = 100,
+												ExpRadius = domeBoomSize,
 												DestroyJointRadiusPercent = 100,
 												ExplosionDamage = math.huge,
 											})
 										end
-										for i = 1, numBooms do
-											local angle = i * ((math.pi * 2) / numBooms)
-											local x = radius * math.cos(angle)
-											local z = radius * math.sin(angle)
-
-											explode(Vector3.new(origin.X + x, capHeight+25, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-												ExplosiveHit = true,
-												ExPressure = causeTerrainDamage and 5000000 or 0,
-												ExpRadius = 100,
-												DestroyJointRadiusPercent = 100,
-												ExplosionDamage = math.huge,
-											})
-										end
-										for i = 1, numBooms do
-											local angle = i * ((math.pi * 2) / numBooms)
-											local x = radius * math.cos(angle)
-											local z = radius * math.sin(angle)
-
-											explode(Vector3.new(origin.X + x, capHeight+50, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-												ExplosiveHit = true,
-												ExPressure = causeTerrainDamage and 5000000 or 0,
-												ExpRadius = 100,
-												DestroyJointRadiusPercent = 100,
-												ExplosionDamage = math.huge,
-											})
-										end
-										task.wait()
+										task.wait(0.15)
 									end
-									task.wait(0.2)
 								end
 							end)
 							self.spawn(function()
