@@ -5998,10 +5998,10 @@ function modules.UniversalCommands()
 
 							self.spawn(function()
 								for i = 1, (5 * explosionRadius) do
-									local scaledHeightSteps = math.floor(5 * explosionRadius)
+									local scaledHeightSteps = math.floor(15 * explosionRadius)
 									local verticalSpacing = 10 * explosionRadius
-									local maxStemRadius = 40 * explosionRadius
-									local stemBoomSize = 80 * explosionRadius
+									local maxStemRadius = 50 * explosionRadius
+									local stemBoomSize = 90 * explosionRadius
 
 									-- Build the stem with tapering
 									for i = 1, scaledHeightSteps do
