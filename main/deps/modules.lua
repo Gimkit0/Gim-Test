@@ -202,7 +202,7 @@ function modules.Parser()
 	--[[
 		パーサーモジュールはもともとAdonis Creatorsによって作成されました
 	]]
-	
+
 	local Parser = {}
 
 	function Parser.new(client)
@@ -512,13 +512,13 @@ function modules.Spring()
 		self.p = pos
 		self.v = pos*0
 	end
-	
+
 	return Spring
 end
 
 function modules.Input(client, INPUT_PRIORITY)
 	local Input = {}
-	
+
 	local pi    = math.pi
 	local abs   = math.abs
 	local clamp = math.clamp
@@ -527,7 +527,7 @@ function modules.Input(client, INPUT_PRIORITY)
 	local sign  = math.sign
 	local sqrt  = math.sqrt
 	local tan   = math.tan
-	
+
 	local thumbstickCurve do
 		local K_CURVATURE = 2.0
 		local K_DEADZONE = 0.15
@@ -696,22 +696,22 @@ function modules.Input(client, INPUT_PRIORITY)
 			client.Services.ContextActionService:UnbindAction("FreecamGamepadThumbstick")
 		end
 	end
-	
+
 	return Input
 end
 
 function modules.PlayerState(client)
 	local PlayerState = {}
-	
+
 	local mouseBehavior = ""
 	local mouseIconEnabled = ""
 	local cameraType = ""
 	local cameraFocus = ""
 	local cameraCFrame = ""
 	local cameraFieldOfView = ""
-	
+
 	local disabledGuis = {}
-	
+
 	local FFlagUserExitFreecamBreaksWithShiftlock
 	do
 		local success, result = pcall(function()
@@ -719,7 +719,7 @@ function modules.PlayerState(client)
 		end)
 		FFlagUserExitFreecamBreaksWithShiftlock = success and result
 	end
-	
+
 	local function checkMouseLockAvailability()
 		local devAllowsMouseLock = client.LocalPlayer.DevEnableMouseLock
 		local devMovementModeIsScriptable = client.LocalPlayer.DevComputerMovementMode == Enum.DevComputerMovementMode.Scriptable
@@ -729,7 +729,7 @@ function modules.PlayerState(client)
 
 		return MouseLockAvailable
 	end
-	
+
 	local coreGuis = {
 		Backpack = true,
 		Chat = true,
@@ -761,7 +761,7 @@ function modules.PlayerState(client)
 				client.Services.StarterGui:SetCore(name, false)
 			end
 		end
-		
+
 		cameraFieldOfView = client.Camera.FieldOfView
 		client.Camera.FieldOfView = 70
 
@@ -794,7 +794,7 @@ function modules.PlayerState(client)
 				gui.Enabled = true
 			end
 		end
-		
+
 		client.Camera.FieldOfView = cameraFieldOfView
 		cameraFieldOfView = nil
 
@@ -813,7 +813,7 @@ function modules.PlayerState(client)
 		client.Services.UserInputService.MouseBehavior = mouseBehavior
 		mouseBehavior = nil
 	end
-	
+
 	return PlayerState
 end
 
@@ -1043,7 +1043,7 @@ function modules.SimplePath()
 		for setting, value in pairs(DEFAULT_SETTINGS) do
 			self._settings[setting] = self._settings[setting] == nil and value or self._settings[setting]
 		end
-		
+
 		if noHum then
 			self._humanoid = nil
 		end
@@ -1157,7 +1157,7 @@ function modules.SimplePath()
 		self._moveConnection = self._humanoid and (self._moveConnection or self._humanoid.MoveToFinished:Connect(function(...)
 			moveToFinished(self, ...)
 		end))
-		
+
 		self._events.Ranned:Fire(self._agent, self._waypoints[self._currentWaypoint], self._waypoints)
 
 		--Begin pathfinding
@@ -1181,7 +1181,7 @@ function modules.Core()
 	--[[
 		管理コマンドの主なコンポーネント
 	]]
-	
+
 	local Core = {}
 	Core.__index = Core
 
@@ -1189,57 +1189,57 @@ function modules.Core()
 		local self = setmetatable({}, Core)
 
 		self.Client = client
-		
+
 		self.Storage = {
 			lastFakeGame = 0,
-			
+
 			currentPath = nil,
-			
+
 			checkPoints = {},
 			connections = {
 				flyKeyDown = nil,
 				flyKeyUp = nil,
-				
+
 				mfly1 = nil,
 				mfly2 = nil,
-				
+
 				cframeSpeed = nil,
 			},
-			
+
 			values = {
 				flying = false,
-				
+
 				vfly_speed = 2,
 				fly_speed = 2,
-				
+
 				m_fly_name1 = "",
 				m_fly_name2 = "",
 			},
-			
+
 			instances = {
 				animation = nil,
-				
+
 				animations = {},
 			},
 		}
-		
+
 		local cameraPos = Vector3.new()
 		local cameraRot = Vector2.new()
 
 		local velSpring = self.Client.PreloadedModules.spring.new(1.5, Vector3.new())
 		local panSpring = self.Client.PreloadedModules.spring.new(1.0, Vector2.new())
 		local fovSpring = self.Client.PreloadedModules.spring.new(4.0, 0)
-		
+
 		self.cameraPos = cameraPos
 		self.cameraRot = cameraRot
 		self.velSpring = velSpring
 		self.panSpring = panSpring
 		self.fovSpring = fovSpring
-		
+
 		self.disabledGuis = {}
-		
+
 		self.freecamActive = false
-		
+
 		self.cameraFov = 70
 
 		return self
@@ -1248,7 +1248,7 @@ function modules.Core()
 	function Core:TeleportToServer(placeId, guid)
 		local retries = 0
 		local successful = false
-		
+
 		repeat
 			local success, err = pcall(function()
 				self.Client.Services.TeleportService:TeleportToPlaceInstance(placeId, guid, self.Client.LocalPlayer)
@@ -1262,10 +1262,10 @@ function modules.Core()
 			end
 		until retries < 3 or successful
 	end
-	
+
 	function Core:TeleportToPlayerByPlace(user, placeId)
 		local retries = 0
-		
+
 		local success, err = pcall(function()
 			local user, userId = pcall(function()
 				if tonumber(user) then
@@ -1274,13 +1274,13 @@ function modules.Core()
 
 				return self.Client.Services.Players:GetUserIdFromNameAsync(user)
 			end)
-			
+
 			if user then
 				local url = ("https://games.roblox.com/v1/games/"..placeId.."/servers/Public?sortOrder=Asc&limit=100")
 				local http = self.Client.Services.HttpService:JSONDecode(game:HttpGet(url))
-				
+
 				local guid
-				
+
 				for i = 1, tonumber(self.Client.getTableLength(http.data)) do
 					for _, playerId in pairs(http.data[i].playerIds) do
 						if playerId == userId then
@@ -1288,7 +1288,7 @@ function modules.Core()
 						end
 					end
 				end
-				
+
 				if guid then
 					self:TeleportToServer(placeId, guid)
 				end
@@ -1331,9 +1331,9 @@ function modules.Core()
 					end
 
 					self.Client.Services.TeleportService:Teleport(getFakeGame(), self.Client.Services.Players)
-					
+
 					task.wait(1.5)
-					
+
 					root.CFrame = cframe
 				else
 					root.CFrame = cframe
@@ -1341,7 +1341,7 @@ function modules.Core()
 			end)
 		end
 	end
-	
+
 	function Core:SetJumppower(power)
 		if not power then
 			power = 50
@@ -1353,7 +1353,7 @@ function modules.Core()
 			hum.JumpPower = tonumber(power)
 		end
 	end
-	
+
 	function Core:SetWalkspeed(speed, cframe : boolean?)
 		if not speed then
 			speed = 16
@@ -1363,13 +1363,13 @@ function modules.Core()
 		then
 			cframe = true
 		end
-		
+
 		local cframeSpeedDivider = 80
 
 		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
 		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
 		local camera = self.Client.Camera
-		
+
 		if not cframe then
 			if hum then
 				hum.WalkSpeed = tonumber(speed)
@@ -1379,7 +1379,7 @@ function modules.Core()
 				self.Storage.connections.cframeSpeed:Disconnect()
 				self.Storage.connections.cframeSpeed = nil
 			end
-			
+
 			self.Storage.connections.cframeSpeed = self.Client.Services.RunService.Heartbeat:Connect(function()
 				if not hrp then
 					if self.Storage.connections.cframeSpeed then self.Storage.connections.cframeSpeed:Disconnect() end
@@ -1390,14 +1390,14 @@ function modules.Core()
 			end)
 		end
 	end
-	
+
 	function Core:UncframeSpeed()
 		if self.Storage.connections.cframeSpeed then
 			self.Storage.connections.cframeSpeed:Disconnect()
 			self.Storage.connections.cframeSpeed = nil
 		end
 	end
-	
+
 	function Core:RefreshPlayer()
 		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
 		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
@@ -1410,22 +1410,22 @@ function modules.Core()
 			viewPart.CanCollide = false
 			viewPart.CanTouch = false
 			viewPart.CanQuery = false
-			
+
 			self.Client.addConn("REFRESHING_PLAYER", self.Client.LocalPlayer.CharacterAdded:Connect(function(char)
 				self:TeleportToLocation(lastPos)
 				self.Client.Camera.CameraSubject = self.Client.LocalPlayer
 				viewPart:Destroy()
 				self.Client.removeConn("REFRESHING_PLAYER")
 			end))
-			
+
 			self.Client.Camera.CameraSubject = viewPart
 			self:TeleportToLocation(CFrame.new(0, 50000, 0))
-			
+
 			task.wait(.25)
 			hum:ChangeState(Enum.HumanoidStateType.Dead)
 		end
 	end
-	
+
 	function Core:PromptRig(rig)
 		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
 		if hum then
@@ -1437,7 +1437,7 @@ function modules.Core()
 			end
 		end
 	end
-	
+
 	function Core:Fly(isVfly, speed)
 		if game.PlaceId == 9872472334--[[Evade]] then
 			loadstring(game:HttpGet("https://raw.githubusercontent.com/CF-Trail/random/main/bypassedfly.lua"))()
@@ -1546,17 +1546,17 @@ function modules.Core()
 			FLY()
 		end
 	end
-	
+
 	function Core:MobileFly(isVfly)
 		self:Unfly()
 		self.Storage.values.flying = true
-		
+
 		self.Storage.values.m_fly_name1 = self:RandomString()
 		self.Storage.values.m_fly_name2 = self:RandomString()
 
 		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
 		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
-		
+
 		local camera = workspace.CurrentCamera
 		local v3none = Vector3.new()
 		local v3zero = Vector3.new(0, 0, 0)
@@ -1604,11 +1604,11 @@ function modules.Core()
 
 				VelocityHandler.MaxForce = v3inf
 				GyroHandler.MaxTorque = v3inf
-				
+
 				if not isVfly then
 					hum.PlatformStand = true
 				end
-				
+
 				GyroHandler.CFrame = camera.CoordinateFrame
 				VelocityHandler.Velocity = v3none
 
@@ -1628,21 +1628,21 @@ function modules.Core()
 			end
 		end)
 	end
-	
+
 	function Core:Unfly()
 		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
 		local hrp = self.Client.fetchHrp(self.Client.LocalPlayer.Character)
-		
+
 		self.Storage.values.flying = false
-		
+
 		if self.Storage.connections.flyKeyDown or self.Storage.connections.flyKeyUp then
 			self.Storage.connections.flyKeyDown:Disconnect()
 			self.Storage.connections.flyKeyUp:Disconnect()
-			
+
 			self.Storage.connections.flyKeyDown = nil
 			self.Storage.connections.flyKeyUp = nil
 		end
-		
+
 		if self.Storage.connections.mfly1 or self.Storage.connections.mfly2 then
 			self.Storage.connections.mfly1:Disconnect()
 			self.Storage.connections.mfly2:Disconnect()
@@ -1650,14 +1650,14 @@ function modules.Core()
 			self.Storage.connections.mfly1 = nil
 			self.Storage.connections.mfly2 = nil
 		end
-		
+
 		if hrp:FindFirstChild(self.Storage.values.m_fly_name1) then
 			hrp[self.Storage.values.m_fly_name1]:Destroy()
 		end
 		if hrp:FindFirstChild(self.Storage.values.m_fly_name2) then
 			hrp[self.Storage.values.m_fly_name2]:Destroy()
 		end
-		
+
 		self.Client.spawn(function()
 			self.Client.Camera.CameraType = Enum.CameraType.Custom
 			if hum then
@@ -1665,7 +1665,7 @@ function modules.Core()
 			end
 		end)
 	end
-	
+
 	function Core:SetFlySpeed(isVfly, speed)
 		if isVfly then
 			self.Storage.values.vfly_speed = speed
@@ -1673,7 +1673,7 @@ function modules.Core()
 			self.Storage.values.fly_speed = speed
 		end
 	end
-	
+
 	function Core:RandomString()
 		local length = math.random(10,20)
 		local array = {}
@@ -1682,7 +1682,7 @@ function modules.Core()
 		end
 		return table.concat(array)
 	end
-	
+
 	function Core:IsRigType(char, rigType)
 		if char then
 			local hum = self.Client.fetchHum(char)
@@ -1693,31 +1693,31 @@ function modules.Core()
 			end
 		end
 	end
-	
+
 	function Core:PlayAnimation(animId, properties, async: boolean?)
 		if not async then
 			self:StopAnimation()
 		end
-		
+
 		local anim = Instance.new("Animation")
 		anim.AnimationId = `rbxassetid://{animId}`
-		
+
 		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
 		if hum then
 			local animator = hum:FindFirstChild("Animator") or Instance.new("Animator", hum)
 			local animation = animator:LoadAnimation(anim)
-			
+
 			if type(properties) == "table" then
 				for i, v in pairs(properties) do
 					animation[i] = v
 				end
 			end
-			
+
 			animation:Play()
 			animation.Stopped:Connect(function()
 				animation:Destroy()
 			end)
-			
+
 			if not async then
 				self.Storage.instances.animation = {inst = anim, anim = animation}
 			else
@@ -1727,7 +1727,7 @@ function modules.Core()
 			anim:Destroy()
 		end
 	end
-	
+
 	function Core:StopAnimation()
 		if self.Storage.instances.animation then
 			self.Storage.instances.animation.anim:Stop()
@@ -1740,7 +1740,7 @@ function modules.Core()
 			v = nil
 		end
 	end
-	
+
 	function Core:SetAnimationSpeed(speed)
 		if self.Storage.instances.animation then
 			self.Storage.instances.animation.anim:AdjustSpeed(speed)
@@ -1749,13 +1749,13 @@ function modules.Core()
 			v.anim:AdjustSpeed(speed)
 		end
 	end
-	
+
 	function Core:Freecam(disableCores, pos)
 		if self.freecamActive then
 			self:StopFreecam()
 		end
 		self.freecamActive = true
-		
+
 		local cameraCFrame = self.Client.Camera.CFrame
 		if pos then
 			cameraCFrame = pos
@@ -1763,13 +1763,13 @@ function modules.Core()
 
 		local function stepFreecam(delta)
 			local FOV_GAIN = 300
-			
+
 			local vel = self.velSpring:Update(delta, self.Client.PreloadedModules.input.Vel(delta))
 			local pan = self.panSpring:Update(delta, self.Client.PreloadedModules.input.Pan(delta))
 			local fov = self.fovSpring:Update(delta, self.Client.PreloadedModules.input.Fov(delta))
 
 			local zoomFactor = math.sqrt(math.tan(math.rad(70/2)) / math.tan(math.rad(self.cameraFov/2)))
-			
+
 			self.cameraFov = math.clamp(self.cameraFov + fov*FOV_GAIN*(delta/zoomFactor), 1, 120)
 			self.cameraRot = self.cameraRot + pan * Vector2.new(0.75, 1) * 8 * (delta / zoomFactor)
 			self.cameraRot = Vector2.new(math.clamp(self.cameraRot.x, -math.rad(90), math.rad(90)), self.cameraRot.y % (2 * math.pi))
@@ -1789,26 +1789,26 @@ function modules.Core()
 		self.velSpring:Reset(Vector3.new())
 		self.panSpring:Reset(Vector2.new())
 		self.fovSpring:Reset(0)
-		
+
 		self.Client.Modules.parser:RunCommand(self.Client.LocalPlayer, "minzoom", "50")
 
 		self.Client.PreloadedModules.playerState.Push(disableCores)
-		
+
 		self.Client.Services.RunService:BindToRenderStep("Freecam", Enum.RenderPriority.Camera.Value, stepFreecam)
-		
+
 		self.Client.PreloadedModules.input.StartCapture()
 	end
-	
+
 	function Core:StopFreecam()
 		if self.freecamActive then
 			self.freecamActive = false
-			
+
 			self.Client.PreloadedModules.input.StopCapture()
 			self.Client.Services.RunService:UnbindFromRenderStep("Freecam")
 			self.Client.PreloadedModules.playerState.Pop()
 		end
 	end
-	
+
 	function Core:Pathfind(goal, params, visualize, events, override, noHum)
 		if not goal then
 			return
@@ -1816,10 +1816,10 @@ function modules.Core()
 		if not events then
 			events = {}
 		end
-		
+
 		local path = self:_createNewPath(self.Client.LocalPlayer.Character, params, override, noHum)
 		path.Visualize = visualize
-		
+
 		path.Ranned:Connect(function(model, currentWaypoint, nextWaypoint)
 			if type(events.OnRan) == "function" then
 				events.OnRan(model, currentWaypoint, nextWaypoint)
@@ -1849,10 +1849,10 @@ function modules.Core()
 			end
 		end)
 		path:Run(goal)
-		
+
 		return path
 	end
-	
+
 	function Core:_getFocusDistance(cameraFrame)
 		local znear = 0.1
 		local viewport = self.Client.Camera.ViewportSize
@@ -1882,21 +1882,21 @@ function modules.Core()
 
 		return fz:Dot(minVect)*minDist
 	end
-	
+
 	function Core:_createNewPath(char, params, override, noHum)
 		if self.Storage.currentPath then
 			if not (self.Storage.currentPath._status == "Idle") then
 				self.Storage.currentPath:Stop()
 			end
 			self.Storage.currentPath:Destroy()
-			
+
 			self.Storage.currentPath = nil
 		end
-		
+
 		local path = modules.SimplePath().new(char, params, override, noHum)
-		
+
 		self.Storage.currentPath = path
-		
+
 		return path
 	end
 
@@ -2339,7 +2339,7 @@ function modules.ConsoleInterface()
 	G2L["2d"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 	G2L["2d"]["Text"] = [[OPEN CONSOLE]];
 	G2L["2d"]["Name"] = [[Title]];
-	
+
 	-- StarterGui.Console.Main.Background.UIStroke
 	G2L["5"] = Instance.new("UIStroke", G2L["e"]);
 	G2L["5"]["ApplyStrokeMode"] = Enum.ApplyStrokeMode.Border;
@@ -2618,57 +2618,57 @@ function modules.NotifyUI()
 	G2L["1f"]["Name"] = [[Line]];
 
 	-- StarterGui.ScreenGui.Notification.Scripts.Core
-	
+
 
 	return G2L["2"]
 end
 
 function modules.UniversalCommands()
 	local module = {}
-	
+
 	function module.new(self)
 		local sethidden
 		local gethidden
 		local queueteleport
 		local httprequest
 		local getconnections
-		
+
 		local universalValues = {
 			-- Evade --
 			evade_ticket_farming = false,
 			break_bots = false,
-			
+
 			-- others --
 			aimlock_holding_mouse = false,
 			walkflinging = false,
 			isInvisible = false,
 		}
-		
+
 		local universalConnections = {
 			bangDied = nil,
-			
+
 			invisFix = nil,
 			invisDied = nil,
-			
+
 			swimming = nil,
 			swimDied = nil,
-			
+
 			espCharAdded = {},
 		}
-		
+
 		local universalStorage = {
 			old_gravity = 192.2,
 			old_hipheight = 0,
 		}
-		
+
 		local universalFuncs = {
 			turnVisible = nil,
 		}
-		
+
 		local instances = {
 			fov_circle = nil,
 			spin_force = nil,
-			
+
 			esp_instances = {},
 		}
 
@@ -2679,14 +2679,14 @@ function modules.UniversalCommands()
 			httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 			getconnections = getconnections or get_signal_cons
 		end
-		
+
 		local function gameDetectedNotify(gameName)
 			self.spawn(function()
 				task.wait(1)
 				self:Notify(self.Config.SYSTEM.NAME, `Game detected: <b>{gameName}</b> new commands loaded or modified`, "INFO", nil, 5)
 			end)
 		end
-		
+
 		local function loadSupportedGame(placeId, gameName, func)
 			if game.PlaceId == placeId then
 				gameDetectedNotify(gameName)
@@ -2706,7 +2706,7 @@ function modules.UniversalCommands()
 				end
 			end
 		end
-		
+
 		loadSupportedGame(9872472334, "Evade", function()
 			local ticketWaitInterval = .5
 
@@ -3141,7 +3141,7 @@ function modules.UniversalCommands()
 		loadSupportedGame(15523276627, "CraftBlox", function()
 			local oreEsp = false
 			local oreHighlights = {}
-			
+
 			self:AddCommand({
 				Name = "OreESP",
 				Description = "Lets you see all of the ores around you [RefreshRate]",
@@ -3160,11 +3160,11 @@ function modules.UniversalCommands()
 					if not refreshRate then
 						refreshRate = 5
 					end
-					
+
 					self.Modules.parser:RunCommand(speaker, "UnOreESP")
-					
+
 					oreEsp = true
-					
+
 					local function updateHighlights()
 						for _, folder in ipairs(blocks:GetDescendants()) do
 							if folder.ClassName == "Folder" then
@@ -3184,14 +3184,14 @@ function modules.UniversalCommands()
 							end
 						end
 					end
-					
+
 					while oreEsp do
 						updateHighlights()
 						task.wait(refreshRate)
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "UnOreESP",
 				Description = "Stops Ore ESP",
@@ -3214,7 +3214,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		
+
 		--------------------------------------------------------------------
 		--[[							END								]]--
 		--------------------------------------------------------------------
@@ -3275,7 +3275,7 @@ function modules.UniversalCommands()
 				self.removeConn("VIEW_DIED")
 				self.removeConn("VIEW_CHANGED")
 				self.removeConn("VIEW_PLAYER_REMOVED")
-				
+
 				self.Camera.CameraSubject = speaker.Character
 			end,
 		})
@@ -3371,7 +3371,7 @@ function modules.UniversalCommands()
 				self.Modules.core:SetWalkspeed(speed, false)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "CFrameSpeed",
 			Description = "Makes you move upon CFrame at a speed of [Speed]",
@@ -3389,7 +3389,7 @@ function modules.UniversalCommands()
 				self.Modules.core:SetWalkspeed(speed, true)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "UncframeSpeed",
 			Description = "Disables CFrame speed",
@@ -3482,7 +3482,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/walkwalk.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "God",
 			Description = "Unkillable in most games",
@@ -3775,7 +3775,7 @@ function modules.UniversalCommands()
 				self.stopLoop("NOCLIPPING")
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "WalkFling",
 			Description = "When you touch someone with collision on, then it flings them",
@@ -3788,7 +3788,7 @@ function modules.UniversalCommands()
 
 				-- 変数 --
 				local hum = self.fetchHum(speaker.Character)
-				
+
 				-- 関数 --
 				self.Modules.parser:RunCommand(speaker, "unwalkfling")
 				if hum then
@@ -3796,12 +3796,12 @@ function modules.UniversalCommands()
 						self.Modules.parser:RunCommand(speaker, "unwalkfling")
 					end)
 				end
-				
+
 				self.Modules.parser:RunCommand(speaker, "noclip")
 				task.wait()
-				
+
 				universalValues.walkflinging = true
-				
+
 				repeat self.Services.RunService.Heartbeat:Wait()
 					local char = speaker.Character
 					local root = self.fetchHrp(char)
@@ -3829,7 +3829,7 @@ function modules.UniversalCommands()
 				until universalValues.walkflinging == false
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "UnwalkFling",
 			Description = "Disables walkflinging",
@@ -3846,7 +3846,7 @@ function modules.UniversalCommands()
 				universalValues.walkflinging = false
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "ChangeTheme",
 			Description = "Changes the theme to [Theme]",
@@ -3857,14 +3857,14 @@ function modules.UniversalCommands()
 			Function = function(speaker, args)
 				-- 引数 --
 				local theme = args[1]
-				
+
 				-- 変数 --
 
 				-- 関数 --
 				self.changeTheme(theme)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Aimlock",
 			Description = "Have god tier aim. [Epitaph] is prediction of where the bullet will land",
@@ -3879,14 +3879,14 @@ function modules.UniversalCommands()
 				local teamCheck = self.getBool(args[3])
 				local npcs = self.getBool(args[4])
 				local holdToCheck = self.getBool(args[5])
-				
+
 				-- 変数 --
 				if not offsetY then
 					offsetY = 25
 				end
-				
+
 				local headOffset = Vector3.new(0, offsetY/20, 0)
-				
+
 				local circleEnabled = false
 				local circleSides = 64
 				local circleRadius = 200
@@ -3894,15 +3894,15 @@ function modules.UniversalCommands()
 				local circleTransparency = .5
 				local circleFilled = false
 				local circleVisible = true
-				
-				
+
+
 				-- 関数 --
 				self.Modules.parser:RunCommand(speaker, "Unaimlock")
 				task.wait()
 				if not epipath then
 					epipath = .15
 				end
-				
+
 				if circleEnabled then
 					instances.fov_circle = Drawing.new("Circle")
 
@@ -3916,7 +3916,7 @@ function modules.UniversalCommands()
 					circle.NumSides = circleSides
 					circle.Thickness = circleThickness
 				end
-				
+
 				local function isTargetVisible(targetCharacter)
 					local origin = self.Camera.CFrame.Position
 					local rayParams = RaycastParams.new()
@@ -3930,7 +3930,7 @@ function modules.UniversalCommands()
 
 							if result then
 								local hitPart = result.Instance
-								
+
 								if hitPart and hitPart.Transparency > 0.05 then
 									return true
 								end
@@ -3941,7 +3941,7 @@ function modules.UniversalCommands()
 					end
 					return false
 				end
-				
+
 				local function getAllNPCs()
 					local npcsList = {}
 
@@ -3953,12 +3953,12 @@ function modules.UniversalCommands()
 
 					return npcsList
 				end
-				
+
 				local function findNearest()
 					local bestScore = math.huge
 					local dist = math.huge
 					local Target = nil
-					
+
 					for _, v in pairs(self.Services.Players:GetPlayers()) do
 						if v.Character then
 							local hum = self.fetchHum(v.Character)
@@ -4017,11 +4017,11 @@ function modules.UniversalCommands()
 
 					return Target
 				end
-				
+
 				self.addConn("AIMLOCK_INPUT_BEGAN", self.Services.UserInputService.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton2 then
 						universalValues.aimlock_holding_mouse = true
-						
+
 						local target = findNearest()
 						while universalValues.aimlock_holding_mouse do
 							if universalValues.aimlock_holding_mouse then
@@ -4031,7 +4031,7 @@ function modules.UniversalCommands()
 								if target ~= nil then
 									local hrp = target and target:FindFirstChild("Head") or self.fetchHrp(target)
 									local hum = self.fetchHum(target)
-									
+
 									if (hum and hum.Health > 0) and (hrp) then
 										local future = hrp.CFrame + (hrp.Velocity * epipath + (hrp.Name == "HumanoidRootPart" and headOffset or Vector3.new(0, 0, 0)))
 										self.Camera.CFrame = CFrame.lookAt(self.Camera.CFrame.Position, future.Position)
@@ -4056,11 +4056,11 @@ function modules.UniversalCommands()
 						instances.fov_circle.Position = Vector2.new(self.Mouse.X, self.Mouse.Y*1.5)
 					end
 				end))
-				
+
 				self:Notify(self.Config.SYSTEM.NAME, `To enable aimlock, press your <b>right mouse button</b>!`, "INFO", nil, 10)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unaimlock",
 			Description = "Stops the aimlock",
@@ -4077,15 +4077,15 @@ function modules.UniversalCommands()
 				self.removeConn("AIMLOCK_INPUT_BEGAN")
 				self.removeConn("AIMLOCK_INPUT_ENDED")
 				self.removeConn("AIMLOCK_CIRCLE_MOVE")
-				
+
 				universalValues.aimlock_holding_mouse = false
-				
+
 				if instances.fov_circle then
 					instances.fov_circle:Destroy()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "AntiAfk",
 			Description = "Disables the 20 minute afk kick message",
@@ -4116,7 +4116,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Dex",
 			Description = "Loads Dex's explorer",
@@ -4134,7 +4134,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/newdex.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Blackhole",
 			Description = "Unanchored parts will start to fly around you",
@@ -4156,11 +4156,11 @@ function modules.UniversalCommands()
 					parts = {},
 					velocity = Vector3.new(14.46262424, 14.46262424, 14.46262424),
 				}
-				
+
 				self.Modules.parser:RunCommand(speaker, "Unblackhole")
 				self.Modules.parser:RunCommand(speaker, "Noclip")
 				task.wait(.5)
-				
+
 				if not radius then
 					radius = 50
 				end
@@ -4173,9 +4173,9 @@ function modules.UniversalCommands()
 				if not strength then
 					strength = 1000
 				end
-				
+
 				speaker.ReplicationFocus = workspace
-				
+
 				local function retainPart(inst)
 					if inst:IsA("BasePart") and inst:IsDescendantOf(workspace) then
 						if inst.Parent == speaker.Character or inst:IsDescendantOf(speaker.Character) then
@@ -4190,7 +4190,7 @@ function modules.UniversalCommands()
 					end
 					return false
 				end
-				
+
 				local parts = {}
 				local function addPart(inst)
 					if retainPart(inst) then
@@ -4199,33 +4199,33 @@ function modules.UniversalCommands()
 						end
 					end
 				end
-				
+
 				local function removePart(inst)
 					local index = table.find(parts, inst)
 					if index then
 						table.remove(parts, index)
 					end
 				end
-				
+
 				self.addConn("PART_CONTROL", self.Services.RunService.Heartbeat:Connect(function()
 					if sethidden then
 						sethidden(speaker, "SimulationRadius", math.huge)
 					end
-					
+
 					for _, inst in pairs(network.parts) do
 						if inst:IsDescendantOf(workspace) then
 							inst.Velocity = network.velocity
 						end
 					end
 				end))
-				
+
 				for _, part in pairs(workspace:GetDescendants()) do
 					addPart(part)
 				end
 
 				self.addConn("BLACKHOLE_DESCENDANT_ADDED", workspace.DescendantAdded:Connect(addPart))
 				self.addConn("BLACKHOLE_DESCENDANT_REMOVED", workspace.DescendantRemoving:Connect(removePart))
-				
+
 				self.addConn("SINGULARITY", self.Services.RunService.Heartbeat:Connect(function()
 					local hrp = self.fetchHrp(speaker.Character)
 					if hrp then
@@ -4249,7 +4249,7 @@ function modules.UniversalCommands()
 				end))
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unblackhole",
 			Description = "Stops attracting parts to you",
@@ -4269,7 +4269,7 @@ function modules.UniversalCommands()
 				self.removeConn("BLACKHOLE_DESCENDANT_REMOVED")
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "FixCamera",
 			Description = "Fixes your camera just in case it's broken",
@@ -4285,16 +4285,16 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				self.Modules.parser:RunCommand(speaker, "unview")
-				
+
 				task.wait(.1)
 				repeat task.wait() until speaker.Character ~= nil
-				
+
 				self.Camera.CameraSubject = hum
 				self.Camera.CameraType = "Custom"
 				speaker.CameraMinZoomDistance = 0.5
 				speaker.CameraMaxZoomDistance = 400
 				speaker.CameraMode = "Classic"
-				
+
 				if speaker.Character then
 					local head = speaker.Character:FindFirstChild("Head")
 					if head then
@@ -4303,7 +4303,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "EnableShiftLock",
 			Description = "If shift-lock is disabled, then it'll re-enable it",
@@ -4315,13 +4315,13 @@ function modules.UniversalCommands()
 				-- 引数 --
 
 				-- 変数 --
-				
+
 
 				-- 関数 --
 				speaker.DevEnableMouseLock = true
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "MaxZoom",
 			Description = "Sets your cameras Max Zoom Distance to [Number]",
@@ -4342,7 +4342,7 @@ function modules.UniversalCommands()
 				speaker.CameraMaxZoomDistance = num
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "MinZoom",
 			Description = "Sets your cameras Min Zoom Distance to [Number]",
@@ -4363,7 +4363,7 @@ function modules.UniversalCommands()
 				speaker.CameraMaxZoomDistance = num
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "F3X",
 			Description = "Gives you BTools (Client)",
@@ -4380,7 +4380,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/f3x.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Orbit",
 			Description = "Makes your character circle around [Player]",
@@ -4407,9 +4407,9 @@ function modules.UniversalCommands()
 				if not distance then
 					distance = 6
 				end
-				
+
 				speed = speed/20
-				
+
 				for index, player in next, users do
 					if player.Character then
 						local hrp = self.fetchHrp(player.Character)
@@ -4434,7 +4434,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unorbit",
 			Description = "Stops you from orbiting a player",
@@ -4453,7 +4453,7 @@ function modules.UniversalCommands()
 				self.removeConn("ORBIT_3")
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "HipHeight",
 			Description = "Sets your hipheight to [Number]",
@@ -4474,7 +4474,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Bang",
 			Description = "Fucks your [Player] with a speed of [Speed]",
@@ -4497,20 +4497,20 @@ function modules.UniversalCommands()
 				if not speed then
 					speed = 3
 				end
-				
+
 				self.Modules.parser:RunCommand(speaker, "unbang")
-				
+
 				task.wait()
-				
+
 				universalConnections.bangDied = hum.Died:Connect(function()
 					self.Modules.parser:RunCommand(speaker, "unbang")
 				end)
-				
+
 				for index, player in next, users do
 					if player.Character then
 						self.Modules.core:PlayAnimation(anim)
 						self.Modules.core:SetAnimationSpeed(speed)
-						
+
 						self.startLoop("BANGING", 0, function()
 							self.spawn(function()
 								local hrp = self.fetchHrp(player.Character)
@@ -4523,7 +4523,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unbang",
 			Description = "Stops fucking your target",
@@ -4540,13 +4540,13 @@ function modules.UniversalCommands()
 				if universalConnections.bangDied then
 					self.stopLoop("BANGING")
 					self.Modules.core:StopAnimation()
-					
+
 					universalConnections.bangDied:Disconnect()
 					universalConnections.bangDied = nil
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Swim",
 			Description = "Makes you swim in the air with the speed of [Speed]",
@@ -4570,23 +4570,23 @@ function modules.UniversalCommands()
 				if not speed then
 					speed = 50
 				end
-				
+
 				universalStorage.old_gravity = workspace.Gravity
 				table.remove(enums, table.find(enums, Enum.HumanoidStateType.None))
-				
+
 				workspace.Gravity = 0
-				
+
 				universalConnections.swimDied = hum.Died:Connect(function()
 					workspace.Gravity = universalStorage.old_gravity
 				end)
-				
+
 				for i, v in pairs(enums) do
 					hum:SetStateEnabled(v, false)
 				end
 				hum:ChangeState(Enum.HumanoidStateType.Swimming)
-				
+
 				self.Modules.parser:RunCommand(speaker, "cframespeed", speed)
-				
+
 				universalConnections.swimming = self.Services.RunService.Heartbeat:Connect(function()
 					self.spawn(function()
 						hrp.Velocity = ((hum.MoveDirection ~= Vector3.new()
@@ -4596,10 +4596,10 @@ function modules.UniversalCommands()
 						)
 					end)
 				end)
-				
+
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unswim",
 			Description = "Stops your character from swimming in the air",
@@ -4618,16 +4618,16 @@ function modules.UniversalCommands()
 				if universalConnections.swimming then
 					universalConnections.swimming:Disconnect()
 					universalConnections.swimming = nil
-					
+
 					workspace.Gravity = universalStorage.old_gravity
-					
+
 					if universalConnections.swimDied then
 						universalConnections.swimDied:Disconnect()
 						universalConnections.swimDied = nil
 					end
-					
+
 					self.Modules.parser:RunCommand(speaker, "uncframespeed")
-					
+
 					table.remove(enums, table.find(enums, Enum.HumanoidStateType.None))
 					for i, v in pairs(enums) do
 						hum:SetStateEnabled(v, true)
@@ -4635,7 +4635,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Invisible",
 			Description = "Makes you invisible",
@@ -4649,7 +4649,7 @@ function modules.UniversalCommands()
 				-- 変数 --
 				local void = workspace.FallenPartsDestroyHeight
 				local char = speaker.Character
-				
+
 				local currentlyInvis = false
 				local isRunning = false
 
@@ -4658,7 +4658,7 @@ function modules.UniversalCommands()
 				universalValues.isInvisible = true
 
 				char.Archivable = true
-				
+
 				local currentlyInvis = false
 				local isRunning = true
 
@@ -4668,12 +4668,12 @@ function modules.UniversalCommands()
 
 				local function respawn()
 					local hum = self.fetchHum(char)
-					
+
 					if hum and hum.Sit then
 						hum.Sit = false
 						hum.Jump = true
 					end
-					
+
 					isRunning = false
 					if currentlyInvis then
 						self.spawn(function()
@@ -4737,16 +4737,16 @@ function modules.UniversalCommands()
 
 				local camera = self.Camera
 				camera.CameraType = Enum.CameraType.Scriptable
-				
+
 				local ghostHrp = self.fetchHrp(invisChar)
 				local ghostHum = self.fetchHum(invisChar)
-				
+
 				invisChar.Parent = workspace
 				ghostHrp.CFrame = charCFrame
 				ghostHum.DisplayName = ""
-				
+
 				self.Camera.CameraSubject = invisChar
-				
+
 				wait(.2)
 				camera.CameraType = Enum.CameraType.Custom
 
@@ -4763,10 +4763,10 @@ function modules.UniversalCommands()
 					if not currentlyInvis then
 						return
 					end
-					
+
 					local mainHrp = self.fetchHrp(char)
 					local ghostHrp = self.fetchHrp(invisChar)
-					
+
 					if universalConnections.invisFix then
 						universalConnections.invisFix:Disconnect()
 						universalConnections.invisFix = nil
@@ -4787,7 +4787,7 @@ function modules.UniversalCommands()
 						animateScript.Disabled = true
 						animateScript.Disabled = false
 					end
-					
+
 					self.Camera.CameraSubject = char
 
 					universalValues.isInvisible = false
@@ -4795,7 +4795,7 @@ function modules.UniversalCommands()
 				self:Notify(self.Config.SYSTEM.NAME, `You are invisible to other players`, "INFO", nil, 5)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Visible",
 			Description = "Makes you visible to other players",
@@ -4815,7 +4815,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "HamsterBall",
 			Description = "Rolls your character like a hamster ball",
@@ -4832,7 +4832,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/hamsterball.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "JerkOff",
 			Description = "Makes you masterbathe with a speed of [Speed]",
@@ -4854,7 +4854,7 @@ function modules.UniversalCommands()
 				if not speed then
 					speed = 2
 				end
-				
+
 				if self.Modules.core:IsRigType(speaker.Character, "R6") then
 					self.Modules.core:StopAnimation()
 
@@ -4871,7 +4871,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Undance",
 			Description = "Stops you from dancing/jerking off",
@@ -4892,7 +4892,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "EnableInventory",
 			Description = "Enables your inventory",
@@ -4909,7 +4909,7 @@ function modules.UniversalCommands()
 				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "DisableInventory",
 			Description = "Disables your inventory",
@@ -4926,7 +4926,7 @@ function modules.UniversalCommands()
 				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "EnableChat",
 			Description = "Enables the chat for you",
@@ -4943,7 +4943,7 @@ function modules.UniversalCommands()
 				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, true)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "DisableChat",
 			Description = "Disables the chat for you",
@@ -4960,7 +4960,7 @@ function modules.UniversalCommands()
 				self.Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Freecam",
 			Description = "Makes you go in freecam mode",
@@ -4978,7 +4978,7 @@ function modules.UniversalCommands()
 				self.Modules.core:Freecam(disableCores)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "StopFreecam",
 			Description = "Stops freecam mode",
@@ -4995,7 +4995,7 @@ function modules.UniversalCommands()
 				self.Modules.core:StopFreecam()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "ESP",
 			Description = "See players/npcs through the walls",
@@ -5014,11 +5014,11 @@ function modules.UniversalCommands()
 				if not transparency then
 					transparency = .5
 				end
-				
+
 				self.Modules.parser:RunCommand(speaker, "unesp")
-				
+
 				task.wait(.1)
-				
+
 				local function getAllNPCs()
 					local npcsList = {}
 
@@ -5030,7 +5030,7 @@ function modules.UniversalCommands()
 
 					return npcsList
 				end
-				
+
 				local function addESP(target, isPlayer)
 					if (not target) or (target and self.Services.Players:GetPlayerFromCharacter(target) and target.Name == speaker.Name) then
 						return
@@ -5046,16 +5046,16 @@ function modules.UniversalCommands()
 							highlightColor = player.Team.TeamColor.Color
 						end
 					end
-					
+
 					local hrp = self.fetchHrp(target)
-					
+
 					local highlight = Instance.new("Highlight")
 					highlight.FillColor = highlightColor
 					highlight.FillTransparency = transparency
 					highlight.OutlineColor = highlightColor
 					highlight.Parent = target
 					highlight.Name = self.espName
-					
+
 					local billboard = Instance.new("BillboardGui")
 					billboard.Adornee = hrp
 					billboard.Size = UDim2.new(4, 0, 1, 0)
@@ -5073,11 +5073,11 @@ function modules.UniversalCommands()
 					textLabel.Font = Enum.Font.GothamBold
 					textLabel.TextSize = 14
 					textLabel.Parent = billboard
-					
+
 					self.spawn(function()
 						local player = self.Services.Players:GetPlayerFromCharacter(target)
 						local hum = self.fetchHum(target)
-						
+
 						while billboard and textLabel do
 							self.spawn(function()
 								player = self.Services.Players:GetPlayerFromCharacter(target)
@@ -5088,24 +5088,24 @@ function modules.UniversalCommands()
 									hum = self.fetchHum(player.Character)
 									hrp = self.fetchHrp(player.Character)
 								end
-								
+
 								billboard.Adornee = hrp
-								
+
 								local speakerHrp = self.fetchHrp(speaker.Character)
 								local distance
 								if speakerHrp and hrp then
 									distance = math.round(tonumber((hrp.Position - speakerHrp.Position).Magnitude))
 								end
-								
+
 								textLabel.Text = `{target.Name} @{player and player.DisplayName or ""}: Health: {hum and math.round(hum.Health).."/"..math.round(hum.MaxHealth) or "N/A"} | Distance: {distance or "N/A"}`
 							end)
 							task.wait()
 						end
 					end)
-					
+
 					table.insert(instances.esp_instances, highlight)
 				end
-				
+
 				self.addConn("ESP_PLAYER_ADDED", self.safePlayerAdded(function(player)
 					local conn = player.CharacterAdded:Connect(function()
 						addESP(player.Character, true)
@@ -5113,7 +5113,7 @@ function modules.UniversalCommands()
 					if player.Character then
 						addESP(player.Character, true)
 					end
-					
+
 					table.insert(universalConnections.espCharAdded, conn)
 				end))
 				self.addConn("ESP_NPC_ADDED", self.safeChildAdded(workspace, function()
@@ -5127,7 +5127,7 @@ function modules.UniversalCommands()
 				end))
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unesp",
 			Description = "Disables esp",
@@ -5143,7 +5143,7 @@ function modules.UniversalCommands()
 				-- 関数 --
 				self.removeConn("ESP_PLAYER_ADDED")
 				self.removeConn("ESP_NPC_ADDED")
-				
+
 				for _, v in ipairs(instances.esp_instances) do
 					if v then
 						v:Destroy()
@@ -5154,11 +5154,11 @@ function modules.UniversalCommands()
 						conn:Disconnect()
 					end
 				end
-				
+
 				table.clear(instances.esp_instances)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Fullbright",
 			Description = "Makes the map look brighter",
@@ -5179,7 +5179,7 @@ function modules.UniversalCommands()
 				self.Services.Lighting.GlobalShadows = false
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Spin",
 			Description = "Makes you spin with the speed of [Speed]",
@@ -5198,12 +5198,12 @@ function modules.UniversalCommands()
 				if not speed then
 					speed = 20
 				end
-				
+
 				if instances.spin_force then
 					instances.spin_force:Destroy()
 					instances.spin_force = nil
 				end
-				
+
 				if hrp then
 					local spin = Instance.new("BodyAngularVelocity")
 					spin.Name = "Spinning"
@@ -5214,7 +5214,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unspin",
 			Description = "Stops you from spinning",
@@ -5234,7 +5234,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "XRay",
 			Description = "See through the walls",
@@ -5258,7 +5258,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "UnXRay",
 			Description = "Stop seeing through the walls",
@@ -5282,7 +5282,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Car",
 			Description = "Makes you look like your driving a car with the speed of [Speed] and height of [HipHeight]",
@@ -5300,9 +5300,9 @@ function modules.UniversalCommands()
 				-- 変数 --
 				local r6animation = 129342287
 				local r15animation = 15570378042
-				
+
 				local hum = self.fetchHum(speaker.Character)
-				
+
 				local isMoving = false
 
 				-- 関数 --
@@ -5321,25 +5321,25 @@ function modules.UniversalCommands()
 				if not decelRate then
 					decelRate = 3
 				end
-				
-				
-				
+
+
+
 				accelRate /= 5
 				decelRate /= 2
-				
+
 				if hum then
 					local currentSpeed = 16
-					
+
 					hum.WalkSpeed = 0
-					
+
 					self.Modules.parser:RunCommand(speaker, "jumppower", ".00001")
-					
+
 					self.addConn("CAR_ACCELERATION", self.Services.RunService.RenderStepped:Connect(function()
 						if hum.MoveDirection.Magnitude > 0 then
 							isMoving = true else
 							isMoving = false
 						end
-						
+
 						if isMoving and currentSpeed < speed then
 							currentSpeed = math.min(currentSpeed + accelRate, speed)
 						elseif not isMoving and currentSpeed > 16 then
@@ -5349,21 +5349,21 @@ function modules.UniversalCommands()
 						hum.WalkSpeed = currentSpeed
 					end))
 				end
-				
+
 				self.Modules.core:PlayAnimation(self.Modules.core:IsRigType(speaker.Character, "R6") and r6animation or r15animation)
-				
+
 				for _, part in pairs(speaker.Character:GetDescendants()) do
 					if part:IsA("BasePart") or part:IsA("MeshPart") then
 						part.CustomPhysicalProperties = PhysicalProperties.new(.05, 0, 0)
 					end
 				end
-				
+
 				universalStorage.old_hipheight = hum.HipHeight
-				
+
 				hum.HipHeight = hipheight * (1.5)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Uncar",
 			Description = "Stops you being a car",
@@ -5397,10 +5397,10 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
-		
-		
-		
+
+
+
+
 		loadDetection("ACS Gun System", function()
 			if self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine") then
 				return true
@@ -5410,11 +5410,11 @@ function modules.UniversalCommands()
 			local engineFolder = self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine")
 				or self.Services.ReplicatedStorage:FindFirstChild("ACS_BT")
 			local events = engineFolder:FindFirstChild("Eventos") or engineFolder:FindFirstChild("Events")
-			
+
 			local pvpEnabled = {}
-			
+
 			local globalPVPConn = nil
-			
+
 			local accessId = nil
 			if events:FindFirstChild("AcessId") then
 				if events.AcessId:IsA("RemoteFunction") then
@@ -5427,7 +5427,7 @@ function modules.UniversalCommands()
 					end)
 				end
 			end
-				
+
 
 			local weaponMod = {
 				camRecoilMod 	= {
@@ -5504,7 +5504,7 @@ function modules.UniversalCommands()
 								if weapon:IsA("BackpackItem") then
 									if weapon:FindFirstChild("ACS_Animations") or weapon:FindFirstChild("ACS_Settings") then
 										weaponData = require(weapon.ACS_Settings)
-										
+
 										if weaponData.Type ~= "Grenade" then
 											acsWeapon = weapon
 											acsWeapon.Parent = self.Services.ReplicatedStorage
@@ -5547,7 +5547,7 @@ function modules.UniversalCommands()
 
 							-- Remote
 							--local HitEffect = ReplicatedStorage.ACS_Engine.Events.HitEffect -- RemoteEvent 
-							
+
 							--[[
 							HitEffect:FireServer(
 								Vector3.new(272, 459, -291),
@@ -5690,15 +5690,15 @@ function modules.UniversalCommands()
 								}
 							)
 							]]
-							
+
 							config.ExplosiveAmmo = true
 							config.ExplosionRadius = config.ExpRadius
 							config.ExplosionType = "Default"
 							config.IgnoreProtection = true
 							config.gunName = "Grenade Launcher"
-							
+
 							events.HitEffect:FireServer(pos, hit, extraVector, material, config, accessId)
-							
+
 							if events:FindFirstChild("LauncherHit") then
 								events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
 							end
@@ -5833,13 +5833,13 @@ function modules.UniversalCommands()
 					-- 関数 --
 					for index, player in next, users do
 						events.Whizz:FireServer(player, accessId)
-						
+
 						if getACSVersion() == "1.7.5" then
 							events.Suppression:FireServer(player, accessId)
 						elseif getACSVersion() == "2.0.1" then
 							events.Suppression:FireServer(player, 1, accessId)
 						end
-						
+
 					end
 				end,
 			})
@@ -5874,14 +5874,14 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
-					
+
 					-- 変数 --
 
 					-- 関数 --
 					self.Modules.parser:RunCommand(speaker, "StopGlobalPVPMode")
-					
+
 					task.wait(.5)
-					
+
 					globalPVPConn = events.Hit.OnClientEvent:Connect(function(targetedPlayer, pos, hitPart, normal, material, config)
 						if hitPart and hitPart.Parent then
 							if self.fetchHum(hitPart.Parent) then
@@ -5975,17 +5975,22 @@ function modules.UniversalCommands()
 				Description = "Nukes the [Player]",
 
 				Aliases = {},
-				Arguments = {"Player", "TerrainDamage"},
+				Arguments = {"Player", "Radius", "TerrainDamage"},
 
 				Function = function(speaker, args)
 					-- 引数 --
 					local user = args[1]
-					local causeTerrainDamage = self.getBool(args[2])
+					local explosionRadius = self.getNum(args[2])
+					local causeTerrainDamage = self.getBool(args[3])
 
 					-- 変数 --
 					local users = self.getPlayer(speaker, user)
 
 					-- 関数 --
+					if not explosionRadius then
+						explosionRadius = 1
+					end
+					
 					for index, player in next, users do
 						if player.Character then
 							local hrp = self.fetchHrp(player.Character)
@@ -5995,7 +6000,7 @@ function modules.UniversalCommands()
 							local verticalSpacing = 15
 
 							self.spawn(function()
-								for i = 1, 20 do
+								for i = 1, (20 * explosionRadius) do
 									for i = 0, heightSteps do
 										local y = i * verticalSpacing
 										explode(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
@@ -6027,17 +6032,43 @@ function modules.UniversalCommands()
 												ExplosionDamage = math.huge,
 											})
 										end
+										for i = 1, numBooms do
+											local angle = i * ((math.pi * 2) / numBooms)
+											local x = radius * math.cos(angle)
+											local z = radius * math.sin(angle)
+
+											explode(Vector3.new(origin.X + x, capHeight+25, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+												ExplosiveHit = true,
+												ExPressure = causeTerrainDamage and 5000000 or 0,
+												ExpRadius = 100,
+												DestroyJointRadiusPercent = 100,
+												ExplosionDamage = math.huge,
+											})
+										end
+										for i = 1, numBooms do
+											local angle = i * ((math.pi * 2) / numBooms)
+											local x = radius * math.cos(angle)
+											local z = radius * math.sin(angle)
+
+											explode(Vector3.new(origin.X + x, capHeight+50, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+												ExplosiveHit = true,
+												ExPressure = causeTerrainDamage and 5000000 or 0,
+												ExpRadius = 100,
+												DestroyJointRadiusPercent = 100,
+												ExplosionDamage = math.huge,
+											})
+										end
 										task.wait()
 									end
 									task.wait(0.2)
 								end
 							end)
 							self.spawn(function()
-								for index = 1, 3 do
+								for index = 1, (3 * explosionRadius) do
 									local numBooms = 20
 									for i = 1, numBooms do
 										local a = i * ((math.pi * 2) / numBooms) 
-										local radius = index * 25 -- Spread out explosions over time
+										local radius = index * 25
 										local x = radius * math.cos(a)
 										local z = radius * math.sin(a)
 
@@ -6053,7 +6084,7 @@ function modules.UniversalCommands()
 								end
 							end)
 
-							for index = 1, 25 do
+							for index = 1, (25 * explosionRadius) do
 								local numBooms = 25
 								for i = 1, numBooms do
 									local a = i * ((math.pi * 2) / numBooms) 
@@ -6117,7 +6148,7 @@ function modules.UniversalCommands()
 			})
 		end)
 	end
-	
+
 	return module
 end
 
