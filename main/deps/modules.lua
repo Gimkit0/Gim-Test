@@ -5540,8 +5540,164 @@ function modules.UniversalCommands()
 						events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
 						events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
 					elseif getACSVersion() == "2.0.1" then
-						if events:FindFirstChild("Hit") then
-							events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
+						if events:FindFirstChild("HitEffect") then
+							-- Generated with Sigma Spy Github: https://github.com/depthso/Sigma-Spy
+							-- Services
+							--local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+							-- Remote
+							--local HitEffect = ReplicatedStorage.ACS_Engine.Events.HitEffect -- RemoteEvent 
+							
+							--[[
+							HitEffect:FireServer(
+								Vector3.new(272, 459, -291),
+								hit,
+								Vector3.new(0, 0, -1),
+								Enum.Material.DiamondPlate,
+								{
+									Ammo = 5,
+									DamageFallOf = 0.85,
+									ShootRate = 70,
+									BarrelAtt = "",
+									EnableZeroing = true,
+									ExplosionRadius = 8,
+									MinRecoilPower = 0.4,
+									Type = "Gun",
+									HolsterCFrame = CFrame.new(1, -2, 0, 1, 0, 0, 0, 1, -0, 0, 0, 1),
+									MaxRecoilPower = 1.6,
+									OtherAtt = "",
+									BulletPenetration = 75,
+									CanCheckMag = true,
+									MuzzleVelocity = 150,
+									ExplosionType = "Default",
+									CanBreachDoor = false,
+									FireModes = {
+										Auto = false,
+										Burst = false,
+										ChangeFiremode = false,
+										Semi = true
+									},
+									camRecoil = {
+										camRecoilUp = {
+											70,
+											75
+										},
+										camRecoilRight = {
+											40,
+											45
+										},
+										camRecoilLeft = {
+											40,
+											45
+										},
+										camRecoilTilt = {
+											90,
+											100
+										}
+									},
+									gunName = "Grenade Launcher",
+									HeadDamage = {
+										25,
+										25
+									},
+									Zoom2 = 60,
+									MagCount = true,
+									InfraRed = false,
+									AimInaccuracyStepAmount = 1.2,
+									CurrentZero = 100,
+									RainbowMode = false,
+									CrosshairOffset = 8,
+									SlideLock = false,
+									ShootType = 3,
+									FlashChance = 0,
+									AimSensitivity = 0.2,
+									Bullets = 1,
+									EnableHUD = true,
+									SlideEx = CFrame.new(0, 0, -1, 1, 0, 0, 0, 1, 0, 0, 0, 1),
+									Tracer = false,
+									LimbDamage = {
+										25,
+										25
+									},
+									MaxStoredAmmo = 10,
+									UnderBarrelAtt = "",
+									Jammed = false,
+									TracerEveryXShots = 0,
+									CenterDot = false,
+									CanBreak = false,
+									ExplosiveAmmo = true,
+									WeaponWeight = 3,
+									ZeroIncrement = 100,
+									HolsterPoint = "Torso",
+									ShellEjectionMod = false,
+									TorsoDamage = {
+										25,
+										25
+									},
+									ShellInsert = false,
+									MinDamage = 35,
+									gunRecoil = {
+										gunRecoilTilt = {
+											50,
+											75
+										},
+										gunRecoilUp = {
+											150,
+											200
+										},
+										gunRecoilLeft = {
+											100,
+											175
+										},
+										gunRecoilRight = {
+											100,
+											175
+										}
+									},
+									BurstShot = 3,
+									WalkMult = 2,
+									RecoilPowerStepAmount = 0.1,
+									StoredAmmo = 10,
+									BulletFlare = false,
+									IncludeChamberedBullet = true,
+									MaxSpread = 100,
+									CrossHair = true,
+									RandomTracer = {
+										Enabled = true,
+										Chance = 20
+									},
+									AimInaccuracyDecrease = 0.25,
+									TracerColor = Color3.fromRGB(255, 255, 255),
+									BulletDrop = 0.4,
+									BulletType = "7.62x51mm",
+									ADSEnabled = {
+										true,
+										false
+									},
+									AimSpreadReduction = 1,
+									IgnoreProtection = false,
+									MaxZero = 400,
+									Holster = true,
+									adsTime = 1.3,
+									AimRecoilReduction = 1,
+									Zoom = 60,
+									AimZoomSpeed = 1,
+									SightAtt = "",
+									IsLauncher = false,
+									MinSpread = 0.75,
+									canAim = true,
+									AmmoInGun = 5
+								}
+							)
+							]]
+							
+							config.ExplosiveAmmo = true
+							config.ExplosionRadius = config.ExpRadius
+							config.ExplosionType = "Default"
+							config.IgnoreProtection = true
+							config.gunName = "Grenade Launcher"
+							
+							events.HitEffect:FireServer(pos, hit, extraVector, material, config, accessId)
 							
 							if events:FindFirstChild("LauncherHit") then
 								events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
