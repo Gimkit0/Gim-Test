@@ -5536,8 +5536,37 @@ function modules.UniversalCommands()
 			end
 			local function explode(pos, hit, extraVector, material, config)
 				self.spawn(function()
-					events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
-					events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
+					if getACSVersion() == "1.7.5" then
+						events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
+						events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
+					elseif getACSVersion() == "2.0.1" then
+						if events:FindFirstChild("Hit") then
+							events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
+							
+							if events:FindFirstChild("LauncherHit") then
+								events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
+							end
+						else
+							local grenade
+							local grenadeData
+							for _, tool in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
+								local grenadeModels = engineFolder:FindFirstChild("GrenadeModels")
+								if grenadeModels then
+									if tool and grenadeModels:FindFirstChild(tool.Name) then
+										grenade = tool
+										grenade.Parent = self.Services.ReplicatedStorage
+										grenadeData = require(tool.ACS_Settings)
+										break
+									end
+								end
+							end
+							if grenade then
+								events.Grenade:FireServer(grenade, grenadeData, hit.CFrame, CFrame.new(0,0,0), Vector3.new(0,0,0), accessId)
+							else
+								self:Notify(self.Config.SYSTEM.NAME, `Please equip a ACS Grenade`, "ERROR", nil, 5)
+							end
+						end
+					end
 				end)
 			end
 			local function pvpMode(player)
@@ -5774,38 +5803,13 @@ function modules.UniversalCommands()
 					for index, player in next, users do
 						if player.Character then
 							local hrp = self.fetchHrp(player.Character)
-							if getACSVersion() == "1.7.5" then
-								if hrp then
-									explode(hrp.Position, hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-										ExplosiveHit = true,
-										ExPressure = causeTerrainDamage and 5000000 or 0,
-										ExpRadius = 100,
-										DestroyJointRadiusPercent = 100,
-										ExplosionDamage = math.huge,
-									})
-								end
-							elseif getACSVersion() == "2.0.1" then
-								local grenade
-								local grenadeData
-								for _, tool in ipairs(speaker.Backpack:GetChildren()) do
-									local grenadeModels = engineFolder:FindFirstChild("GrenadeModels")
-									if grenadeModels then
-										if tool and grenadeModels:FindFirstChild(tool.Name) then
-											grenade = tool
-											grenade.Parent = self.Services.ReplicatedStorage
-											grenadeData = require(tool.ACS_Settings)
-											break
-										end
-									end
-								end
-								if grenade then
-									events.Grenade:FireServer(grenade, grenadeData, hrp.CFrame, CFrame.new(0,0,0), Vector3.new(0,0,0), accessId)
-								else
-									self:Notify(self.Config.SYSTEM.NAME, `Please equip a ACS Grenade`, "ERROR", nil, 5)
-								end
-							
-								--self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 1.7.5 is only supported for now`, "ERROR", nil, 5)
-							end
+							explode(hrp.Position, hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+								ExplosiveHit = true,
+								ExPressure = causeTerrainDamage and 5000000 or 0,
+								ExpRadius = 100,
+								DestroyJointRadiusPercent = 100,
+								ExplosionDamage = math.huge,
+							})
 						end
 					end
 				end,
@@ -5829,93 +5833,87 @@ function modules.UniversalCommands()
 					for index, player in next, users do
 						if player.Character then
 							local hrp = self.fetchHrp(player.Character)
-							if getACSVersion() == "1.7.5" then
-								if hrp then
-									local origin = hrp.CFrame.p
-									
-									local heightSteps = 10
-									local verticalSpacing = 15
-									
-									self.spawn(function()
-										for i = 1, 20 do
-											for i = 0, heightSteps do
-												local y = i * verticalSpacing
-												explode(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-													ExplosiveHit = true,
-													ExPressure = causeTerrainDamage and 5000000 or 0,
-													ExpRadius = 100,
-													DestroyJointRadiusPercent = 100,
-													ExplosionDamage = math.huge,
-												})
-												task.wait()
-											end
-											local capHeight = origin.Y + heightSteps * verticalSpacing
-											local numRings = 4
-											local ringSpacing = 20
+							local origin = hrp.CFrame.p
 
-											for ring = 1, numRings do
-												local radius = ring * 30
-												local numBooms = 30
-												for i = 1, numBooms do
-													local angle = i * ((math.pi * 2) / numBooms)
-													local x = radius * math.cos(angle)
-													local z = radius * math.sin(angle)
+							local heightSteps = 10
+							local verticalSpacing = 15
 
-													explode(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-														ExplosiveHit = true,
-														ExPressure = causeTerrainDamage and 5000000 or 0,
-														ExpRadius = 100,
-														DestroyJointRadiusPercent = 100,
-														ExplosionDamage = math.huge,
-													})
-												end
-												task.wait()
-											end
-											task.wait(0.2)
-										end
-									end)
-									self.spawn(function()
-										for index = 1, 3 do
-											local numBooms = 20
-											for i = 1, numBooms do
-												local a = i * ((math.pi * 2) / numBooms) 
-												local radius = index * 25 -- Spread out explosions over time
-												local x = radius * math.cos(a)
-												local z = radius * math.sin(a)
+							self.spawn(function()
+								for i = 1, 20 do
+									for i = 0, heightSteps do
+										local y = i * verticalSpacing
+										explode(Vector3.new(origin.X, origin.Y + y, origin.Z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+											ExplosiveHit = true,
+											ExPressure = causeTerrainDamage and 5000000 or 0,
+											ExpRadius = 100,
+											DestroyJointRadiusPercent = 100,
+											ExplosionDamage = math.huge,
+										})
+										task.wait()
+									end
+									local capHeight = origin.Y + heightSteps * verticalSpacing
+									local numRings = 4
+									local ringSpacing = 20
 
-												explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y - 25, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-													ExplosiveHit = true,
-													ExPressure = causeTerrainDamage and 5000000 or 0,
-													ExpRadius = 100,
-													DestroyJointRadiusPercent = 100,
-													ExplosionDamage = math.huge,
-												})
-											end
-											task.wait(0.5)
-										end
-									end)
-									
-									for index = 1, 25 do
-										local numBooms = 25
+									for ring = 1, numRings do
+										local radius = ring * 30
+										local numBooms = 30
 										for i = 1, numBooms do
-											local a = i * ((math.pi * 2) / numBooms) 
-											local radius = index * 25 -- Spread out explosions over time
-											local x = radius * math.cos(a)
-											local z = radius * math.sin(a)
+											local angle = i * ((math.pi * 2) / numBooms)
+											local x = radius * math.cos(angle)
+											local z = radius * math.sin(angle)
 
-											explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+											explode(Vector3.new(origin.X + x, capHeight, origin.Z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
 												ExplosiveHit = true,
 												ExPressure = causeTerrainDamage and 5000000 or 0,
-												ExpRadius = 65,
+												ExpRadius = 100,
 												DestroyJointRadiusPercent = 100,
 												ExplosionDamage = math.huge,
 											})
 										end
-										task.wait(0.5)
+										task.wait()
 									end
+									task.wait(0.2)
 								end
-							else
-								self:Notify(self.Config.SYSTEM.NAME, `Currently ACS 1.7.5 is only supported for now`, "ERROR", nil, 5)
+							end)
+							self.spawn(function()
+								for index = 1, 3 do
+									local numBooms = 20
+									for i = 1, numBooms do
+										local a = i * ((math.pi * 2) / numBooms) 
+										local radius = index * 25 -- Spread out explosions over time
+										local x = radius * math.cos(a)
+										local z = radius * math.sin(a)
+
+										explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y - 25, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+											ExplosiveHit = true,
+											ExPressure = causeTerrainDamage and 5000000 or 0,
+											ExpRadius = 100,
+											DestroyJointRadiusPercent = 100,
+											ExplosionDamage = math.huge,
+										})
+									end
+									task.wait(0.5)
+								end
+							end)
+
+							for index = 1, 25 do
+								local numBooms = 25
+								for i = 1, numBooms do
+									local a = i * ((math.pi * 2) / numBooms) 
+									local radius = index * 25 -- Spread out explosions over time
+									local x = radius * math.cos(a)
+									local z = radius * math.sin(a)
+
+									explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+										ExplosiveHit = true,
+										ExPressure = causeTerrainDamage and 5000000 or 0,
+										ExpRadius = 65,
+										DestroyJointRadiusPercent = 100,
+										ExplosionDamage = math.huge,
+									})
+								end
+								task.wait(0.5)
 							end
 						end
 					end
