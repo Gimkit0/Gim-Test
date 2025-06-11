@@ -5540,161 +5540,15 @@ function modules.UniversalCommands()
 						events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
 						events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
 					elseif getACSVersion() == "2.0.1" then
-						if events:FindFirstChild("HitEffect") then
-							-- Generated with Sigma Spy Github: https://github.com/depthso/Sigma-Spy
-							-- Services
-							--local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-							-- Remote
-							--local HitEffect = ReplicatedStorage.ACS_Engine.Events.HitEffect -- RemoteEvent 
-
-							--[[
-							HitEffect:FireServer(
-								Vector3.new(272, 459, -291),
-								hit,
-								Vector3.new(0, 0, -1),
-								Enum.Material.DiamondPlate,
-								{
-									Ammo = 5,
-									DamageFallOf = 0.85,
-									ShootRate = 70,
-									BarrelAtt = "",
-									EnableZeroing = true,
-									ExplosionRadius = 8,
-									MinRecoilPower = 0.4,
-									Type = "Gun",
-									HolsterCFrame = CFrame.new(1, -2, 0, 1, 0, 0, 0, 1, -0, 0, 0, 1),
-									MaxRecoilPower = 1.6,
-									OtherAtt = "",
-									BulletPenetration = 75,
-									CanCheckMag = true,
-									MuzzleVelocity = 150,
-									ExplosionType = "Default",
-									CanBreachDoor = false,
-									FireModes = {
-										Auto = false,
-										Burst = false,
-										ChangeFiremode = false,
-										Semi = true
-									},
-									camRecoil = {
-										camRecoilUp = {
-											70,
-											75
-										},
-										camRecoilRight = {
-											40,
-											45
-										},
-										camRecoilLeft = {
-											40,
-											45
-										},
-										camRecoilTilt = {
-											90,
-											100
-										}
-									},
-									gunName = "Grenade Launcher",
-									HeadDamage = {
-										25,
-										25
-									},
-									Zoom2 = 60,
-									MagCount = true,
-									InfraRed = false,
-									AimInaccuracyStepAmount = 1.2,
-									CurrentZero = 100,
-									RainbowMode = false,
-									CrosshairOffset = 8,
-									SlideLock = false,
-									ShootType = 3,
-									FlashChance = 0,
-									AimSensitivity = 0.2,
-									Bullets = 1,
-									EnableHUD = true,
-									SlideEx = CFrame.new(0, 0, -1, 1, 0, 0, 0, 1, 0, 0, 0, 1),
-									Tracer = false,
-									LimbDamage = {
-										25,
-										25
-									},
-									MaxStoredAmmo = 10,
-									UnderBarrelAtt = "",
-									Jammed = false,
-									TracerEveryXShots = 0,
-									CenterDot = false,
-									CanBreak = false,
-									ExplosiveAmmo = true,
-									WeaponWeight = 3,
-									ZeroIncrement = 100,
-									HolsterPoint = "Torso",
-									ShellEjectionMod = false,
-									TorsoDamage = {
-										25,
-										25
-									},
-									ShellInsert = false,
-									MinDamage = 35,
-									gunRecoil = {
-										gunRecoilTilt = {
-											50,
-											75
-										},
-										gunRecoilUp = {
-											150,
-											200
-										},
-										gunRecoilLeft = {
-											100,
-											175
-										},
-										gunRecoilRight = {
-											100,
-											175
-										}
-									},
-									BurstShot = 3,
-									WalkMult = 2,
-									RecoilPowerStepAmount = 0.1,
-									StoredAmmo = 10,
-									BulletFlare = false,
-									IncludeChamberedBullet = true,
-									MaxSpread = 100,
-									CrossHair = true,
-									RandomTracer = {
-										Enabled = true,
-										Chance = 20
-									},
-									AimInaccuracyDecrease = 0.25,
-									TracerColor = Color3.fromRGB(255, 255, 255),
-									BulletDrop = 0.4,
-									BulletType = "7.62x51mm",
-									ADSEnabled = {
-										true,
-										false
-									},
-									AimSpreadReduction = 1,
-									IgnoreProtection = false,
-									MaxZero = 400,
-									Holster = true,
-									adsTime = 1.3,
-									AimRecoilReduction = 1,
-									Zoom = 60,
-									AimZoomSpeed = 1,
-									SightAtt = "",
-									IsLauncher = false,
-									MinSpread = 0.75,
-									canAim = true,
-									AmmoInGun = 5
-								}
-							)
-							]]
-
+						if events:FindFirstChild("HitEffect") and events:FindFirstChild("Hit") then
 							config.ExplosiveAmmo = true
 							config.ExplosionRadius = config.ExpRadius
 							config.ExplosionType = "Default"
 							config.IgnoreProtection = true
+							config.BulletPenetration = 999
+							config.HeadDamage = {math.huge, math.huge}
+							config.LimbDamage = {math.huge, math.huge}
+							config.TorsoDamage = {math.huge, math.huge}
 							config.gunName = "Grenade Launcher"
 
 							events.HitEffect:FireServer(pos, hit, extraVector, material, config, accessId)
@@ -5722,6 +5576,115 @@ function modules.UniversalCommands()
 								self:Notify(self.Config.SYSTEM.NAME, `Please equip a ACS Grenade`, "ERROR", nil, 5)
 							end
 						end
+					end
+				end)
+			end
+			local function nuke(pos, hit, explosionRadius, causeTerrainDamage)
+				self.spawn(function()
+					local origin = pos
+					
+					explode(pos, hit, Vector3.new(0,0,0), Enum.Material.Mud, {
+						ExplosiveHit = true,
+						ExPressure = causeTerrainDamage and 5000000 or 0,
+						ExpRadius = 100,
+						DestroyJointRadiusPercent = 100,
+						ExplosionDamage = math.huge,
+					})
+
+					for i = 1, (5 * explosionRadius) do
+						local scaledHeightSteps = math.floor(15 * explosionRadius)
+						local verticalSpacing = 10 * explosionRadius
+						local maxStemRadius = 50 * explosionRadius
+						local stemBoomSize = 90 * explosionRadius
+
+						-- Build the stem with tapering
+						for i = 1, scaledHeightSteps do
+							local y = i * verticalSpacing
+							local radius = math.max(5, maxStemRadius - (i * (maxStemRadius / scaledHeightSteps)))
+							local numBooms = math.clamp(8 + i * 2, 8, 30)
+
+							for j = 1, numBooms do
+								local angle = j * ((math.pi * 2) / numBooms)
+								local x = radius * math.cos(angle)
+								local z = radius * math.sin(angle)
+
+								explode(Vector3.new(origin.X + x, origin.Y + y, origin.Z + z), hit, Vector3.new(0, 0, 0), Enum.Material.Mud, {
+									ExplosiveHit = true,
+									ExPressure = causeTerrainDamage and 5000000 or 0,
+									ExpRadius = stemBoomSize,
+									DestroyJointRadiusPercent = 100,
+									ExplosionDamage = math.huge,
+								})
+							end
+							task.wait(0.1)
+						end
+
+						-- Cap with dome shape
+						local capHeight = origin.Y + scaledHeightSteps * verticalSpacing
+						local domeLayers = math.floor(5 * explosionRadius)
+						local domeLayerSpacing = 40 * explosionRadius
+						local domeBoomSize = 100 * explosionRadius
+
+						for layer = 1, domeLayers do
+							local layerRadius = layer * domeLayerSpacing
+							local yOffset = -((layer - 1) ^ 2) + (domeLayers ^ 2)
+							local numBooms = math.floor(30 + layer * 6 * explosionRadius)
+
+							for i = 1, numBooms do
+								local angle = i * ((math.pi * 2) / numBooms)
+								local x = layerRadius * math.cos(angle)
+								local z = layerRadius * math.sin(angle)
+
+								explode(Vector3.new(origin.X + x, capHeight + yOffset, origin.Z + z), hit, Vector3.new(0, 0, 0), Enum.Material.Mud, {
+									ExplosiveHit = true,
+									ExPressure = causeTerrainDamage and 5000000 or 0,
+									ExpRadius = domeBoomSize,
+									DestroyJointRadiusPercent = 100,
+									ExplosionDamage = math.huge,
+								})
+							end
+							task.wait(0.15)
+						end
+					end
+				end)
+				self.spawn(function()
+					for index = 1, (3 * explosionRadius) do
+						local numBooms = 20
+						for i = 1, numBooms do
+							local a = i * ((math.pi * 2) / numBooms) 
+							local radius = index * 25
+							local x = radius * math.cos(a)
+							local z = radius * math.sin(a)
+
+							explode(Vector3.new(pos.x + x, pos.y - 25, pos.z + z), hit, Vector3.new(0,0,0), Enum.Material.Mud, {
+								ExplosiveHit = true,
+								ExPressure = causeTerrainDamage and 5000000 or 0,
+								ExpRadius = 100,
+								DestroyJointRadiusPercent = 100,
+								ExplosionDamage = math.huge,
+							})
+						end
+						task.wait(0.5)
+					end
+				end)
+				self.spawn(function()
+					for index = 1, (25 * explosionRadius) do
+						local numBooms = 25
+						for i = 1, numBooms do
+							local a = i * ((math.pi * 2) / numBooms) 
+							local radius = index * 25
+							local x = radius * math.cos(a)
+							local z = radius * math.sin(a)
+
+							explode(Vector3.new(pos.x + x, pos.y, pos.z + z), hit, Vector3.new(0,0,0), Enum.Material.Mud, {
+								ExplosiveHit = true,
+								ExPressure = causeTerrainDamage and 5000000 or 0,
+								ExpRadius = 65,
+								DestroyJointRadiusPercent = 100,
+								ExplosionDamage = math.huge,
+							})
+						end
+						task.wait(0.5)
 					end
 				end)
 			end
@@ -5994,117 +5957,35 @@ function modules.UniversalCommands()
 					for index, player in next, users do
 						if player.Character then
 							local hrp = self.fetchHrp(player.Character)
-							local origin = hrp.CFrame.p
-
-							self.spawn(function()
-								hrp.Anchored = true
-								
-								explode(hrp.Position, hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-									ExplosiveHit = true,
-									ExPressure = causeTerrainDamage and 5000000 or 0,
-									ExpRadius = 100,
-									DestroyJointRadiusPercent = 100,
-									ExplosionDamage = math.huge,
-								})
-								
-								for i = 1, (5 * explosionRadius) do
-									local scaledHeightSteps = math.floor(15 * explosionRadius)
-									local verticalSpacing = 10 * explosionRadius
-									local maxStemRadius = 50 * explosionRadius
-									local stemBoomSize = 90 * explosionRadius
-
-									-- Build the stem with tapering
-									for i = 1, scaledHeightSteps do
-										local y = i * verticalSpacing
-										local radius = math.max(5, maxStemRadius - (i * (maxStemRadius / scaledHeightSteps)))
-										local numBooms = math.clamp(8 + i * 2, 8, 30)
-
-										for j = 1, numBooms do
-											local angle = j * ((math.pi * 2) / numBooms)
-											local x = radius * math.cos(angle)
-											local z = radius * math.sin(angle)
-
-											explode(Vector3.new(origin.X + x, origin.Y + y, origin.Z + z), hrp, Vector3.new(0, 0, 0), Enum.Material.Mud, {
-												ExplosiveHit = true,
-												ExPressure = causeTerrainDamage and 5000000 or 0,
-												ExpRadius = stemBoomSize,
-												DestroyJointRadiusPercent = 100,
-												ExplosionDamage = math.huge,
-											})
-										end
-										task.wait(0.1)
-									end
-
-									-- Cap with dome shape
-									local capHeight = origin.Y + scaledHeightSteps * verticalSpacing
-									local domeLayers = math.floor(5 * explosionRadius)
-									local domeLayerSpacing = 40 * explosionRadius
-									local domeBoomSize = 100 * explosionRadius
-
-									for layer = 1, domeLayers do
-										local layerRadius = layer * domeLayerSpacing
-										local yOffset = -((layer - 1) ^ 2) + (domeLayers ^ 2)
-										local numBooms = math.floor(30 + layer * 6 * explosionRadius)
-
-										for i = 1, numBooms do
-											local angle = i * ((math.pi * 2) / numBooms)
-											local x = layerRadius * math.cos(angle)
-											local z = layerRadius * math.sin(angle)
-
-											explode(Vector3.new(origin.X + x, capHeight + yOffset, origin.Z + z), hrp, Vector3.new(0, 0, 0), Enum.Material.Mud, {
-												ExplosiveHit = true,
-												ExPressure = causeTerrainDamage and 5000000 or 0,
-												ExpRadius = domeBoomSize,
-												DestroyJointRadiusPercent = 100,
-												ExplosionDamage = math.huge,
-											})
-										end
-										task.wait(0.15)
-									end
-								end
-							end)
-							self.spawn(function()
-								for index = 1, (3 * explosionRadius) do
-									local numBooms = 20
-									for i = 1, numBooms do
-										local a = i * ((math.pi * 2) / numBooms) 
-										local radius = index * 25
-										local x = radius * math.cos(a)
-										local z = radius * math.sin(a)
-
-										explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y - 25, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-											ExplosiveHit = true,
-											ExPressure = causeTerrainDamage and 5000000 or 0,
-											ExpRadius = 100,
-											DestroyJointRadiusPercent = 100,
-											ExplosionDamage = math.huge,
-										})
-									end
-									task.wait(0.5)
-								end
-							end)
-							self.spawn(function()
-								for index = 1, (25 * explosionRadius) do
-									local numBooms = 25
-									for i = 1, numBooms do
-										local a = i * ((math.pi * 2) / numBooms) 
-										local radius = index * 25 -- Spread out explosions over time
-										local x = radius * math.cos(a)
-										local z = radius * math.sin(a)
-
-										explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-											ExplosiveHit = true,
-											ExPressure = causeTerrainDamage and 5000000 or 0,
-											ExpRadius = 65,
-											DestroyJointRadiusPercent = 100,
-											ExplosionDamage = math.huge,
-										})
-									end
-									task.wait(0.5)
-								end
-							end)
+							hrp.Anchored = true
+							
+							nuke(hrp.Position, hrp, explosionRadius, causeTerrainDamage)
 						end
 					end
+				end,
+			})
+			self:AddCommand({
+				Name = "NukeRemote",
+				Description = "Gives you a nuclear bomb remote",
+
+				Aliases = {},
+				Arguments = {"Radius", "TerrainDamage"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local explosionRadius = self.getNum(args[1])
+					local causeTerrainDamage = self.getBool(args[2])
+
+					-- 変数 --
+
+					-- 関数 --
+					if not explosionRadius then
+						explosionRadius = 1
+					end
+
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/remoteModule.lua"))().new("Nuke Remote", function(pos, hit)
+						nuke(pos, hit, explosionRadius, causeTerrainDamage)
+					end, 10)
 				end,
 			})
 			self:AddCommand({
