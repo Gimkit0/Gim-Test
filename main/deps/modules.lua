@@ -5997,6 +5997,16 @@ function modules.UniversalCommands()
 							local origin = hrp.CFrame.p
 
 							self.spawn(function()
+								hrp.Anchored = true
+								
+								explode(hrp.Position, hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+									ExplosiveHit = true,
+									ExPressure = causeTerrainDamage and 5000000 or 0,
+									ExpRadius = 100,
+									DestroyJointRadiusPercent = 100,
+									ExplosionDamage = math.huge,
+								})
+								
 								for i = 1, (5 * explosionRadius) do
 									local scaledHeightSteps = math.floor(15 * explosionRadius)
 									local verticalSpacing = 10 * explosionRadius
@@ -6073,25 +6083,26 @@ function modules.UniversalCommands()
 									task.wait(0.5)
 								end
 							end)
+							self.spawn(function()
+								for index = 1, (25 * explosionRadius) do
+									local numBooms = 25
+									for i = 1, numBooms do
+										local a = i * ((math.pi * 2) / numBooms) 
+										local radius = index * 25 -- Spread out explosions over time
+										local x = radius * math.cos(a)
+										local z = radius * math.sin(a)
 
-							for index = 1, (25 * explosionRadius) do
-								local numBooms = 25
-								for i = 1, numBooms do
-									local a = i * ((math.pi * 2) / numBooms) 
-									local radius = index * 25 -- Spread out explosions over time
-									local x = radius * math.cos(a)
-									local z = radius * math.sin(a)
-
-									explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
-										ExplosiveHit = true,
-										ExPressure = causeTerrainDamage and 5000000 or 0,
-										ExpRadius = 65,
-										DestroyJointRadiusPercent = 100,
-										ExplosionDamage = math.huge,
-									})
+										explode(Vector3.new(hrp.CFrame.p.x + x, hrp.CFrame.p.y, hrp.CFrame.p.z + z), hrp, Vector3.new(0,0,0), Enum.Material.Mud, {
+											ExplosiveHit = true,
+											ExPressure = causeTerrainDamage and 5000000 or 0,
+											ExpRadius = 65,
+											DestroyJointRadiusPercent = 100,
+											ExplosionDamage = math.huge,
+										})
+									end
+									task.wait(0.5)
 								end
-								task.wait(0.5)
-							end
+							end)
 						end
 					end
 				end,
