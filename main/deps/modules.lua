@@ -5546,9 +5546,9 @@ function modules.UniversalCommands()
 							config.ExplosionType = "Default"
 							config.IgnoreProtection = true
 							config.BulletPenetration = 999
-							config.HeadDamage = {math.huge, math.huge}
-							config.LimbDamage = {math.huge, math.huge}
-							config.TorsoDamage = {math.huge, math.huge}
+							config.HeadDamage = {5000, 5000}
+							config.LimbDamage = {5000, 5000}
+							config.TorsoDamage = {5000, 5000}
 							config.gunName = "Grenade Launcher"
 
 							events.HitEffect:FireServer(pos, hit, extraVector, material, config, accessId)
