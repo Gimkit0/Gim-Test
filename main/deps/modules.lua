@@ -5684,7 +5684,7 @@ function modules.UniversalCommands()
 								ExplosionDamage = math.huge,
 							})
 						end
-						task.wait(0.5)
+						task.wait(0.25)
 					end
 				end)
 			end
