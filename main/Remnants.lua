@@ -9,6 +9,12 @@
 	  - Adonis (Davey_Bones): Batch commands
 	  - And you: For making this possible 😘
 
+	- * - Upcoming features - * -
+	  - Saving
+	  - Better command handling
+	  - Toshokan Library: UI Library for administator bar
+	  - CFrame fly command
+
 	This was google translate sorry if english was bad
 ]=]
 
