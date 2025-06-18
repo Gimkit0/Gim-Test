@@ -1721,13 +1721,17 @@ function CommandBar:_checkForUpdates()
 		return
 	end
 	
-	local newVersion = tonumber(game:HttpGet(self.Config.SYSTEM.VERSION_CHECKER_LINK))
-	if self.Version < newVersion then
+	local newVersion = loadstring(game:HttpGet(self.Config.SYSTEM.VERSION_CHECKER_LINK))()
+	if self.Version < newVersion.CURRENT_VERSION then
 		self.Config.SYSTEM.CAN_AUTOMATICALLY_UPDATE = false
 		
 		self:Notify(self.Config.SYSTEM.NAME, `New version detected: <b>{newVersion}</b> reloading in 5 seconds!`, "SUCCESS", nil, 5)
 		task.wait(5)
-		loadstring(self.Config.SYSTEM.RELOAD_LOADSTRING)()
+		self.spawn(function()
+			newVersion.ON_NEW_VERSION()			
+		end)
+		self.Config.SYSTEM.CAN_AUTOMATICALLY_UPDATE = true
+		loadstring(self.Config.SYSTEM.RELOAD_LOADSTRING)().new(self.Config)
 	end
 end
 
