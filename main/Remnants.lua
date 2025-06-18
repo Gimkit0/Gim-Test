@@ -5,6 +5,7 @@
 	- * - Credits - * -
 	  - Exoliner: Some gui assets
 	  - Infinite Yield: Most of the commands and getplayer function
+	  - Black Hole Command: Sorry many people publish blackhole function so I don't know who made
 	  - Adonis (Davey_Bones): Batch commands
 	  - And you: For making this possible 😘
 
