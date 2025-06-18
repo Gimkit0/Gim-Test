@@ -1,11 +1,14 @@
 --[=[
 	Remnants Admin Console, Made by ._.l5 at discord AKA Server
+	This is a remake of Infinite yield admin commands
 	
 	- * - Credits - * -
 	  - Exoliner: Some gui assets
 	  - Infinite Yield: Most of the commands and getplayer function
 	  - Adonis (Davey_Bones): Batch commands
 	  - And you: For making this possible 😘
+
+	This was google translate sorry if english was bad
 ]=]
 
 local CommandBar = {}
