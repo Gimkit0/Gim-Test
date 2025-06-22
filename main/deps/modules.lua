@@ -5399,10 +5399,178 @@ function modules.UniversalCommands()
 		})
 
 
+		loadDetection("Gore Engine", function()
+			local assets =self.Services.ReplicatedStorage:FindFirstChild("Assets")
+			if assets then
+				local events = assets:FindFirstChild("Events")
+				if events then
+					local detect = events:FindFirstChild("damageLimb")
+					if detect then
+						return true
+					end
+				end
+			end
+			return false
+		end, function()
+			local assets = self.Services.ReplicatedStorage.Assets
+			local events = assets.Events
+			local remotes = assets.Remotes
+			
+			local specialBulletId = "H3LL0_MY_N@M3_J3FF"
+			
+			local equippedTool = nil
+			
+			local function setEquippedTool()
+				if equippedTool then
+					return
+				end
+				
+				local backpack = self.LocalPlayer.Backpack
+				
+				local tool
+				if backpack:FindFirstChild("AWM") then
+					tool = backpack.AWM
+				end
+				if not tool then
+					for _, item in ipairs(backpack:GetChildren()) do
+						if item:IsA("BackpackItem") and item:FindFirstChild("toolSettings") then
+							tool = item
+							break
+						end
+					end
+				end
+				
+				if tool and not equippedTool then
+					tool.Parent = self.LocalPlayer.Character
+					equippedTool = true
+					
+					--[[
+					local _unequipEvent
+					_unequipEvent = tool.Unequipped:Connect(function()
+						equippedTool = nil
+						
+						_unequipEvent:Disconnect()
+						_unequipEvent = nil
+					end)
+					]]
+					
+					remotes.fire:FireServer(nil, nil, specialBulletId)
+					
+					spawn(function()
+						task.wait()
+						local hum = self.fetchHum(self.LocalPlayer.Character)
+						remotes.toolRemove:InvokeServer()
+						
+						if hum then
+							hum:UnequipTools()
+						end
+						
+						remotes.toolEquip:InvokeServer(tool)
+					end)
+				end
+			end
+			
+			self:AddCommand({
+				Name = "Kill",
+				Description = "Kills the [Player]",
 
+				Aliases = {"CommitDie", "Die"},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							if player.Character:FindFirstChild("Head") then
+								setEquippedTool()
+								
+								for _ = 1,10 do
+									remotes.hitBullet:FireServer(
+										player.Character.Head,
+										Vector3.zero,
+										Vector3.zero,
+										nil,
+										Vector3.zero,
+										specialBulletId
+									)
+								end
+							end
+						end
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "SpawnDummy",
+				Description = "Spawns a dummy near the [Player]",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							local hrp = self.fetchHrp(player.Character)
+							if hrp then
+								remotes.spawnDummy:FireServer(hrp.Position)
+							end
+						end
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Music",
+				Description = "Plays the music [SoundId] (CANNOT STOP IT)",
+
+				Aliases = {"Sound"},
+				Arguments = {"SoundId", "Pitch", "Volume"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local musicId = self.getNum(args[1])
+					local pitch = self.getNum(args[2])
+					local volume = self.getNum(args[3])
+
+					-- 変数 --
+
+					-- 関数 --
+					if not pitch then
+						pitch = 1
+					end
+					if not volume then
+						volume = .5
+					end
+					
+					remotes.repAudio:FireServer(game.SoundService, {
+						name = "SERVER'S_SOUND",
+						soundId = musicId,
+						volume = volume,
+						pitch = pitch,
+						dist = {10, 10000}
+					})
+					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
+				end,
+			})
+		end)
 
 		loadDetection("ACS Gun System", function()
-			if self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine") then
+			if self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine")
+				or self.Services.ReplicatedStorage:FindFirstChild("ACS_BT")
+			then
 				return true
 			end
 			return false
