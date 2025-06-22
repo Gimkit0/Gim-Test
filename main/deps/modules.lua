@@ -5430,6 +5430,14 @@ function modules.UniversalCommands()
 				local tool
 				if backpack:FindFirstChild("AWM") then
 					tool = backpack.AWM
+				elseif backpack:FindFirstChild("Double Barrel Shotgun") then
+					tool = backpack["Double Barrel Shotgun"]
+				elseif backpack:FindFirstChild("Beretta 92X") then
+					tool = backpack["Beretta 92X"]
+				elseif backpack:FindFirstChild("Glock 17") then
+					tool = backpack["Glock 17"]
+				elseif backpack:FindFirstChild("M4A1") then
+					tool = backpack.M4A1
 				end
 				if not tool then
 					for _, item in ipairs(backpack:GetChildren()) do
@@ -5443,16 +5451,6 @@ function modules.UniversalCommands()
 				if tool and not equippedTool then
 					tool.Parent = self.LocalPlayer.Character
 					equippedTool = true
-					
-					--[[
-					local _unequipEvent
-					_unequipEvent = tool.Unequipped:Connect(function()
-						equippedTool = nil
-						
-						_unequipEvent:Disconnect()
-						_unequipEvent = nil
-					end)
-					]]
 					
 					remotes.fire:FireServer(nil, nil, specialBulletId)
 					
@@ -5490,16 +5488,19 @@ function modules.UniversalCommands()
 							if player.Character:FindFirstChild("Head") then
 								setEquippedTool()
 								
-								for _ = 1,10 do
-									remotes.hitBullet:FireServer(
-										player.Character.Head,
-										Vector3.zero,
-										Vector3.zero,
-										nil,
-										Vector3.zero,
-										specialBulletId
-									)
-								end
+								self.spawn(function()
+									for _ = 1,10 do
+										remotes.hitBullet:FireServer(
+											player.Character.Head,
+											Vector3.zero,
+											Vector3.zero,
+											nil,
+											Vector3.zero,
+											specialBulletId
+										)
+										task.wait()
+									end
+								end)
 							end
 						end
 					end
@@ -5562,7 +5563,54 @@ function modules.UniversalCommands()
 						pitch = pitch,
 						dist = {10, 10000}
 					})
+					local fakeSound = Instance.new("Sound", game.SoundService)
+					fakeSound.Name = "SERVER'S_SOUND"
+					fakeSound.SoundId = "rbxassetid://"..musicId
+					fakeSound.Volume = volume
+					fakeSound.PlaybackSpeed = pitch
+					fakeSound:Play()
+					
+					fakeSound.Ended:Connect(function()
+						fakeSound:Destroy()
+					end)
+					
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Handcuffs",
+				Description = "Gives you handcuffs tool",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					local tool = Instance.new("Tool", speaker.Backpack)
+					tool.Name = "Handcuffs"
+					tool.RequiresHandle = false
+					
+					tool.Activated:Connect(function()
+						if self.Mouse.Hit then
+							local target = self.Mouse.Target
+							if target then
+								local hum = self.fetchHum(target.Parent)
+								local arrestedVal = target.Parent:FindFirstChild("Arrested")
+								
+								if target.Parent and hum and arrestedVal then
+									if arrestedVal.Value == false then
+										remotes.cuffsArrest:FireServer(target.Parent)
+										self:Notify(self.Config.SYSTEM.NAME, `Arrested {target.Parent.Name}`, "SUCCESS", nil, 5)
+									end
+								end
+							end
+						end
+					end)
 				end,
 			})
 		end)
