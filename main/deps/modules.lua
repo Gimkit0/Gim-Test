@@ -5586,27 +5586,34 @@ function modules.UniversalCommands()
 				Arguments = {},
 
 				Function = function(speaker, args)
-					-- 引数 --
-
-					-- 変数 --
-
-					-- 関数 --
 					local tool = Instance.new("Tool", speaker.Backpack)
 					tool.Name = "Handcuffs"
 					tool.RequiresHandle = false
-					
+
 					tool.Activated:Connect(function()
-						if self.Mouse.Hit then
-							local target = self.Mouse.Target
-							if target then
-								local hum = self.fetchHum(target.Parent)
-								local arrestedVal = target.Parent:FindFirstChild("Arrested")
-								
-								if target.Parent and hum and arrestedVal then
-									if arrestedVal.Value == false then
-										remotes.cuffsArrest:FireServer(target.Parent)
-										self:Notify(self.Config.SYSTEM.NAME, `Arrested {target.Parent.Name}`, "SUCCESS", nil, 5)
-									end
+						local origin = self.Mouse.Origin.Position
+						local direction = (self.Mouse.Hit.Position - origin).Unit * 100
+
+						local raycastParams = RaycastParams.new()
+						raycastParams.FilterDescendantsInstances = {speaker.Character}
+						raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+						raycastParams.IgnoreWater = true
+
+						local result = workspace:Raycast(origin, direction, raycastParams)
+
+						while result and result.Instance:FindFirstAncestorOfClass("Accessory") do
+							origin = result.Position + direction.Unit * 0.1
+							result = workspace:Raycast(origin, direction, raycastParams)
+						end
+
+						if result and result.Instance then
+							local target = result.Instance
+							local character = target:FindFirstAncestorOfClass("Model")
+							if character then
+								local hum = self.fetchHum(character)
+
+								if character and hum then
+									remotes.cuffsArrest:FireServer(character)
 								end
 							end
 						end
