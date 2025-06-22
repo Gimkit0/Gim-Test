@@ -5508,6 +5508,76 @@ function modules.UniversalCommands()
 			})
 			
 			self:AddCommand({
+				Name = "Decapitate",
+				Description = "Decapitates the [Player]'s [Limb]",
+
+				Aliases = {"Decap"},
+				Arguments = {"Player", "Limb"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+					local limb = args[2]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+					local limbOptions = {
+						["head"] = "Head",
+						["torso"] = "Torso",
+						["leftarm"] = "Left Arm",
+						["rightarm"] = "RightArm",
+						["leftleg"] = "Left Leg",
+						["rightleg"] = "Right Leg",
+					}
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							if player.Character:FindFirstChild("Head") then
+								local selectedLimb = limbOptions[limb:lower()]
+								
+								setEquippedTool()
+
+								self.spawn(function()
+									if limb:lower() ~= "all" then
+										if not selectedLimb then
+											return
+										end
+										for _ = 1,10 do
+											remotes.hitBullet:FireServer(
+												player.Character[selectedLimb],
+												Vector3.zero,
+												Vector3.zero,
+												nil,
+												player.Character[selectedLimb].CFrame,
+												specialBulletId
+											)
+											task.wait()
+										end
+									else
+										for _, part in ipairs(player.Character:GetChildren()) do
+											if part:IsA("BasePart") then
+												for _ = 1,10 do
+													remotes.hitBullet:FireServer(
+														player.Character[part.Name],
+														Vector3.zero,
+														Vector3.zero,
+														nil,
+														player.Character[part.Name].CFrame,
+														specialBulletId
+													)
+												end
+											end
+										end
+									end
+								end, true)
+							end
+						end
+					end
+				end,
+			})
+			
+			self:AddCommand({
 				Name = "SpawnDummy",
 				Description = "Spawns a dummy near the [Player]",
 
@@ -5618,6 +5688,32 @@ function modules.UniversalCommands()
 							end
 						end
 					end)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Crash",
+				Description = "Crashes the server",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					local users = self.getPlayer(speaker, "all")
+
+					-- 関数 --
+					for i = 1, 250000 do
+						for index, player in next, users do
+							self.spawn(function()
+								if player.Character then
+									local hrp = self.fetchHrp(player.Character)
+									if hrp then
+										remotes.spawnDummy:FireServer(hrp.Position)
+									end
+								end
+							end)
+						end
+					end
 				end,
 			})
 		end)
