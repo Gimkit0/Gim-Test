@@ -56,7 +56,7 @@ function CommandBar.new(config)
 			SAVE_FILE_NAME = `{globalName}.rem`,
 			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
 			
-			VERSION = 1.05,
+			VERSION = 1.02,
 			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
 			
 			KEEP_ON_TELEPORT = true,
@@ -914,20 +914,18 @@ function CommandBar.new(config)
 			["npcs"] = function(speaker,args)
 				local returns = {}
 				for _, v in pairs(workspace:GetDescendants()) do
-					if v:IsA("Model") and self.fetchHrp(v) and v:FindFirstChildWhichIsA("Humanoid") and self.Services.Players:GetPlayerFromCharacter(v) == nil then
-						if not self.Services.RunService:IsStudio() then
-							local clone = Instance.new("Player")
-							clone.Name = v.Name .. " - " .. v:FindFirstChildWhichIsA("Humanoid").DisplayName
-							clone.Character = v
-							table.insert(returns, clone)
-						else
-							local clone = {
-								Name = v.Name,
-								DisplayName = v.Name,
-								Character = v,
-							}
-							table.insert(returns, clone)
-						end
+					if v:IsA("Model")
+						and self.fetchHum(v)
+						and (not self.Services.Players:GetPlayerFromCharacter(v))
+					then
+						local clone = {
+							Name = v.Name,
+							DisplayName = v.Name,
+							Character = v,
+
+							isNPC = true,
+						}
+						table.insert(returns, clone)
 					end
 				end
 				return returns
@@ -956,7 +954,16 @@ function CommandBar.new(config)
 						local matches = {string.match(tokenContent,"^"..regex.."$")}
 						if #matches > 0 then
 							foundCase = true
-							initialPlayers = self.onlyIncludeInTable(initialPlayers, case(speaker,matches,initialPlayers))
+							local caseResult = case(speaker, matches, initialPlayers)
+
+							if caseResult and type(caseResult[1]) == "table" and caseResult[1].isNPC then
+								initialPlayers = {}
+								for _, v in pairs(caseResult) do
+									table.insert(initialPlayers, v)
+								end
+							else
+								initialPlayers = self.onlyIncludeInTable(initialPlayers, caseResult)
+							end
 						end
 					end
 					if not foundCase then
@@ -969,7 +976,18 @@ function CommandBar.new(config)
 						local matches = {string.match(tokenContent,"^"..regex.."$")}
 						if #matches > 0 then
 							foundCase = true
-							initialPlayers = self.removeTableMatches(initialPlayers, case(speaker,matches,initialPlayers))
+							local caseResult = case(speaker, matches, initialPlayers)
+							if caseResult and type(caseResult[1]) == "table" and caseResult[1].isNPC then
+								for _, npc in pairs(caseResult) do
+									for i = #foundList, 1, -1 do
+										if foundList[i] == npc then
+											table.remove(foundList, i)
+										end
+									end
+								end
+							else
+								initialPlayers = self.removeTableMatches(initialPlayers, caseResult)
+							end
 						end
 					end
 					if not foundCase then
@@ -978,12 +996,20 @@ function CommandBar.new(config)
 				end
 			end
 
-			for i,v in pairs(initialPlayers) do table.insert(foundList,v) end
+			for _, v in pairs(initialPlayers) do
+				if not table.find(foundList, v) then
+					table.insert(foundList, v)
+				end
+			end
 		end
 
 		local found = {}
 		for i,v in pairs(foundList) do
-			table.insert(found, fetchPlayer(v.Name))
+			if type(v) == "table" then
+				table.insert(found,v)
+			else
+				table.insert(found, fetchPlayer(v.Name))
+			end
 		end
 
 		return found
@@ -1622,35 +1648,39 @@ function CommandBar:Notify(name, desc, ntype, clickFunc, duration)
 			end
 
 			self.openAnimation = function()
-				local lastSize = self._frame.Size
-				self._frame.Size = UDim2.new(1,0,0,0)
-				self._frame:TweenSize(lastSize, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .15, true, nil)
-				self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
-				task.wait(.20)
-				for index, object in ipairs(self._graphical:GetChildren()) do
-					if object:IsA("Frame") then
-						object.Visible = true
+				task.spawn(pcall, function()
+					local lastSize = self._frame.Size
+					self._frame.Size = UDim2.new(1,0,0,0)
+					self._frame:TweenSize(lastSize, Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .15, true, nil)
+					self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+					task.wait(.20)
+					for index, object in ipairs(self._graphical:GetChildren()) do
+						if object:IsA("Frame") then
+							object.Visible = true
+						end
 					end
-				end
-				self.ringAnimation(self._graphical.Top.Icon)
-				self._intro.Line:TweenPosition(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+					self.ringAnimation(self._graphical.Top.Icon)
+					self._intro.Line:TweenPosition(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+				end)
 			end
 
 			self.closeAnimation = function()
-				self._closed = true
-				self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
-				task.wait(.20)
-				for index, object in ipairs(self._graphical:GetChildren()) do
-					if object:IsA("Frame") then
-						object.Visible = false
+				task.spawn(pcall, function()
+					self._closed = true
+					self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+					task.wait(.20)
+					for index, object in ipairs(self._graphical:GetChildren()) do
+						if object:IsA("Frame") then
+							object.Visible = false
+						end
 					end
-				end
-				self._intro.Line:TweenPosition(UDim2.new(-1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
-				task.wait(.20)
-				self._intro.Line.Visible = false
-				self._frame:TweenSize(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .3, true, nil)
-				task.wait(.3)
-				self._frame:Destroy()
+					self._intro.Line:TweenPosition(UDim2.new(-1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+					task.wait(.20)
+					self._intro.Line.Visible = false
+					self._frame:TweenSize(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .3, true, nil)
+					task.wait(.3)
+					self._frame:Destroy()
+				end)
 			end
 
 			self.addConnection("Rendering", self._services.RunService.RenderStepped:Connect(function()
@@ -1720,12 +1750,12 @@ function CommandBar:_checkForUpdates()
 	if self.Services.RunService:IsStudio() then
 		return
 	end
-	
+
 	local newVersion = loadstring(game:HttpGet(self.Config.SYSTEM.VERSION_CHECKER_LINK))()
 	if self.Version < newVersion.CURRENT_VERSION then
 		self.Config.SYSTEM.CAN_AUTOMATICALLY_UPDATE = false
-		
-		self:Notify(self.Config.SYSTEM.NAME, `New version detected: <b>{newVersion}</b> reloading in 5 seconds!`, "SUCCESS", nil, 5)
+
+		self:Notify(self.Config.SYSTEM.NAME, `New version detected: <b>{newVersion.CURRENT_VERSION}</b> reloading in 5 seconds!`, "SUCCESS", nil, 5)
 		task.wait(5)
 		self.spawn(function()
 			newVersion.ON_NEW_VERSION()			
