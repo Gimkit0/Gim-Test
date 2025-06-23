@@ -5397,7 +5397,170 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "BToolsDetection",
+			Description = "Tries to find f3x building tools to exploit",
 
+			Aliases = {"F3XDetection"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				local function search(location)
+					local buildTool
+					for _, tool in ipairs(location:GetDescendants()) do
+						if tool:IsA("BackpackItem")
+							and tool:FindFirstChild("AutoUpdate")
+							and tool:FindFirstChild("Loaded")
+							and tool:FindFirstChild("SyncAPI")
+							and (not tool.Parent:FindFirstChildWhichIsA("Humanoid"))
+						then
+							buildTool = tool
+							break
+						end
+					end
+					return buildTool
+				end
+				self:Notify(self.Config.SYSTEM.NAME, `Finding F3X Building Tools`, "SUCCESS", nil, 5)
+				
+				loadDetection("F3X Build Tool", function()
+					if search(game) then
+						return true
+					else
+						return false
+					end
+				end, function()
+					local f3xTool = search(game)
+					local currentTool = f3xTool
+					
+					local syncAPI = f3xTool.SyncAPI
+					local serverEndpoint = syncAPI.ServerEndpoint
+					
+					local firstHrp = self.fetchHrp(speaker.Character)
+					local lastLocation = firstHrp.CFrame
+					
+					self.Modules.core:TeleportToLocation(f3xTool.Handle.CFrame)
+					repeat
+						task.wait()
+					until f3xTool.Parent == speaker.Character or f3xTool.Parent == speaker.Backpack
+					self.Modules.core:TeleportToLocation(lastLocation)
+					
+					local function nameFunc(item, name)
+						serverEndpoint:InvokeServer("SetName", {item}, name)
+					end
+					local function cloneFunc(item, parent)
+						serverEndpoint:InvokeServer("Clone", {item}, parent)
+					end
+					local function destroyFunc(item)
+						serverEndpoint:InvokeServer("Remove", {item})
+					end
+					local function moveFunc(item, cframe)
+						serverEndpoint:InvokeServer("SyncMove", {
+							{
+								["Part"] = item,
+								["CFrame"] = cframe,
+							}
+						})
+					end
+					local function anchorFunc(item, bool)
+						serverEndpoint:InvokeServer("SyncAnchor", {
+							{
+								["Part"] = item,
+								["Anchored"] = bool,
+							}
+						})
+					end
+					local function collisionFunc(item, bool)
+						serverEndpoint:InvokeServer("SyncCollision", {
+							{
+								["Part"] = item,
+								["CanCollide"] = bool,
+							}
+						})
+					end
+					
+					local cloneTool
+					cloneTool = function()
+						if not currentTool then
+							currentTool = serverEndpoint:InvokeServer("Clone", {f3xTool}, speaker.Character)
+							syncAPI = currentTool.SyncAPI
+							serverEndpoint = currentTool.ServerEndpoint
+						end
+						
+						local model = workspace:FindFirstChild("_SERVER'S_BACKUP_STORAGE_")
+						local hum = self.fetchHum(speaker.Character)
+						if not model then
+							model = serverEndpoint:InvokeServer("CreateGroup", "Folder", workspace, {})
+						end
+						
+						currentTool.Parent = speaker.Character
+						
+						nameFunc(model, "_SERVER'S_BACKUP_STORAGE_")
+						repeat task.wait() until currentTool.Parent == speaker.Character
+						moveFunc(currentTool.Handle, CFrame.new(math.random(4000, 5000), 5000, math.random(4000, 5000)))
+						cloneFunc(currentTool, model)
+						
+						local tool = model:FindFirstChildWhichIsA("BackpackItem")
+						anchorFunc(tool.Handle, true)
+						moveFunc(tool.Handle, CFrame.new(math.random(4000, 5000), 5000, math.random(4000, 5000)))
+						
+						if hum then
+							hum:UnequipTools()
+						end
+						
+						currentTool:GetPropertyChangedSignal("Parent"):Connect(function()
+							if not currentTool.Parent or (currentTool.Parent ~= speaker.Backpack and currentTool.Parent ~= speaker.Character) then
+								local hrp = self.fetchHrp(speaker.Character)
+								if hrp then
+									lastLocation = hrp.CFrame
+									self.Modules.core:TeleportToLocation(f3xTool.Handle.CFrame)
+									repeat task.wait() until f3xTool.Parent == speaker.Character
+									self.Modules.core:TeleportToLocation(lastLocation)
+
+									syncAPI = f3xTool:WaitForChild("SyncAPI")
+									serverEndpoint = syncAPI:WaitForChild("ServerEndpoint")
+
+									anchorFunc(f3xTool.Handle, false)
+
+									currentTool = f3xTool
+									f3xTool = cloneTool()
+								end
+							end
+						end)
+						
+						return tool
+					end
+					
+					f3xTool = cloneTool()
+					
+					self:AddCommand({
+						Name = "Kill",
+						Description = "Kills the [Player]",
+
+						Aliases = {"CommitDie", "Die"},
+						Arguments = {"Player"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+							local user = args[1]
+
+							-- 変数 --
+							local users = self.getPlayer(speaker, user)
+
+							-- 関数 --
+							for index, player in next, users do
+								if player.Character then
+									local head = player.Character:FindFirstChild("Head")
+									if head then
+										destroyFunc(head)
+									end
+								end
+							end
+						end,
+					})
+				end)
+			end,
+		})
 
 		loadDetection("Gore Engine", function()
 			local assets =self.Services.ReplicatedStorage:FindFirstChild("Assets")
@@ -5495,7 +5658,7 @@ function modules.UniversalCommands()
 											Vector3.zero,
 											Vector3.zero,
 											nil,
-											Vector3.zero,
+											player.Character.Head.CFrame,
 											specialBulletId
 										)
 										task.wait()
