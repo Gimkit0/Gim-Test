@@ -5439,6 +5439,8 @@ function modules.UniversalCommands()
 					local firstHrp = self.fetchHrp(speaker.Character)
 					local lastLocation = firstHrp.CFrame
 					
+					local respawnConn = nil
+					
 					self.Modules.core:TeleportToLocation(f3xTool.Handle.CFrame)
 					repeat
 						task.wait()
@@ -5478,6 +5480,19 @@ function modules.UniversalCommands()
 							}
 						})
 					end
+					local function lockedFunc(item, bool)
+						serverEndpoint:InvokeServer("SyncCollision", {
+							{
+								item,
+							}
+						}, bool)
+					end
+					local function groupFunc(parent, modelType, items)
+						return serverEndpoint:InvokeServer("CreateGroup", modelType, parent, items)
+					end
+					local function parentFunc(item, parent)
+						serverEndpoint:InvokeServer("SetParent", {item}, parent)
+					end
 					
 					local cloneTool
 					cloneTool = function()
@@ -5490,7 +5505,7 @@ function modules.UniversalCommands()
 						local model = workspace:FindFirstChild("_SERVER'S_BACKUP_STORAGE_")
 						local hum = self.fetchHum(speaker.Character)
 						if not model then
-							model = serverEndpoint:InvokeServer("CreateGroup", "Folder", workspace, {})
+							model = groupFunc(workspace, "Folder", {})
 						end
 						
 						currentTool.Parent = speaker.Character
@@ -5508,7 +5523,7 @@ function modules.UniversalCommands()
 							hum:UnequipTools()
 						end
 						
-						currentTool:GetPropertyChangedSignal("Parent"):Connect(function()
+						local function onDestroy()
 							if not currentTool.Parent or (currentTool.Parent ~= speaker.Backpack and currentTool.Parent ~= speaker.Character) then
 								local hrp = self.fetchHrp(speaker.Character)
 								if hrp then
@@ -5526,6 +5541,28 @@ function modules.UniversalCommands()
 									f3xTool = cloneTool()
 								end
 							end
+						end
+						
+						currentTool:GetPropertyChangedSignal("Parent"):Connect(function()
+							onDestroy()
+						end)
+						currentTool.Destroying:Connect(function()
+							onDestroy()
+						end)
+						tool:GetPropertyChangedSignal("Parent"):Connect(function()
+							if not (tool:IsDescendantOf(speaker.Character) or tool:IsDescendantOf(speaker.Backpack) or tool:IsDescendantOf(model)) then
+								f3xTool = cloneTool()
+							end
+						end)
+						
+						if respawnConn then
+							respawnConn:Disconnect()
+							respawnConn = nil
+						end
+						
+						respawnConn = speaker.CharacterAdded:Connect(function(char)
+							task.wait(1)
+							onDestroy()
 						end)
 						
 						return tool
@@ -5554,6 +5591,52 @@ function modules.UniversalCommands()
 									if head then
 										destroyFunc(head)
 									end
+								end
+							end
+						end,
+					})
+					
+					self:AddCommand({
+						Name = "Punish",
+						Description = "Sets the [Player]'s character to nil",
+
+						Aliases = {"Nil"},
+						Arguments = {"Player"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+							local user = args[1]
+
+							-- 変数 --
+							local users = self.getPlayer(speaker, user)
+
+							-- 関数 --
+							for index, player in next, users do
+								if player.Character then
+									destroyFunc(player.Character)
+								end
+							end
+						end,
+					})
+					
+					self:AddCommand({
+						Name = "Unpunish",
+						Description = "Unsets the [Player]'s character to nil",
+
+						Aliases = {"Nil"},
+						Arguments = {"Player"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+							local user = args[1]
+
+							-- 変数 --
+							local users = self.getPlayer(speaker, user)
+
+							-- 関数 --
+							for index, player in next, users do
+								if player.Character then
+									parentFunc(player.Character, workspace)
 								end
 							end
 						end,
