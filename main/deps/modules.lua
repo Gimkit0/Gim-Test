@@ -5518,6 +5518,11 @@ function modules.UniversalCommands()
 						cloneFunc(currentTool, model)
 						
 						local tool = model:FindFirstChildWhichIsA("BackpackItem")
+						
+						if not tool then
+							return
+						end
+						
 						anchorFunc(tool.Handle, true)
 						moveFunc(tool.Handle, CFrame.new(math.random(4000, 5000), 5000, math.random(4000, 5000)))
 						
