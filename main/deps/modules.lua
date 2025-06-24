@@ -5851,7 +5851,7 @@ function modules.UniversalCommands()
 							-- 関数 --
 							local group = groupFunc(workspace, "Folder", {})
 							nameFunc(group, "C00l P@RT")
-							require(script.RemoteModule).new("5000 PARTS", function(pos, hit)
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/remoteModule.lua"))().new("5000 PARTS", function(pos, hit)
 								for index = 1, 5000 do
 									local part = createPartFunc("Normal", CFrame.new(pos) * CFrame.new(0, .5, 0), workspace)
 									self.spawn(function()
@@ -5879,9 +5879,172 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
+		
+		loadDetection("FE Gun Kit", function()
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
+			if remotes then
+				local detect = remotes:FindFirstChild("InflictTarget")
+				if detect then
+					return true
+				end
+			end
+		end, function()
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
+			
+			local equippedTool = nil
+			
+			local setEquippedTool = function()
+				local tool
+				for _, item in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
+					if item:IsA("BackpackItem")
+						and item:FindFirstChild("Setting")
+						and item:FindFirstChild("GunClient")
+					then
+						tool = item
+						break
+					end
+				end
+				
+				if equippedTool then
+					local returning = {
+						tool = equippedTool,
+						module = require(equippedTool:WaitForChild("Setting"):FindFirstChildWhichIsA("ModuleScript"))
+					}
+					
+					return returning
+				end
+				
+				if tool then
+					equippedTool = tool
+					equippedTool.Destroying:Connect(function()
+						equippedTool = nil
+					end)
+					
+					local returning = {
+						tool = tool,
+						module = require(tool:WaitForChild("Setting"):FindFirstChildWhichIsA("ModuleScript"))
+					}
+					
+					return returning
+				end
+				
+				return nil
+			end
+			
+			self:AddCommand({
+				Name = "Music",
+				Description = "Plays the music [SoundId] (CANNOT STOP IT)",
+
+				Aliases = {"Sound"},
+				Arguments = {"SoundId", "Pitch", "Volume"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local musicId = self.getNum(args[1])
+					local pitch = self.getNum(args[2])
+					local volume = self.getNum(args[3])
+
+					-- 変数 --
+
+					-- 関数 --
+					if not pitch then
+						pitch = 1
+					end
+					if not volume then
+						volume = .5
+					end
+
+					remotes.PlayAudio:FireServer({
+						Name = "SERVER'S_SOUND",
+						Origin = game.SoundService,
+						SoundId = `rbxassetid://{musicId}`,
+						Volume = volume,
+						Pitch = pitch,
+						MaxDistance = 10000
+					}, true)
+					
+					local fakeSound = Instance.new("Sound", game.SoundService)
+					fakeSound.Name = "SERVER'S_SOUND"
+					fakeSound.SoundId = "rbxassetid://"..musicId
+					fakeSound.Volume = volume
+					fakeSound.PlaybackSpeed = pitch
+					fakeSound:Play()
+
+					fakeSound.Ended:Connect(function()
+						fakeSound:Destroy()
+					end)
+
+					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "ShatterAllGlass",
+				Description = "Shatters all of the glass in the map",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					for _, glass in ipairs(workspace:GetDescendants()) do
+						if glass:IsA("BasePart") and glass.Name == "_glass" then
+							remotes.ShatterGlass:FireServer(glass, glass.Position, Vector3.new(0,0,0))
+						end
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Kill",
+				Description = "Kills the [Player]",
+
+				Aliases = {"CommitDie", "Die"},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					if not setEquippedTool() then
+						self:Notify(self.Config.SYSTEM.NAME, `Please have a FE Gun Kit Gun`, "ERROR", nil, 5)
+						return
+					end
+					
+					for index, player in next, users do
+						if player.Character then
+							local hum = self.fetchHum(player.Character)
+							local hrp = self.fetchHrp(player.Character)
+							
+							local head = player.Character:FindFirstChild("Head")
+							
+							if hum and head then
+								local returned = setEquippedTool()
+								
+								for i = 1, 10 do
+									self.spawn(function()
+										remotes.InflictTarget:InvokeServer("Gun", returned.tool, returned.module, hum, hrp, head, {
+											ChargeLevel = 3,
+										}, 0)
+									end)
+								end
+							end
+						end
+					end
+				end,
+			})
+		end)
 
 		loadDetection("Gore Engine", function()
-			local assets =self.Services.ReplicatedStorage:FindFirstChild("Assets")
+			local assets = self.Services.ReplicatedStorage:FindFirstChild("Assets")
 			if assets then
 				local events = assets:FindFirstChild("Events")
 				if events then
