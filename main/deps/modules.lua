@@ -5424,13 +5424,13 @@ function modules.UniversalCommands()
 				self:Notify(self.Config.SYSTEM.NAME, `Finding F3X Building Tools`, "SUCCESS", nil, 5)
 				
 				loadDetection("F3X Build Tool", function()
-					if search(game) then
+					if search(workspace) or search(speaker.Backpack) then
 						return true
 					else
 						return false
 					end
 				end, function()
-					local f3xTool = search(game)
+					local f3xTool = search(workspace) or search(speaker.Backpack)
 					local currentTool = f3xTool
 					
 					local syncAPI = f3xTool.SyncAPI
@@ -5440,6 +5440,8 @@ function modules.UniversalCommands()
 					local lastLocation = firstHrp.CFrame
 					
 					local respawnConn = nil
+					
+					repeat task.wait() until f3xTool:FindFirstChild("Handle")
 					
 					self.Modules.core:TeleportToLocation(f3xTool.Handle.CFrame)
 					repeat
