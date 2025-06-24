@@ -4134,6 +4134,28 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/newdex.lua"))()
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "FixChat",
+			Description = "Fixes the chat",
+
+			Aliases = {"ChatHistory"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if self.Services.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+					local winConfig = self.Services.TextChatService:WaitForChild("ChatWindowConfiguration")
+					winConfig.WidthScale = 1
+					winConfig.HeightScale = 1
+					winConfig.Enabled = true
+				end
+			end,
+		})
 
 		self:AddCommand({
 			Name = "Blackhole",
@@ -5894,21 +5916,32 @@ function modules.UniversalCommands()
 			local equippedTool = nil
 			
 			local setEquippedTool = function()
+				local settingModule = nil
+				
 				local tool
 				for _, item in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
 					if item:IsA("BackpackItem")
 						and item:FindFirstChild("Setting")
-						and item:FindFirstChild("GunClient")
 					then
 						tool = item
 						break
 					end
 				end
 				
+				if tool then
+					settingModule = require(tool:WaitForChild("Setting"))
+					
+					if tool.Setting:FindFirstChild("1") then
+						settingModule = require(tool.Setting:WaitForChild("1"))
+					elseif tool.Setting:FindFirstChildWhichIsA("ModuleScript") then
+						settingModule = require(tool.Setting:FindFirstChildWhichIsA("ModuleScript"))
+					end
+				end
+				
 				if equippedTool then
 					local returning = {
 						tool = equippedTool,
-						module = require(equippedTool:WaitForChild("Setting"):FindFirstChildWhichIsA("ModuleScript"))
+						module = settingModule
 					}
 					
 					return returning
@@ -5922,7 +5955,7 @@ function modules.UniversalCommands()
 					
 					local returning = {
 						tool = tool,
-						module = require(tool:WaitForChild("Setting"):FindFirstChildWhichIsA("ModuleScript"))
+						module = settingModule
 					}
 					
 					return returning
@@ -6029,13 +6062,15 @@ function modules.UniversalCommands()
 							if hum and head then
 								local returned = setEquippedTool()
 								
-								for i = 1, 10 do
-									self.spawn(function()
-										remotes.InflictTarget:InvokeServer("Gun", returned.tool, returned.module, hum, hrp, head, {
-											ChargeLevel = 3,
-										}, 0)
-									end)
-								end
+								self.spawn(function()
+									for i = 1, 10 do
+										self.spawn(function()
+											remotes.InflictTarget:InvokeServer("Gun", returned.tool, returned.module, hum, hrp, head, {
+												ChargeLevel = 3,
+											}, 0)
+										end)
+									end
+								end)
 							end
 						end
 					end
