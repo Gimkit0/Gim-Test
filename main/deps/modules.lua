@@ -5410,13 +5410,20 @@ function modules.UniversalCommands()
 					local buildTool
 					for _, tool in ipairs(location:GetDescendants()) do
 						if tool:IsA("BackpackItem")
-							and tool:FindFirstChild("AutoUpdate")
-							and tool:FindFirstChild("Loaded")
+							and tool:FindFirstChild("Vendor")
 							and tool:FindFirstChild("SyncAPI")
-							and (not tool.Parent:FindFirstChildWhichIsA("Humanoid"))
 						then
-							buildTool = tool
-							break
+							local ancestor = tool:FindFirstAncestorOfClass("Model")
+							local isInSpeaker = (tool:IsDescendantOf(speaker.Character) or tool:IsDescendantOf(speaker:FindFirstChildOfClass("Backpack")))
+
+							local isInValidWorkspace = (location == workspace and (
+								not ancestor or ancestor == speaker.Character or not ancestor:FindFirstChildOfClass("Humanoid")
+								))
+
+							if isInSpeaker or isInValidWorkspace then
+								buildTool = tool
+								break
+							end
 						end
 					end
 					return buildTool
@@ -5438,6 +5445,10 @@ function modules.UniversalCommands()
 					
 					local firstHrp = self.fetchHrp(speaker.Character)
 					local lastLocation = firstHrp.CFrame
+					
+					local caches = {
+						decals = {},
+					}
 					
 					local respawnConn = nil
 					
@@ -5483,17 +5494,84 @@ function modules.UniversalCommands()
 						})
 					end
 					local function lockedFunc(item, bool)
-						serverEndpoint:InvokeServer("SyncCollision", {
-							{
-								item,
-							}
+						serverEndpoint:InvokeServer("SetLocked", {
+							item
 						}, bool)
+					end
+					local function createPartFunc(partType, cframe, parent)
+						return serverEndpoint:InvokeServer("CreatePart", partType, cframe, parent)
+					end
+					local function createDecorFunc(decorType, part)
+						serverEndpoint:InvokeServer("CreateDecorations", {
+							{
+								["Part"] = part,
+								["DecorationType"] = decorType,
+							}
+						})
 					end
 					local function groupFunc(parent, modelType, items)
 						return serverEndpoint:InvokeServer("CreateGroup", modelType, parent, items)
 					end
 					local function parentFunc(item, parent)
 						serverEndpoint:InvokeServer("SetParent", {item}, parent)
+					end
+					local function colorFunc(part, color)
+						serverEndpoint:InvokeServer("SyncColor", {
+							{
+								["Part"] = part,
+								["Color"] = color,
+							}
+						})
+					end
+					local function materialFunc(part, material)
+						serverEndpoint:InvokeServer("SyncMaterial", {
+							{
+								["Part"] = part,
+								["Material"] = material,
+							}
+						})
+					end
+					local function spawnDecalFunc(part, decalType, side)
+						serverEndpoint:InvokeServer("CreateTextures", {
+							{
+								["Part"] = part,
+								["Face"] = side,
+								["TextureType"] = decalType,
+							}
+						})
+					end
+					local function addDecalFunc(part, decalType, decalId, side)
+						serverEndpoint:InvokeServer("SyncTexture", {
+							{
+								["Part"] = part,
+								["Face"] = side,
+								["TextureType"] = decalType,
+								["Texture"] = "rbxassetid://".. decalId
+							}
+						})
+					end
+					
+					
+					local function decalify(model, id)
+						local function decalFace(part, face)
+							local decal = spawnDecalFunc(part, "Decal", face)
+							addDecalFunc(part, "Decal", id, face)
+							
+							table.insert(caches.decals, decal)
+						end
+						
+						for _, part in ipairs(model:GetDescendants()) do
+							if part:IsA("BasePart") then
+								self.spawn(function()
+									decalFace(part, Enum.NormalId.Front)
+									decalFace(part, Enum.NormalId.Back)
+									decalFace(part, Enum.NormalId.Top)
+									decalFace(part, Enum.NormalId.Bottom)
+									decalFace(part, Enum.NormalId.Left)
+									decalFace(part, Enum.NormalId.Right)
+								end)
+							end
+						end
 					end
 					
 					local cloneTool
@@ -5520,6 +5598,9 @@ function modules.UniversalCommands()
 						local tool = model:FindFirstChildWhichIsA("BackpackItem")
 						
 						if not tool then
+							if hum then
+								hum:UnequipTools()
+							end
 							return
 						end
 						
@@ -5594,9 +5675,9 @@ function modules.UniversalCommands()
 							-- 関数 --
 							for index, player in next, users do
 								if player.Character then
-									local head = player.Character:FindFirstChild("Head")
-									if head then
-										destroyFunc(head)
+									local torso = player.Character:FindFirstChild("Torso")
+									if torso then
+										destroyFunc(torso)
 									end
 								end
 							end
@@ -5646,6 +5727,153 @@ function modules.UniversalCommands()
 									parentFunc(player.Character, workspace)
 								end
 							end
+						end,
+					})
+					
+					self:AddCommand({
+						Name = "Ragdoll",
+						Description = "Makes the [Player]'s character not stand",
+
+						Aliases = {"PlatformStand"},
+						Arguments = {"Player"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+							local user = args[1]
+
+							-- 変数 --
+							local users = self.getPlayer(speaker, user)
+
+							-- 関数 --
+							for index, player in next, users do
+								if player.Character then
+									local hrp = self.fetchHrp(player.Character)
+									if hrp then
+										destroyFunc(hrp)
+									end
+								end
+							end
+						end,
+					})
+					
+					self:AddCommand({
+						Name = "Freeze",
+						Description = "Freezes the [Player]'s character",
+
+						Aliases = {},
+						Arguments = {"Player"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+							local user = args[1]
+
+							-- 変数 --
+							local users = self.getPlayer(speaker, user)
+
+							-- 関数 --
+							for index, player in next, users do
+								if player.Character then
+									for _, part in ipairs(player.Character:GetChildren()) do
+										self.spawn(function()
+											if part:IsA("BasePart") then
+												anchorFunc(part, true)
+											end
+										end)
+									end
+								end
+							end
+						end,
+					})
+					
+					self:AddCommand({
+						Name = "Unfreeze",
+						Description = "Unfreezes the [Player]'s character",
+
+						Aliases = {},
+						Arguments = {"Player"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+							local user = args[1]
+
+							-- 変数 --
+							local users = self.getPlayer(speaker, user)
+
+							-- 関数 --
+							for index, player in next, users do
+								if player.Character then
+									for _, part in ipairs(player.Character:GetChildren()) do
+										self.spawn(function()
+											if part:IsA("BasePart") then
+												anchorFunc(part, false)
+											end
+										end)
+									end
+								end
+							end
+						end,
+					})
+					
+					self:AddCommand({
+						Name = "Decalify",
+						Description = "Puts decals of [ImageID] everywhere",
+
+						Aliases = {"DecalSpam", "SpamDecal"},
+						Arguments = {"ImageID"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+							local imageId = self.getNum(args[1])
+
+							-- 変数 --
+
+							-- 関数 --
+							if not imageId then
+								return
+							end
+							
+							decalify(workspace, imageId)
+						end,
+					})
+					
+					self:AddCommand({
+						Name = "5000Parts",
+						Description = "Gives you a 5000 parts remote",
+
+						Aliases = {},
+						Arguments = {"Player"},
+
+						Function = function(speaker, args)
+							-- 引数 --
+
+							-- 変数 --
+
+							-- 関数 --
+							local group = groupFunc(workspace, "Folder", {})
+							nameFunc(group, "C00l P@RT")
+							require(script.RemoteModule).new("5000 PARTS", function(pos, hit)
+								for index = 1, 5000 do
+									local part = createPartFunc("Normal", CFrame.new(pos) * CFrame.new(0, .5, 0), workspace)
+									self.spawn(function()
+										parentFunc(part, group)
+										colorFunc(part, Color3.fromRGB(255, 255, 255))
+										materialFunc(part, Enum.Material.Neon)
+										lockedFunc(part, true)
+										anchorFunc(part, false)
+										nameFunc(part, "GL0RlUS 🌊UM")
+									end)
+								end
+							end)
+							--[[
+							loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/remoteModule.lua"))().new("Nuke Remote", function(pos, hit)
+								for index = 1, 10000000 do
+									local part = createPartFunc("Normal", pos, workspace)
+									
+									task.wait()
+								end
+							end, 10)
+							]]
+							
 						end,
 					})
 				end)
