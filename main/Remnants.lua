@@ -323,6 +323,7 @@ function CommandBar.new(config)
 		AvatarEditorService = game:GetService("AvatarEditorService"),
 		ReplicatedStorage = game:GetService("ReplicatedStorage"),
 		ContextActionService = game:GetService("ContextActionService"),
+		TextChatService = game:GetService("TextChatService")
 	}
 	self.PreloadedModules = {
 		spring = loadedModules.Spring(),
