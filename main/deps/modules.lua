@@ -5903,8 +5903,8 @@ function modules.UniversalCommands()
 		})
 		
 		loadDetection("Reward System", function()
-			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
-				or self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
+				or self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			
 			if remotes then
 				local detect = remotes:FindFirstChild("Reward")
@@ -5913,8 +5913,8 @@ function modules.UniversalCommands()
 				end
 			end
 		end, function()
-			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
-				or self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
+				or self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			
 			local rewardEvent = remotes.Reward
 			
