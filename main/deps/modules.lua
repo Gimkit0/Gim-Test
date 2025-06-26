@@ -5902,6 +5902,94 @@ function modules.UniversalCommands()
 			end,
 		})
 		
+		loadDetection("Reward System", function()
+			if true then
+				return true
+			end
+			
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
+				or self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
+			
+			if remotes then
+				local detect = remotes:FindFirstChild("Reward")
+				if detect then
+					return true
+				end
+			end
+		end, function()
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
+				or self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
+			
+			local rewardEvent = true --remotes.Reward
+			
+			local rewardList = {}
+			for _, reward in ipairs(self.Services.StarterGui:GetDescendants()) do
+				if reward:FindFirstChild("Ready")
+					and reward:FindFirstChild("Reward")
+					and reward:FindFirstChild("Time")
+				then
+					local textLabel = reward:FindFirstChild("TextLabel")
+					local value = reward.Reward.Value
+					local name
+					if textLabel then
+						name = textLabel.Text else
+						name = value
+					end
+					
+					local inserting = {
+						name = name,
+						value = value
+					}
+					
+					table.insert(rewardList, inserting)
+				end
+			end
+			
+			local function getReward(name)
+				for _, reward in ipairs(rewardList) do
+					if reward.name == name then
+						return reward
+					end
+				end
+			end
+			
+			self:AddCommand({
+				Name = "RewardMenu",
+				Description = "Gives you the reward menu",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					local window = self.Toshokan:Window({
+						TITLE = "Reward Menu",
+					})
+					
+					local rewardsPage = window:Page({
+						TITLE = "Rewards",
+						DESCRIPTION = "Gives you rewards from the reward system",
+						ICON = 11332562153,
+					})
+					
+					for _, reward in pairs(rewardList) do
+						rewardsPage:Button({
+							NAME = reward.name,
+							DESCRIPTION = `This gives you {reward.name}`,
+							
+							CALLBACK = function()
+								rewardEvent:FireServer(reward.value)
+							end,
+						})
+					end
+				end,
+			})
+		end)
+		
 		loadDetection("FE Gun Kit", function()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			if remotes then
