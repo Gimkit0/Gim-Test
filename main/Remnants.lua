@@ -25,6 +25,7 @@ function CommandBar.new(config)
 	local self = setmetatable({}, CommandBar)
 	
 	local loadedModules
+	local toshokanLib
 	
 	local globalName = "サーバー管理者コンソール"
 	
@@ -46,8 +47,10 @@ function CommandBar.new(config)
 	
 	if game:GetService("RunService"):IsStudio() then
 		loadedModules = require(script.Modules)
+		toshokanLib = require(script.Toshokan).new()
 	else
 		loadedModules = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/modules.lua"))()
+		toshokanLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/toshokan-lib/refs/heads/main/toshokan.lua"))().new()
 	end
 	
 	local defaultConfig = {
@@ -350,6 +353,7 @@ function CommandBar.new(config)
 	self.Mouse = self.LocalPlayer:GetMouse()
 	
 	self.UI = loadedModules.ConsoleInterface()
+	self.Toshokan = toshokanLib
 	
 	self.findFirstChild = function(location, name)
 		for _,v in next, location:GetChildren() do
