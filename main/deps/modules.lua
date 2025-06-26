@@ -5903,10 +5903,6 @@ function modules.UniversalCommands()
 		})
 		
 		loadDetection("Reward System", function()
-			if true then
-				return true
-			end
-			
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 				or self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
 			
@@ -5920,7 +5916,7 @@ function modules.UniversalCommands()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 				or self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
 			
-			local rewardEvent = true --remotes.Reward
+			local rewardEvent = remotes.Reward
 			
 			local rewardList = {}
 			for _, reward in ipairs(self.Services.StarterGui:GetDescendants()) do
