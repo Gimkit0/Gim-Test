@@ -1861,8 +1861,6 @@ function modules.Core()
 			fakeSound.Volume = volume
 			fakeSound.PlaybackSpeed = pitch
 
-			fakeSound.Loaded:Wait()
-
 			fakeSound:Play()
 
 			fakeSound.Ended:Connect(function()
