@@ -1852,6 +1852,39 @@ function modules.Core()
 
 		return path
 	end
+	
+	function Core:PlayFakeSound(musicId, volume, pitch)
+		self.Client.spawn(function()
+			local fakeSound = Instance.new("Sound", game.SoundService)
+			fakeSound.Name = "SERVER'S_SOUND"
+			fakeSound.SoundId = "rbxassetid://"..musicId
+			fakeSound.Volume = volume
+			fakeSound.PlaybackSpeed = pitch
+
+			fakeSound.Loaded:Wait()
+
+			fakeSound:Play()
+
+			fakeSound.Ended:Connect(function()
+				fakeSound:Destroy()
+			end)
+		end)
+	end
+	
+	function Core:IsAssetBanned(assetId)
+		local success, result = pcall(function()
+			return self.Client.Services.MarketplaceService:GetProductInfo(assetId)
+		end)
+
+		if not success then
+			return true, "Error retrieving asset info: " .. tostring(result)
+		end
+		if result.AssetTypeId == 0 or (not result.IsPublicDomain) then
+			return true, "Invalid asset type (possibly banned)"
+		end
+
+		return false, result
+	end
 
 	function Core:_getFocusDistance(cameraFrame)
 		local znear = 0.1
@@ -6070,6 +6103,12 @@ function modules.UniversalCommands()
 					if not volume then
 						volume = .5
 					end
+					
+					if self.Modules.core:IsAssetBanned(musicId) then
+						local _, info = self.Modules.core:IsAssetBanned(musicId)
+						self:Notify(self.Config.SYSTEM.NAME, info, "ERROR", nil, 5)
+						return
+					end
 
 					remotes.PlayAudio:FireServer({
 						Name = "SERVER'S_SOUND",
@@ -6078,18 +6117,11 @@ function modules.UniversalCommands()
 						Volume = volume,
 						Pitch = pitch,
 						MaxDistance = 10000
-					}, true)
+					}, {
+						Enabled = false,
+					})
 					
-					local fakeSound = Instance.new("Sound", game.SoundService)
-					fakeSound.Name = "SERVER'S_SOUND"
-					fakeSound.SoundId = "rbxassetid://"..musicId
-					fakeSound.Volume = volume
-					fakeSound.PlaybackSpeed = pitch
-					fakeSound:Play()
-
-					fakeSound.Ended:Connect(function()
-						fakeSound:Destroy()
-					end)
+					self.Modules.core:PlayFakeSound(musicId, volume, pitch)
 
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
 				end,
@@ -6389,6 +6421,12 @@ function modules.UniversalCommands()
 						volume = .5
 					end
 					
+					if self.Modules.core:IsAssetBanned(musicId) then
+						local _, info = self.Modules.core:IsAssetBanned(musicId)
+						self:Notify(self.Config.SYSTEM.NAME, info, "ERROR", nil, 5)
+						return
+					end
+					
 					remotes.repAudio:FireServer(game.SoundService, {
 						name = "SERVER'S_SOUND",
 						soundId = musicId,
@@ -6396,16 +6434,8 @@ function modules.UniversalCommands()
 						pitch = pitch,
 						dist = {10, 10000}
 					})
-					local fakeSound = Instance.new("Sound", game.SoundService)
-					fakeSound.Name = "SERVER'S_SOUND"
-					fakeSound.SoundId = "rbxassetid://"..musicId
-					fakeSound.Volume = volume
-					fakeSound.PlaybackSpeed = pitch
-					fakeSound:Play()
 					
-					fakeSound.Ended:Connect(function()
-						fakeSound:Destroy()
-					end)
+					self.Modules.core:PlayFakeSound(musicId, volume, pitch)
 					
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
 				end,
