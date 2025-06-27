@@ -326,7 +326,8 @@ function CommandBar.new(config)
 		AvatarEditorService = game:GetService("AvatarEditorService"),
 		ReplicatedStorage = game:GetService("ReplicatedStorage"),
 		ContextActionService = game:GetService("ContextActionService"),
-		TextChatService = game:GetService("TextChatService")
+		TextChatService = game:GetService("TextChatService"),
+		MarketplaceService = game:GetService("MarketplaceService"),
 	}
 	self.PreloadedModules = {
 		spring = loadedModules.Spring(),
@@ -1670,21 +1671,26 @@ function CommandBar:Notify(name, desc, ntype, clickFunc, duration)
 			end
 
 			self.closeAnimation = function()
-				task.spawn(pcall, function()
-					self._closed = true
-					self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
-					task.wait(.20)
-					for index, object in ipairs(self._graphical:GetChildren()) do
-						if object:IsA("Frame") then
-							object.Visible = false
+				task.spawn(function()
+					local success, err = pcall(function()
+						self._closed = true
+						self._intro.Line:TweenPosition(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+						task.wait(.20)
+						for index, object in ipairs(self._graphical:GetChildren()) do
+							if object:IsA("Frame") then
+								object.Visible = false
+							end
 						end
+						self._intro.Line:TweenPosition(UDim2.new(-1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
+						task.wait(.20)
+						self._intro.Line.Visible = false
+						self._frame:TweenSize(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .3, true, nil)
+						task.wait(.3)
+						self._frame:Destroy()
+					end)
+					if not success then
+						self._frame:Destroy()
 					end
-					self._intro.Line:TweenPosition(UDim2.new(-1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, .20, true, nil)
-					task.wait(.20)
-					self._intro.Line.Visible = false
-					self._frame:TweenSize(UDim2.new(1,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quart, .3, true, nil)
-					task.wait(.3)
-					self._frame:Destroy()
 				end)
 			end
 
