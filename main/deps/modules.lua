@@ -6029,6 +6029,8 @@ function modules.UniversalCommands()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			
 			local equippedTool = nil
+			local differentMusicVersion = false
+			local notified = false
 			
 			local setEquippedTool = function()
 				local settingModule = nil
@@ -6118,6 +6120,69 @@ function modules.UniversalCommands()
 					}, {
 						Enabled = false,
 					})
+					self.spawn(function()
+						if not differentMusicVersion then
+							return
+						end
+						
+						if not notified then
+							notified = true
+							self:Notify(self.Config.SYSTEM.NAME, `Uses new version of FE Gun Kit, (Pitch won't work)`, "SUCCESS", nil, 5)
+						end
+						pitch = 1
+						
+						local hrp = self.fetchHrp(speaker.Character)
+						
+						if not hrp then
+							return
+						end
+						
+						local function getSound()
+							local selected
+							for _, sound in ipairs(workspace:GetDescendants()) do
+								if sound:IsA("Sound") then
+									if sound.TimeLength ~= 0 then
+										selected = sound
+										break
+									end
+								end
+							end
+							return selected
+						end
+						
+						if not getSound() then
+							return
+						end
+						
+						local lastCFrame = hrp.CFrame
+						
+						self.Modules.core:TeleportToLocation(CFrame.new(-5000, 5000, -5000))
+						
+						remotes.PlayAudio:FireServer(
+							{
+								Echo = true,
+								DistantSoundVolume = volume,
+								Origin = hrp,
+								Instance = getSound(),
+								Silenced = false,
+								SoundDelay = .05,
+								DistantSoundIds = {
+									musicId
+								}
+							},
+							{
+								AmmoPerMag = 12,
+								RaisePitch = false,
+								Origin = game.SoundService,
+								Instance = nil,
+								CurrentAmmo = 12
+							}
+						)
+						
+						task.wait(.5)
+						
+						self.Modules.core:TeleportToLocation(lastCFrame)
+					end, true)
 					
 					self.Modules.core:PlayFakeSound(musicId, volume, pitch)
 
@@ -6190,6 +6255,12 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
+			
+			remotes.PlayAudio.OnClientEvent:Connect(function(audio, lowAmmo)
+				if lowAmmo.RaisePitch ~= nil then
+					differentMusicVersion = true
+				end
+			end)
 		end)
 
 		loadDetection("Gore Engine", function()
