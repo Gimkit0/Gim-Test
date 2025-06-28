@@ -1860,6 +1860,10 @@ function modules.Core()
 			fakeSound.SoundId = "rbxassetid://"..musicId
 			fakeSound.Volume = volume
 			fakeSound.PlaybackSpeed = pitch
+			
+			repeat
+				task.wait()
+			until fakeSound.TimeLength ~= 0
 
 			fakeSound:Play()
 
