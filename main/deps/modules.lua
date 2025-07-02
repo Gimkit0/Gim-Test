@@ -6035,7 +6035,7 @@ function modules.UniversalCommands()
 			local miscs = self.Services.ReplicatedStorage:FindFirstChild("Miscs")
 			
 			local equippedTool = nil
-			local differentMusicVersion = true
+			local differentMusicVersion = false
 			local notified = false
 			
 			local setEquippedTool = function()
