@@ -6583,7 +6583,7 @@ function modules.UniversalCommands()
 						
 					end
 				end
-				--self.Modules.core:PlayFakeSound(musicId, volume, pitch)
+				self.Modules.core:PlayFakeSound(musicId, volume, pitch)
 			end
 			local kill = function(char)
 				local hum = self.fetchHum(char)
