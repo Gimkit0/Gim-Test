@@ -6032,6 +6032,7 @@ function modules.UniversalCommands()
 		end, function()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			local modules = self.Services.ReplicatedStorage:FindFirstChild("Modules")
+			local miscs = self.Services.ReplicatedStorage:FindFirstChild("Miscs")
 			
 			local equippedTool = nil
 			local differentMusicVersion = false
@@ -6085,6 +6086,56 @@ function modules.UniversalCommands()
 				
 				return nil
 			end
+			local playAudio = function(musicId, volume, pitch, checkIfBanned)
+				if not pitch then
+					pitch = 1
+				end
+				if not volume then
+					volume = .5
+				end
+				if checkIfBanned == nil then
+					checkIfBanned = true
+				end
+				if checkIfBanned then
+					if self.Modules.core:IsAssetBanned(musicId) then
+						local _, info = self.Modules.core:IsAssetBanned(musicId)
+						self:Notify(self.Config.SYSTEM.NAME, info, "ERROR", nil, 5)
+						return
+					end
+				end
+				
+				remotes.PlayAudio:FireServer({
+					Name = "SERVER'S_SOUND",
+					Origin = game.SoundService,
+					SoundId = `rbxassetid://{musicId}`,
+					Volume = volume,
+					Pitch = pitch,
+					MaxDistance = 10000
+				}, {
+					Enabled = false,
+				})
+				self.Modules.core:PlayFakeSound(musicId, volume, pitch)
+			end
+			local kill = function(char)
+				local hum = self.fetchHum(char)
+				local hrp = self.fetchHrp(char)
+
+				local head = char:FindFirstChild("Head")
+
+				if hum and head then
+					local returned = setEquippedTool()
+
+					self.spawn(function()
+						for i = 1, 10 do
+							self.spawn(function()
+								remotes.InflictTarget:InvokeServer("Gun", returned.tool, returned.module, hum, hrp, head, {
+									ChargeLevel = 3,
+								}, 0)
+							end)
+						end
+					end)
+				end
+			end
 			
 			self:AddCommand({
 				Name = "Music",
@@ -6102,94 +6153,7 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					if not pitch then
-						pitch = 1
-					end
-					if not volume then
-						volume = .5
-					end
-					
-					if self.Modules.core:IsAssetBanned(musicId) then
-						local _, info = self.Modules.core:IsAssetBanned(musicId)
-						self:Notify(self.Config.SYSTEM.NAME, info, "ERROR", nil, 5)
-						return
-					end
-
-					remotes.PlayAudio:FireServer({
-						Name = "SERVER'S_SOUND",
-						Origin = game.SoundService,
-						SoundId = `rbxassetid://{musicId}`,
-						Volume = volume,
-						Pitch = pitch,
-						MaxDistance = 10000
-					}, {
-						Enabled = false,
-					})
-					self.spawn(function()
-						if not differentMusicVersion then
-							return
-						end
-						
-						if not notified then
-							notified = true
-							self:Notify(self.Config.SYSTEM.NAME, `Uses new version of FE Gun Kit, (Pitch won't work)`, "SUCCESS", nil, 5)
-						end
-						pitch = 1
-						
-						local hrp = self.fetchHrp(speaker.Character)
-						
-						if not hrp then
-							return
-						end
-						
-						local function getSound()
-							local selected
-							for _, sound in ipairs(workspace:GetDescendants()) do
-								if sound:IsA("Sound") then
-									if sound.TimeLength ~= 0 then
-										selected = sound
-										break
-									end
-								end
-							end
-							return selected
-						end
-						
-						if not getSound() then
-							return
-						end
-						
-						local lastCFrame = hrp.CFrame
-						
-						self.Modules.core:TeleportToLocation(CFrame.new(-5000, 5000, -5000))
-						
-						remotes.PlayAudio:FireServer(
-							{
-								Echo = true,
-								DistantSoundVolume = volume,
-								Origin = hrp,
-								Instance = getSound(),
-								Silenced = false,
-								SoundDelay = .05,
-								DistantSoundIds = {
-									musicId
-								}
-							},
-							{
-								AmmoPerMag = 12,
-								RaisePitch = false,
-								Origin = game.SoundService,
-								Instance = nil,
-								CurrentAmmo = 12
-							}
-						)
-						
-						task.wait(.5)
-						
-						self.Modules.core:TeleportToLocation(lastCFrame)
-					end, true)
-					
-					self.Modules.core:PlayFakeSound(musicId, volume, pitch)
+					playAudio(musicId, volume, pitch)
 
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
 				end,
@@ -6238,24 +6202,7 @@ function modules.UniversalCommands()
 					
 					for index, player in next, users do
 						if player.Character then
-							local hum = self.fetchHum(player.Character)
-							local hrp = self.fetchHrp(player.Character)
-							
-							local head = player.Character:FindFirstChild("Head")
-							
-							if hum and head then
-								local returned = setEquippedTool()
-								
-								self.spawn(function()
-									for i = 1, 10 do
-										self.spawn(function()
-											remotes.InflictTarget:InvokeServer("Gun", returned.tool, returned.module, hum, hrp, head, {
-												ChargeLevel = 3,
-											}, 0)
-										end)
-									end
-								end)
-							end
+							kill(player.Character)
 						end
 					end
 				end,
@@ -6263,13 +6210,14 @@ function modules.UniversalCommands()
 			
 			self:AddCommand({
 				Name = "Goku",
-				Description = "Gives you Goku Blast tool",
+				Description = "Gives you Goku Blast tool (SOME GAMES DETECT THIS SO YOU MIGHT HAVE TO TURN ON BYPASS MODE)",
 
 				Aliases = {},
-				Arguments = {},
+				Arguments = {"BypassMode"},
 
 				Function = function(speaker, args)
 					-- 引数 --
+					local bypassMode = self.getBool(args[1])
 
 					-- 変数 --
 					local projectileHandler = require(modules.ProjectileHandler)
@@ -6278,15 +6226,24 @@ function modules.UniversalCommands()
 					local activated = false
 
 					-- 関数 --
+					if bypassMode then
+						setEquippedTool()
+					end
+					
 					local tool = Instance.new("Tool", speaker.Backpack)
 					tool.Name = "Goku Blast"
 					tool.RequiresHandle = false
 					
 					tool.Equipped:Connect(function()
 						equipped = true
+						if self.Modules.core:IsRigType(speaker, "R15") then
+							self.Modules.core:PlayAnimation(17747125537) else
+							self.Modules.core:PlayAnimation(95383474)
+						end
 					end)
 					tool.Unequipped:Connect(function()
 						equipped = false
+						self.Modules.core:StopAnimation()
 					end)
 					
 					self.addConn("GOKU_BLAST_ACTIVATE", self.Services.UserInputService.InputBegan:Connect(function(input, gpe)
@@ -6475,7 +6432,7 @@ function modules.UniversalCommands()
 									CriticalBaseChance = 5,
 									VMIdleAnimationSpeed = 1,
 									MeleeBloodWoundEnabled = true,
-									GoreEffectEnabled = false,
+									GoreEffectEnabled = true,
 									HoldDownAnimationID = 11268950861,
 									MeleeBloodWoundPartColor = true,
 									BurstRate = 0.075,
@@ -6511,7 +6468,7 @@ function modules.UniversalCommands()
 									MouseSensitiveIS = 0.2,
 									Knockback = 0,
 									AimSecondaryFireAnimationSpeed = 1,
-									FullyGibbedLimbChance = 50,
+									FullyGibbedLimbChance = 100,
 									MeleeHitCharSndIDs = {
 										6398015798,
 										6398016125,
@@ -6570,7 +6527,7 @@ function modules.UniversalCommands()
 										0
 									},
 									GoreSoundPitchMin = 1,
-									BounceElasticity = 1,
+									BounceElasticity = 0,
 									PenetrationAmount = 0,
 									ChargingSoundPitchRange = {
 										1,
@@ -6657,7 +6614,7 @@ function modules.UniversalCommands()
 									ChargingAnimationEnabled = false,
 									ExplosionSoundPitchMin = 1,
 									MinigunRevUpAnimationSpeed = 1,
-									ExplosionRadius = 100,
+									ExplosionRadius = 16,
 									WhizSoundID = {
 										3809084884,
 										3809085250,
@@ -6696,7 +6653,7 @@ function modules.UniversalCommands()
 									CooldownTime = 0.05,
 									BulletHoleSize = 0.2,
 									MaximumRate = 4,
-									ExplosionCraterPartColor = false,
+									ExplosionCraterPartColor = true,
 									FriendlyFire = false,
 									ProjectileType = "None",
 									ShotgunReload = false,
@@ -6707,7 +6664,7 @@ function modules.UniversalCommands()
 									ChargedShotEnabled = false,
 									VMMinigunRevUpAnimationSpeed = 1,
 									ExplosionKnockbackPower = 50,
-									BulletShellEnabled = true,
+									BulletShellEnabled = false,
 									DisappearTime = 5,
 									ShellClipinSpeed = 0.5,
 									BatteryEnabled = false,
@@ -6727,6 +6684,7 @@ function modules.UniversalCommands()
 									TacticalReloadAnimationEnabled = false,
 									SelfKnockbackRedution = 0.8,
 									BloodWoundSize = 0.5,
+									GoreSoundVolume = 1,
 									GoreSoundIDs = {
 										1930359546
 									},
@@ -6735,7 +6693,7 @@ function modules.UniversalCommands()
 									FieldOfViewS = 12.5,
 									SniperEnabled = false,
 									AimChargingAnimationSpeed = 1,
-									CameraRecoilingEnabled = true,
+									CameraRecoilingEnabled = false,
 									BloodWoundEnabled = true,
 									HeadshotDamageMultiplier = 2,
 									MeleeHitCharSndPitchMin = 1,
@@ -6770,16 +6728,43 @@ function modules.UniversalCommands()
 								fakeTool,
 								{
 									ChargeLevel = 0,
-									ExplosionEffectFolder = game:GetService("ReplicatedStorage"):WaitForChild("Miscs"):WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("ExplosionEffect"),
-									MuzzleFolder = game:GetService("ReplicatedStorage"):WaitForChild("Miscs"):WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("MuzzleEffect"),
-									HitEffectFolder = game:GetService("ReplicatedStorage"):WaitForChild("Miscs"):WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("HitEffect"),
-									GoreEffect = game:GetService("ReplicatedStorage"):WaitForChild("Miscs"):WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("GoreEffect"),
-									BloodEffectFolder = game:GetService("ReplicatedStorage"):WaitForChild("Miscs"):WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("BloodEffect")
+									ExplosionEffectFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("ExplosionEffect"),
+									MuzzleFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("MuzzleEffect"),
+									HitEffectFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("HitEffect"),
+									GoreEffect = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("GoreEffect"),
+									BloodEffectFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("BloodEffect")
 								},
-								true,
+								not bypassMode,
 							}
 							
-							projectileHandler:SimulateProjectile(unpack(args))
+							if bypassMode then
+								remotes.VisualizeBullet:FireServer(unpack(args))
+								projectileHandler:SimulateProjectile(unpack(args))
+								
+								local origin = fakeTool.Position
+								local direction = direction
+
+								local raycastParams = RaycastParams.new()
+								raycastParams.FilterDescendantsInstances = {speaker.Character}
+								raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+								raycastParams.IgnoreWater = true
+
+								local rayResult = workspace:Raycast(origin, direction * 1000, raycastParams)
+
+								if rayResult and rayResult.Instance then
+									local hitPart = rayResult.Instance
+									local character = hitPart:FindFirstAncestorOfClass("Model")
+									if character and character:FindFirstChildWhichIsA("Humanoid") then
+										kill(character)
+									end
+									if hitPart.Name == "_glass" then
+										remotes.ShatterGlass:FireServer(hitPart, hitPart.Position, Vector3.new(0,0,0))
+									end
+								end
+							else
+								projectileHandler:SimulateProjectile(unpack(args))
+							end
+							playAudio(8561500387, 1, 1, false)
 						end
 						task.wait()
 					end
