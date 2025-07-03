@@ -5636,7 +5636,7 @@ function modules.UniversalCommands()
 							if self.Modules.core:IsRigType(playerCharacter, "R15") then
 								playerCharacter.UpperTorso.Anchored = true
 							end
-							task.wait(1)
+							task.wait(.5)
 							self.Modules.core:TeleportToLocation(npcRootPart.CFrame)
 						end
 					end
@@ -6899,7 +6899,7 @@ function modules.UniversalCommands()
 					
 					tool.Equipped:Connect(function()
 						equipped = true
-						if self.Modules.core:IsRigType(speaker, "R15") then
+						if self.Modules.core:IsRigType(speaker.Character, "R15") then
 							self.Modules.core:PlayAnimation(17747125537) else
 							self.Modules.core:PlayAnimation(95383474)
 						end
@@ -6936,7 +6936,20 @@ function modules.UniversalCommands()
 								fakeTool = speaker.Character["Right Arm"]
 							end
 							
-							local direction = (self.Mouse.Hit.Position - fakeTool.Position)
+							local rayOrigin = self.Camera.CFrame.Position
+							local mouseRay = self.Camera:ScreenPointToRay(self.Mouse.X, self.Mouse.Y)
+							local maxDistance = 10000
+							local rayDirection = mouseRay.Direction * maxDistance
+
+							local raycastParams = RaycastParams.new()
+							raycastParams.FilterDescendantsInstances = {game.Players.LocalPlayer.Character}
+							raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+
+							local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+
+							local hitPosition = raycastResult and raycastResult.Position or (rayOrigin + rayDirection)
+
+							local direction = (hitPosition - fakeTool.Position)
 							
 							local args = {
 								fakeTool,
@@ -7318,7 +7331,7 @@ function modules.UniversalCommands()
 									MaximumRate = 4,
 									ExplosionCraterPartColor = true,
 									FriendlyFire = false,
-									ProjectileType = "None",
+									ProjectileType = "C52",
 									ShotgunReload = false,
 									CustomHitEffect = false,
 									AngleY_Min = 0.05,
