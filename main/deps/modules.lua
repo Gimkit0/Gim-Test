@@ -5456,6 +5456,194 @@ function modules.UniversalCommands()
 		})
 		
 		self:AddCommand({
+			Name = "NoHoldDuration",
+			Description = "Disables Hold Duration for Proximity Prompts",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				for _, proximityPrompt in pairs(workspace:GetDescendants()) do
+					if proximityPrompt:IsA("ProximityPrompt") then
+						proximityPrompt["HoldDuration"] = 0
+					end
+				end
+
+				game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+					prompt["HoldDuration"] = 0
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "TeleportTool",
+			Description = "Gives you a teleport tool",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				local tool = Instance.new("Tool", speaker.Backpack)
+				tool.Name = "Teleport Tool"
+				tool.RequiresHandle = false
+				
+				tool.Activated:Connect(function()
+					if (not self.Mouse.Hit) or (not self.Mouse.Target) then
+						return
+					end
+					self.Modules.core:TeleportToLocation(CFrame.new(self.Mouse.Hit.Position + Vector3.new(0, 1, 0)))
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "LightTool",
+			Description = "Gives you a light tool",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				local tool = Instance.new("Tool", speaker.Backpack)
+				tool.Name = "Light Tool"
+
+				local handle = Instance.new("Part", tool)
+				handle.Name = "Handle"
+				handle.Size = Vector3.new(.1, .1, .1)
+				handle.Transparency = 1
+				handle.CanCollide = false
+				handle.CanTouch = false
+				handle.CanQuery = false
+				
+				local light = Instance.new("SpotLight", handle)
+				light.Brightness = 5
+				light.Range = 60
+				light.Color = Color3.fromRGB(255, 255, 255)
+				light.Face = Enum.NormalId.Front
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "NPCController",
+			Description = "Gives you a NPC Controller tool",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if self.Modules.core:IsRigType(speaker.Character, "R6") then
+					self:Notify(self.Config.SYSTEM.NAME, `This script doesn't work in R6`, "ERROR", nil, 5)
+					return
+				end
+				
+				local function getRaycastTarget()
+					local character = speaker.Character or speaker.CharacterAdded:Wait()
+					local ignoreList = {}
+
+					table.insert(ignoreList, character)
+
+					for _, descendant in pairs(workspace:GetDescendants()) do
+						if descendant:IsA("Accessory") or descendant:IsA("Tool") then
+							table.insert(ignoreList, descendant)
+						end
+					end
+
+					local rayOrigin = self.Camera.CFrame.Position
+					local rayDirection = (self.Mouse.Hit.Position - rayOrigin).Unit * 1000
+
+					local rayParams = RaycastParams.new()
+					rayParams.FilterType = Enum.RaycastFilterType.Exclude
+					rayParams.FilterDescendantsInstances = ignoreList
+					rayParams.IgnoreWater = true
+
+					local result = workspace:Raycast(rayOrigin, rayDirection, rayParams)
+					return result
+				end
+				
+				local tool = Instance.new("Tool", speaker.Backpack)
+				tool.Name = "Light Tool"
+				tool.RequiresHandle = false
+				
+				tool.Activated:Connect(function()
+					local result = getRaycastTarget()
+					if result and result.Instance then
+						local hitPart = result.Instance
+						local npc = hitPart:FindFirstAncestorOfClass("Model")
+						if npc and npc:FindFirstChild("HumanoidRootPart") then
+							local npcRootPart = self.fetchHrp(npc)
+							local playerCharacter = speaker.Character or speaker.CharacterAdded:Wait()
+							local playerRootPart = self.fetchHrp(playerCharacter)
+							
+							if (not npcRootPart) or (not playerRootPart) then
+								return
+							end
+
+							local A0 = Instance.new("Attachment", npcRootPart)
+							local A1 = Instance.new("Attachment", playerRootPart)
+							local AP = Instance.new("AlignPosition", npcRootPart)
+							local AO = Instance.new("AlignOrientation", npcRootPart)
+
+							AP.Responsiveness = 200
+							AP.MaxForce = math.huge
+							AO.MaxTorque = math.huge
+							AO.Responsiveness = 200
+							AP.Attachment0 = A0
+							AP.Attachment1 = A1
+							AO.Attachment0 = A0
+							AO.Attachment1 = A1
+
+							for _, v in pairs(npc:GetDescendants()) do
+								if v:IsA("BasePart") then
+									self.Services.RunService.Stepped:Connect(function()
+										v.CanCollide = false
+									end)
+								end
+							end
+
+							playerRootPart:BreakJoints()
+							for _, v in pairs(playerCharacter:GetDescendants()) do
+								if v:IsA("BasePart") then
+									if v.Name == "HumanoidRootPart" or v.Name == "UpperTorso" or v.Name == "Head" then
+									else
+										v:Destroy()
+									end
+								end
+							end
+
+							playerRootPart.Position += Vector3.new(5, 0, 0)
+							playerCharacter.Head.Anchored = true
+							
+							if self.Modules.core:IsRigType(playerCharacter, "R15") then
+								playerCharacter.UpperTorso.Anchored = true
+							end
+							
+						end
+					end
+				end)
+			end,
+		})
+		
+		self:AddCommand({
 			Name = "BToolsDetection",
 			Description = "Tries to find f3x building tools to exploit",
 
@@ -5938,20 +6126,25 @@ function modules.UniversalCommands()
 		})
 		
 		loadDetection("Reward System", function()
-			local remotes = self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
-				or self.Services.ReplicatedStorage:FindFirstChild("Remotes")
-			
-			if remotes then
-				local detect = remotes:FindFirstChild("Reward")
-				if detect then
-					return true
+			local rewardEvent
+			for _, event in ipairs(self.Services.ReplicatedStorage:GetDescendants()) do
+				if event:IsA("RemoteEvent") and event.Name == "Reward" and event.Parent:IsA("Folder") then
+					rewardEvent = event
+					break
 				end
 			end
-		end, function()
-			local remotes = self.Services.ReplicatedStorage:FindFirstChild("RemotesS")
-				or self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			
-			local rewardEvent = remotes.Reward
+			if rewardEvent then
+				return true
+			end
+		end, function()
+			local rewardEvent
+			for _, event in ipairs(self.Services.ReplicatedStorage:GetDescendants()) do
+				if event:IsA("RemoteEvent") and event.Name == "Reward" and event.Parent:IsA("Folder") then
+					rewardEvent = event
+					break
+				end
+			end
 			
 			local rewardList = {}
 			for _, reward in ipairs(self.Services.StarterGui:GetDescendants()) do
