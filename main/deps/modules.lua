@@ -5581,7 +5581,7 @@ function modules.UniversalCommands()
 				end
 				
 				local tool = Instance.new("Tool", speaker.Backpack)
-				tool.Name = "Light Tool"
+				tool.Name = "NPC Controller"
 				tool.RequiresHandle = false
 				
 				tool.Activated:Connect(function()
@@ -5636,7 +5636,8 @@ function modules.UniversalCommands()
 							if self.Modules.core:IsRigType(playerCharacter, "R15") then
 								playerCharacter.UpperTorso.Anchored = true
 							end
-							
+							task.wait(1)
+							self.Modules.core:TeleportToLocation(npcRootPart.CFrame)
 						end
 					end
 				end)
