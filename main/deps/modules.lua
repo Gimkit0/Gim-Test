@@ -6865,7 +6865,7 @@ function modules.UniversalCommands()
 							if hrp then
 								self.spawn(function()
 									local conn = hum.Died:Connect(function()
-										playAudio(musicId, volume, pitch, hrp)
+										playAudio(musicId, volume, pitch, hrp, false)
 									end)
 									while task.wait(.25) do
 										if not deathSoundConn then
