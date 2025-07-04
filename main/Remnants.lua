@@ -471,9 +471,11 @@ function CommandBar.new(config)
 		end
 		if inst then
 			self.spawn(function()
-				func(inst)
+				for _, obj in ipairs(inst:GetDescendants()) do
+					func(obj)
+				end
 			end)
-			return inst.ChildAdded:Connect(func)
+			return inst.DescendantAdded:Connect(func)
 		end
 		return nil
 	end
