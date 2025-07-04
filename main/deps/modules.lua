@@ -6863,15 +6863,8 @@ function modules.UniversalCommands()
 							local hrp = self.fetchHrp(object)
 							
 							if hrp then
-								self.spawn(function()
-									local conn = hum.Died:Connect(function()
-										playAudio(musicId, volume, pitch, hrp, false)
-									end)
-									while task.wait(.25) do
-										if not deathSoundConn then
-											conn:Disconnect()
-										end
-									end
+								hum.Died:Connect(function()
+									playAudio(musicId, volume, pitch, hrp, false)
 								end)
 							end
 						end
@@ -6882,7 +6875,7 @@ function modules.UniversalCommands()
 			
 			self:AddCommand({
 				Name = "StopDeathSound",
-				Description = "Stops the death sound connection",
+				Description = "Stops the death sound connection (CHARACTERS HAVE TO DIE IN ORDER FOR IT TO APPLY)",
 
 				Aliases = {},
 				Arguments = {},
