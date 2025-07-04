@@ -1853,9 +1853,13 @@ function modules.Core()
 		return path
 	end
 	
-	function Core:PlayFakeSound(musicId, volume, pitch)
+	function Core:PlayFakeSound(musicId, volume, pitch, parent)
+		if not parent then
+			parent = game.SoundService
+		end
+		
 		self.Client.spawn(function()
-			local fakeSound = Instance.new("Sound", game.SoundService)
+			local fakeSound = Instance.new("Sound", parent)
 			fakeSound.Name = "SERVER'S_SOUND"
 			fakeSound.SoundId = "rbxassetid://"..musicId
 			fakeSound.Volume = volume
@@ -6229,6 +6233,8 @@ function modules.UniversalCommands()
 			local miscs = self.Services.ReplicatedStorage:FindFirstChild("Miscs")
 			
 			local equippedTool = nil
+			local deathSoundConn = nil
+			
 			local differentMusicVersion = false
 			local notified = false
 			
@@ -6280,7 +6286,7 @@ function modules.UniversalCommands()
 				
 				return nil
 			end
-			local playAudio = function(musicId, volume, pitch, checkIfBanned)
+			local playAudio = function(musicId, volume, pitch, parent, checkIfBanned)
 				if not pitch then
 					pitch = 1
 				end
@@ -6290,18 +6296,21 @@ function modules.UniversalCommands()
 				if checkIfBanned == nil then
 					checkIfBanned = true
 				end
+				if not parent then
+					parent = game.SoundService
+				end
 				if checkIfBanned then
 					if self.Modules.core:IsAssetBanned(musicId) then
 						local _, info = self.Modules.core:IsAssetBanned(musicId)
 						self:Notify(self.Config.SYSTEM.NAME, info, "ERROR", nil, 5)
-						return
+						return false
 					end
 				end
 				
 				if not differentMusicVersion then
 					remotes.PlayAudio:FireServer({
 						Name = "SERVER'S_SOUND",
-						Origin = game.SoundService,
+						Origin = parent,
 						SoundId = `rbxassetid://{musicId}`,
 						Volume = volume,
 						Pitch = pitch,
@@ -6777,7 +6786,8 @@ function modules.UniversalCommands()
 						
 					end
 				end
-				self.Modules.core:PlayFakeSound(musicId, volume, pitch)
+				self.Modules.core:PlayFakeSound(musicId, volume, pitch, parent)
+				return true
 			end
 			local kill = function(char)
 				local hum = self.fetchHum(char)
@@ -6816,9 +6826,77 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					playAudio(musicId, volume, pitch)
+					if not playAudio(musicId, volume, pitch) then
+						return
+					end
 
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "DeathSound",
+				Description = "When an NPC or player dies, it'll play the [SoundId] (EVERYONE CAN HEAR IT)",
+
+				Aliases = {},
+				Arguments = {"SoundId", "Pitch", "Volume"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local musicId = self.getNum(args[1])
+					local pitch = self.getNum(args[2])
+					local volume = self.getNum(args[3])
+
+					-- 変数 --
+
+					-- 関数 --
+					if deathSoundConn then
+						deathSoundConn:Disconnect()
+						deathSoundConn = nil
+					end
+					
+					task.wait(.25)
+					
+					deathSoundConn = self.safeChildAdded(workspace, function(object)
+						if object:IsA("Model") and self.fetchHum(object) then
+							local hum = self.fetchHum(object)
+							local hrp = self.fetchHrp(object)
+							
+							if hrp then
+								self.spawn(function()
+									local conn = hum.Died:Connect(function()
+										playAudio(musicId, volume, pitch, hrp)
+									end)
+									while task.wait(.25) do
+										if not deathSoundConn then
+											conn:Disconnect()
+										end
+									end
+								end)
+							end
+						end
+					end)
+					
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "StopDeathSound",
+				Description = "Stops the death sound connection",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if deathSoundConn then
+						deathSoundConn:Disconnect()
+						deathSoundConn = nil
+					end
 				end,
 			})
 			
@@ -7436,7 +7514,7 @@ function modules.UniversalCommands()
 							else
 								projectileHandler:SimulateProjectile(unpack(args))
 							end
-							playAudio(8561500387, 1, 1, false)
+							playAudio(8561500387, 1, 1, fakeTool, false)
 						end
 						task.wait()
 					end
