@@ -2978,9 +2978,9 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					self.Services.RunService.RenderStepped:Connect(function()
+					local conn = self.Services.RunService.RenderStepped:Connect(function()
 						self.spawn(function()
-							for i = 1, 1000 do
+							for i = 1, 3500 do
 								wearItem:FireServer({
 									[1] = "Wear",
 									[2] = "11297746",
@@ -2990,12 +2990,16 @@ function modules.UniversalCommands()
 						end)
 					end)
 
-					task.wait(20)
+					task.wait(35)
 					local head = speaker.Character:FindFirstChild("Head")
 					if head then
-						head:Destroy()
-					else
+						head:Destroy() else
 						self.Modules.core:TeleportToLocation(0, -500, 0)
+					end
+					
+					if conn then
+						conn:Disconnect()
+						conn = nil
 					end
 				end,
 			})
