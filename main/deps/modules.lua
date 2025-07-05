@@ -1852,19 +1852,19 @@ function modules.Core()
 
 		return path
 	end
-	
+
 	function Core:PlayFakeSound(musicId, volume, pitch, parent)
 		if not parent then
 			parent = game.SoundService
 		end
-		
+
 		self.Client.spawn(function()
 			local fakeSound = Instance.new("Sound", parent)
 			fakeSound.Name = "SERVER'S_SOUND"
 			fakeSound.SoundId = "rbxassetid://"..musicId
 			fakeSound.Volume = volume
 			fakeSound.PlaybackSpeed = pitch
-			
+
 			repeat
 				task.wait()
 			until fakeSound.TimeLength ~= 0
@@ -1876,7 +1876,7 @@ function modules.Core()
 			end)
 		end)
 	end
-	
+
 	function Core:IsAssetBanned(assetId)
 		local success, result = pcall(function()
 			return self.Client.Services.MarketplaceService:GetProductInfo(assetId)
@@ -2964,7 +2964,7 @@ function modules.UniversalCommands()
 		end)
 		loadSupportedGame(1662219031, "Life in Paradise", function()
 			local wearItem = self.Services.ReplicatedStorage:WaitForChild("WearItem")
-			
+
 			self:AddCommand({
 				Name = "Crash",
 				Description = "Crashes the server",
@@ -2989,12 +2989,17 @@ function modules.UniversalCommands()
 							end
 						end)
 					end)
-					
-					task.wait(2)
-					self.Modules.core:TeleportToLocation(CFrame.new(0, -500, 0))
+
+					task.wait(20)
+					local head = speaker.Character:FindFirstChild("Head")
+					if head then
+						head:Destroy()
+					else
+						self.Modules.core:TeleportToLocation(0, -500, 0)
+					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "Lag",
 				Description = "Lags the server",
@@ -3008,7 +3013,7 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					for i = 1, 3500 do
+					for i = 1, 10000 do
 						self.spawn(function()
 							wearItem:FireServer({
 								[1] = "Wear",
@@ -4232,7 +4237,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/newdex.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "FixChat",
 			Description = "Fixes the chat",
@@ -5517,7 +5522,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "NoHoldDuration",
 			Description = "Disables Hold Duration for Proximity Prompts",
@@ -5542,7 +5547,7 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "TeleportTool",
 			Description = "Gives you a teleport tool",
@@ -5559,7 +5564,7 @@ function modules.UniversalCommands()
 				local tool = Instance.new("Tool", speaker.Backpack)
 				tool.Name = "Teleport Tool"
 				tool.RequiresHandle = false
-				
+
 				tool.Activated:Connect(function()
 					if (not self.Mouse.Hit) or (not self.Mouse.Target) then
 						return
@@ -5568,7 +5573,7 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "LightTool",
 			Description = "Gives you a light tool",
@@ -5592,7 +5597,7 @@ function modules.UniversalCommands()
 				handle.CanCollide = false
 				handle.CanTouch = false
 				handle.CanQuery = false
-				
+
 				local light = Instance.new("SpotLight", handle)
 				light.Brightness = 5
 				light.Range = 60
@@ -5600,7 +5605,7 @@ function modules.UniversalCommands()
 				light.Face = Enum.NormalId.Front
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "NPCController",
 			Description = "Gives you a NPC Controller tool",
@@ -5618,7 +5623,7 @@ function modules.UniversalCommands()
 					self:Notify(self.Config.SYSTEM.NAME, `This script doesn't work in R6`, "ERROR", nil, 5)
 					return
 				end
-				
+
 				local function getRaycastTarget()
 					local character = speaker.Character or speaker.CharacterAdded:Wait()
 					local ignoreList = {}
@@ -5642,11 +5647,11 @@ function modules.UniversalCommands()
 					local result = workspace:Raycast(rayOrigin, rayDirection, rayParams)
 					return result
 				end
-				
+
 				local tool = Instance.new("Tool", speaker.Backpack)
 				tool.Name = "NPC Controller"
 				tool.RequiresHandle = false
-				
+
 				tool.Activated:Connect(function()
 					local result = getRaycastTarget()
 					if result and result.Instance then
@@ -5656,7 +5661,7 @@ function modules.UniversalCommands()
 							local npcRootPart = self.fetchHrp(npc)
 							local playerCharacter = speaker.Character or speaker.CharacterAdded:Wait()
 							local playerRootPart = self.fetchHrp(playerCharacter)
-							
+
 							if (not npcRootPart) or (not playerRootPart) then
 								return
 							end
@@ -5695,7 +5700,7 @@ function modules.UniversalCommands()
 
 							playerRootPart.Position += Vector3.new(5, 0, 0)
 							playerCharacter.Head.Anchored = true
-							
+
 							if self.Modules.core:IsRigType(playerCharacter, "R15") then
 								playerCharacter.UpperTorso.Anchored = true
 							end
@@ -5706,7 +5711,7 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "BToolsDetection",
 			Description = "Tries to find f3x building tools to exploit",
@@ -5738,7 +5743,7 @@ function modules.UniversalCommands()
 					return buildTool
 				end
 				self:Notify(self.Config.SYSTEM.NAME, `Finding F3X Building Tools`, "SUCCESS", nil, 5)
-				
+
 				loadDetection("F3X Build Tool", function()
 					if search(workspace) or search(speaker.Backpack) then
 						return true
@@ -5748,27 +5753,27 @@ function modules.UniversalCommands()
 				end, function()
 					local f3xTool = search(workspace) or search(speaker.Backpack)
 					local currentTool = f3xTool
-					
+
 					local syncAPI = f3xTool.SyncAPI
 					local serverEndpoint = syncAPI.ServerEndpoint
-					
+
 					local firstHrp = self.fetchHrp(speaker.Character)
 					local lastLocation = firstHrp.CFrame
-					
+
 					local caches = {
 						decals = {},
 					}
-					
+
 					local respawnConn = nil
-					
+
 					repeat task.wait() until f3xTool:FindFirstChild("Handle")
-					
+
 					self.Modules.core:TeleportToLocation(f3xTool.Handle.CFrame)
 					repeat
 						task.wait()
 					until f3xTool.Parent == speaker.Character or f3xTool.Parent == speaker.Backpack
 					self.Modules.core:TeleportToLocation(lastLocation)
-					
+
 					local function nameFunc(item, name)
 						serverEndpoint:InvokeServer("SetName", {item}, name)
 					end
@@ -5859,16 +5864,16 @@ function modules.UniversalCommands()
 							}
 						})
 					end
-					
-					
+
+
 					local function decalify(model, id)
 						local function decalFace(part, face)
 							local decal = spawnDecalFunc(part, "Decal", face)
 							addDecalFunc(part, "Decal", id, face)
-							
+
 							table.insert(caches.decals, decal)
 						end
-						
+
 						for _, part in ipairs(model:GetDescendants()) do
 							if part:IsA("BasePart") then
 								self.spawn(function()
@@ -5882,7 +5887,7 @@ function modules.UniversalCommands()
 							end
 						end
 					end
-					
+
 					local cloneTool
 					cloneTool = function()
 						if not currentTool then
@@ -5890,36 +5895,36 @@ function modules.UniversalCommands()
 							syncAPI = currentTool.SyncAPI
 							serverEndpoint = currentTool.ServerEndpoint
 						end
-						
+
 						local model = workspace:FindFirstChild("_SERVER'S_BACKUP_STORAGE_")
 						local hum = self.fetchHum(speaker.Character)
 						if not model then
 							model = groupFunc(workspace, "Folder", {})
 						end
-						
+
 						currentTool.Parent = speaker.Character
-						
+
 						nameFunc(model, "_SERVER'S_BACKUP_STORAGE_")
 						repeat task.wait() until currentTool.Parent == speaker.Character
 						moveFunc(currentTool.Handle, CFrame.new(math.random(4000, 5000), 5000, math.random(4000, 5000)))
 						cloneFunc(currentTool, model)
-						
+
 						local tool = model:FindFirstChildWhichIsA("BackpackItem")
-						
+
 						if not tool then
 							if hum then
 								hum:UnequipTools()
 							end
 							return
 						end
-						
+
 						anchorFunc(tool.Handle, true)
 						moveFunc(tool.Handle, CFrame.new(math.random(4000, 5000), 5000, math.random(4000, 5000)))
-						
+
 						if hum then
 							hum:UnequipTools()
 						end
-						
+
 						local function onDestroy()
 							if not currentTool.Parent or (currentTool.Parent ~= speaker.Backpack and currentTool.Parent ~= speaker.Character) then
 								local hrp = self.fetchHrp(speaker.Character)
@@ -5939,7 +5944,7 @@ function modules.UniversalCommands()
 								end
 							end
 						end
-						
+
 						currentTool:GetPropertyChangedSignal("Parent"):Connect(function()
 							onDestroy()
 						end)
@@ -5951,22 +5956,22 @@ function modules.UniversalCommands()
 								f3xTool = cloneTool()
 							end
 						end)
-						
+
 						if respawnConn then
 							respawnConn:Disconnect()
 							respawnConn = nil
 						end
-						
+
 						respawnConn = speaker.CharacterAdded:Connect(function(char)
 							task.wait(1)
 							onDestroy()
 						end)
-						
+
 						return tool
 					end
-					
+
 					f3xTool = cloneTool()
-					
+
 					self:AddCommand({
 						Name = "Kill",
 						Description = "Kills the [Player]",
@@ -5992,7 +5997,7 @@ function modules.UniversalCommands()
 							end
 						end,
 					})
-					
+
 					self:AddCommand({
 						Name = "Punish",
 						Description = "Sets the [Player]'s character to nil",
@@ -6015,7 +6020,7 @@ function modules.UniversalCommands()
 							end
 						end,
 					})
-					
+
 					self:AddCommand({
 						Name = "Unpunish",
 						Description = "Unsets the [Player]'s character to nil",
@@ -6038,7 +6043,7 @@ function modules.UniversalCommands()
 							end
 						end,
 					})
-					
+
 					self:AddCommand({
 						Name = "Ragdoll",
 						Description = "Makes the [Player]'s character not stand",
@@ -6064,7 +6069,7 @@ function modules.UniversalCommands()
 							end
 						end,
 					})
-					
+
 					self:AddCommand({
 						Name = "Freeze",
 						Description = "Freezes the [Player]'s character",
@@ -6093,7 +6098,7 @@ function modules.UniversalCommands()
 							end
 						end,
 					})
-					
+
 					self:AddCommand({
 						Name = "Unfreeze",
 						Description = "Unfreezes the [Player]'s character",
@@ -6122,7 +6127,7 @@ function modules.UniversalCommands()
 							end
 						end,
 					})
-					
+
 					self:AddCommand({
 						Name = "Decalify",
 						Description = "Puts decals of [ImageID] everywhere",
@@ -6140,11 +6145,11 @@ function modules.UniversalCommands()
 							if not imageId then
 								return
 							end
-							
+
 							decalify(workspace, imageId)
 						end,
 					})
-					
+
 					self:AddCommand({
 						Name = "5000Parts",
 						Description = "Gives you a 5000 parts remote",
@@ -6182,13 +6187,13 @@ function modules.UniversalCommands()
 								end
 							end, 10)
 							]]
-							
+
 						end,
 					})
 				end)
 			end,
 		})
-		
+
 		loadDetection("Reward System", function()
 			local rewardEvent
 			for _, event in ipairs(self.Services.ReplicatedStorage:GetDescendants()) do
@@ -6197,7 +6202,7 @@ function modules.UniversalCommands()
 					break
 				end
 			end
-			
+
 			if rewardEvent then
 				return true
 			end
@@ -6209,7 +6214,7 @@ function modules.UniversalCommands()
 					break
 				end
 			end
-			
+
 			local rewardList = {}
 			for _, reward in ipairs(self.Services.StarterGui:GetDescendants()) do
 				if reward:FindFirstChild("Ready")
@@ -6223,16 +6228,16 @@ function modules.UniversalCommands()
 						name = textLabel.Text else
 						name = value
 					end
-					
+
 					local inserting = {
 						name = name,
 						value = value
 					}
-					
+
 					table.insert(rewardList, inserting)
 				end
 			end
-			
+
 			local function getReward(name)
 				for _, reward in ipairs(rewardList) do
 					if reward.name == name then
@@ -6240,7 +6245,7 @@ function modules.UniversalCommands()
 					end
 				end
 			end
-			
+
 			self:AddCommand({
 				Name = "RewardMenu",
 				Description = "Gives you the reward menu",
@@ -6257,18 +6262,18 @@ function modules.UniversalCommands()
 					local window = self.Toshokan:Window({
 						TITLE = "Reward Menu",
 					})
-					
+
 					local rewardsPage = window:Page({
 						TITLE = "Rewards",
 						DESCRIPTION = "Gives you rewards from the reward system",
 						ICON = 11332562153,
 					})
-					
+
 					for _, reward in pairs(rewardList) do
 						rewardsPage:Button({
 							NAME = reward.name,
 							DESCRIPTION = `This gives you {reward.name}`,
-							
+
 							CALLBACK = function()
 								rewardEvent:FireServer(reward.value)
 							end,
@@ -6277,7 +6282,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		
+
 		loadDetection("FE Gun Kit", function()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			if remotes then
@@ -6290,16 +6295,16 @@ function modules.UniversalCommands()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			local modules = self.Services.ReplicatedStorage:FindFirstChild("Modules")
 			local miscs = self.Services.ReplicatedStorage:FindFirstChild("Miscs")
-			
+
 			local equippedTool = nil
 			local deathSoundConn = nil
-			
+
 			local differentMusicVersion = false
 			local notified = false
-			
+
 			local setEquippedTool = function()
 				local settingModule = nil
-				
+
 				local tool
 				for _, item in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
 					if item:IsA("BackpackItem")
@@ -6309,40 +6314,40 @@ function modules.UniversalCommands()
 						break
 					end
 				end
-				
+
 				if tool then
 					settingModule = require(tool:WaitForChild("Setting"))
-					
+
 					if tool.Setting:FindFirstChild("1") then
 						settingModule = require(tool.Setting:WaitForChild("1"))
 					elseif tool.Setting:FindFirstChildWhichIsA("ModuleScript") then
 						settingModule = require(tool.Setting:FindFirstChildWhichIsA("ModuleScript"))
 					end
 				end
-				
+
 				if equippedTool then
 					local returning = {
 						tool = equippedTool,
 						module = settingModule
 					}
-					
+
 					return returning
 				end
-				
+
 				if tool then
 					equippedTool = tool
 					equippedTool.Destroying:Connect(function()
 						equippedTool = nil
 					end)
-					
+
 					local returning = {
 						tool = tool,
 						module = settingModule
 					}
-					
+
 					return returning
 				end
-				
+
 				return nil
 			end
 			local playAudio = function(musicId, volume, pitch, parent, checkIfBanned)
@@ -6365,7 +6370,7 @@ function modules.UniversalCommands()
 						return false
 					end
 				end
-				
+
 				if not differentMusicVersion then
 					remotes.PlayAudio:FireServer({
 						Name = "SERVER'S_SOUND",
@@ -6380,7 +6385,7 @@ function modules.UniversalCommands()
 				else
 					local hrp = self.fetchHrp(self.LocalPlayer.Character)
 					local users = self.getPlayer(self.LocalPlayer, "all")
-					
+
 					for index, player in next, users do
 						if player.Character then
 							local playerHrp = self.fetchHrp(player.Character)
@@ -6838,11 +6843,11 @@ function modules.UniversalCommands()
 									},
 									false,
 								}
-								
+
 								remotes.VisualizeBullet:FireServer(unpack(args))
 							end
 						end
-						
+
 					end
 				end
 				self.Modules.core:PlayFakeSound(musicId, volume, pitch, parent)
@@ -6868,7 +6873,7 @@ function modules.UniversalCommands()
 					end)
 				end
 			end
-			
+
 			self:AddCommand({
 				Name = "Music",
 				Description = "Plays the music [SoundId] (CANNOT STOP IT)",
@@ -6892,7 +6897,7 @@ function modules.UniversalCommands()
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "DeathSound",
 				Description = "When an NPC or player dies, it'll play the [SoundId] (EVERYONE CAN HEAR IT)",
@@ -6913,14 +6918,14 @@ function modules.UniversalCommands()
 						deathSoundConn:Disconnect()
 						deathSoundConn = nil
 					end
-					
+
 					task.wait(.25)
-					
+
 					deathSoundConn = self.safeChildAdded(workspace, function(object)
 						if object:IsA("Model") and self.fetchHum(object) then
 							local hum = self.fetchHum(object)
 							local hrp = self.fetchHrp(object)
-							
+
 							if hrp then
 								hum.Died:Connect(function()
 									playAudio(musicId, volume, pitch, hrp, false)
@@ -6928,10 +6933,10 @@ function modules.UniversalCommands()
 							end
 						end
 					end)
-					
+
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "StopDeathSound",
 				Description = "Stops the death sound connection (CHARACTERS HAVE TO DIE IN ORDER FOR IT TO APPLY)",
@@ -6951,7 +6956,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "ShatterAllGlass",
 				Description = "Shatters all of the glass in the map",
@@ -6972,7 +6977,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "Kill",
 				Description = "Kills the [Player]",
@@ -6992,7 +6997,7 @@ function modules.UniversalCommands()
 						self:Notify(self.Config.SYSTEM.NAME, `Please have a FE Gun Kit Gun`, "ERROR", nil, 5)
 						return
 					end
-					
+
 					for index, player in next, users do
 						if player.Character then
 							kill(player.Character)
@@ -7000,7 +7005,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "Goku",
 				Description = "Gives you Goku Blast tool (SOME GAMES DETECT THIS SO YOU MIGHT HAVE TO TURN ON BYPASS MODE)",
@@ -7014,7 +7019,7 @@ function modules.UniversalCommands()
 
 					-- 変数 --
 					local projectileHandler = require(modules.ProjectileHandler)
-					
+
 					local equipped = false
 					local activated = false
 
@@ -7022,11 +7027,11 @@ function modules.UniversalCommands()
 					if bypassMode then
 						setEquippedTool()
 					end
-					
+
 					local tool = Instance.new("Tool", speaker.Backpack)
 					tool.Name = "Goku Blast"
 					tool.RequiresHandle = false
-					
+
 					tool.Equipped:Connect(function()
 						equipped = true
 						if self.Modules.core:IsRigType(speaker.Character, "R15") then
@@ -7038,12 +7043,12 @@ function modules.UniversalCommands()
 						equipped = false
 						self.Modules.core:StopAnimation()
 					end)
-					
+
 					self.addConn("GOKU_BLAST_ACTIVATE", self.Services.UserInputService.InputBegan:Connect(function(input, gpe)
 						if gpe then
 							return
 						end
-						
+
 						if input.UserInputType == Enum.UserInputType.MouseButton1 then
 							if equipped then
 								activated = true
@@ -7057,7 +7062,7 @@ function modules.UniversalCommands()
 							end	
 						end
 					end))
-					
+
 					while tool do
 						if activated then
 							local fakeTool
@@ -7065,7 +7070,7 @@ function modules.UniversalCommands()
 								fakeTool = speaker.Character.RightHand else
 								fakeTool = speaker.Character["Right Arm"]
 							end
-							
+
 							local rayOrigin = self.Camera.CFrame.Position
 							local mouseRay = self.Camera:ScreenPointToRay(self.Mouse.X, self.Mouse.Y)
 							local maxDistance = 10000
@@ -7080,7 +7085,7 @@ function modules.UniversalCommands()
 							local hitPosition = raycastResult and raycastResult.Position or (rayOrigin + rayDirection)
 
 							local direction = (hitPosition - fakeTool.Position)
-							
+
 							local args = {
 								fakeTool,
 								fakeTool,
@@ -7538,11 +7543,11 @@ function modules.UniversalCommands()
 								},
 								not bypassMode,
 							}
-							
+
 							if bypassMode then
 								remotes.VisualizeBullet:FireServer(unpack(args))
 								projectileHandler:SimulateProjectile(unpack(args))
-								
+
 								local origin = fakeTool.Position
 								local direction = direction
 
@@ -7572,7 +7577,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			remotes.PlayAudio.OnClientEvent:Connect(function(audio, lowAmmo)
 				if lowAmmo.RaisePitch ~= nil then
 					differentMusicVersion = true
@@ -7596,18 +7601,18 @@ function modules.UniversalCommands()
 			local assets = self.Services.ReplicatedStorage.Assets
 			local events = assets.Events
 			local remotes = assets.Remotes
-			
+
 			local specialBulletId = "H3LL0_MY_N@M3_J3FF"
-			
+
 			local equippedTool = nil
-			
+
 			local function setEquippedTool()
 				if equippedTool then
 					return
 				end
-				
+
 				local backpack = self.LocalPlayer.Backpack
-				
+
 				local tool
 				if backpack:FindFirstChild("AWM") then
 					tool = backpack.AWM
@@ -7628,27 +7633,27 @@ function modules.UniversalCommands()
 						end
 					end
 				end
-				
+
 				if tool and not equippedTool then
 					tool.Parent = self.LocalPlayer.Character
 					equippedTool = true
-					
+
 					remotes.fire:FireServer(nil, nil, specialBulletId)
-					
+
 					spawn(function()
 						task.wait()
 						local hum = self.fetchHum(self.LocalPlayer.Character)
 						remotes.toolRemove:InvokeServer()
-						
+
 						if hum then
 							hum:UnequipTools()
 						end
-						
+
 						remotes.toolEquip:InvokeServer(tool)
 					end)
 				end
 			end
-			
+
 			self:AddCommand({
 				Name = "Kill",
 				Description = "Kills the [Player]",
@@ -7668,7 +7673,7 @@ function modules.UniversalCommands()
 						if player.Character then
 							if player.Character:FindFirstChild("Head") then
 								setEquippedTool()
-								
+
 								self.spawn(function()
 									for _ = 1,10 do
 										remotes.hitBullet:FireServer(
@@ -7687,7 +7692,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "Decapitate",
 				Description = "Decapitates the [Player]'s [Limb]",
@@ -7716,7 +7721,7 @@ function modules.UniversalCommands()
 						if player.Character then
 							if player.Character:FindFirstChild("Head") then
 								local selectedLimb = limbOptions[limb:lower()]
-								
+
 								setEquippedTool()
 
 								self.spawn(function()
@@ -7757,7 +7762,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "SpawnDummy",
 				Description = "Spawns a dummy near the [Player]",
@@ -7783,7 +7788,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "Music",
 				Description = "Plays the music [SoundId] (CANNOT STOP IT)",
@@ -7806,13 +7811,13 @@ function modules.UniversalCommands()
 					if not volume then
 						volume = .5
 					end
-					
+
 					if self.Modules.core:IsAssetBanned(musicId) then
 						local _, info = self.Modules.core:IsAssetBanned(musicId)
 						self:Notify(self.Config.SYSTEM.NAME, info, "ERROR", nil, 5)
 						return
 					end
-					
+
 					remotes.repAudio:FireServer(game.SoundService, {
 						name = "SERVER'S_SOUND",
 						soundId = musicId,
@@ -7820,13 +7825,13 @@ function modules.UniversalCommands()
 						pitch = pitch,
 						dist = {10, 10000}
 					})
-					
+
 					self.Modules.core:PlayFakeSound(musicId, volume, pitch)
-					
+
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "Handcuffs",
 				Description = "Gives you handcuffs tool",
@@ -7869,7 +7874,7 @@ function modules.UniversalCommands()
 					end)
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "Crash",
 				Description = "Crashes the server",
@@ -8080,7 +8085,7 @@ function modules.UniversalCommands()
 			local function nuke(pos, hit, explosionRadius, causeTerrainDamage)
 				self.spawn(function()
 					local origin = pos
-					
+
 					explode(pos, hit, Vector3.new(0,0,0), Enum.Material.Mud, {
 						ExplosiveHit = true,
 						ExPressure = causeTerrainDamage and 5000000 or 0,
@@ -8451,12 +8456,12 @@ function modules.UniversalCommands()
 					if not explosionRadius then
 						explosionRadius = 1
 					end
-					
+
 					for index, player in next, users do
 						if player.Character then
 							local hrp = self.fetchHrp(player.Character)
 							hrp.Anchored = true
-							
+
 							nuke(hrp.Position, hrp, explosionRadius, causeTerrainDamage)
 						end
 					end
