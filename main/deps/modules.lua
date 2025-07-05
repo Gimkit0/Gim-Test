@@ -2989,7 +2989,9 @@ function modules.UniversalCommands()
 							end
 						end)
 					end)
-
+					
+					task.wait(2)
+					self.Modules.core:TeleportToLocation(CFrame.new(0, -500, 0))
 				end,
 			})
 			
