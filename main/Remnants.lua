@@ -21,16 +21,19 @@
 local CommandBar = {}
 CommandBar.__index = CommandBar
 
-function CommandBar.new(config)
+function CommandBar.new(config, customGlobalName)
 	local self = setmetatable({}, CommandBar)
 	
 	local loadedModules
 	local toshokanLib
 	
-	local globalName = "サーバー管理者コンソール"
+	local globalName = customGlobalName or "サーバー管理者コンソール"
+	
+	self.deletedGlobal = false
 	
 	if _G[globalName] then
 		_G[globalName]:Destroy()
+		self.deletedGlobal = true
 	end
 	
 	if not game:IsLoaded() then
@@ -1533,7 +1536,11 @@ function CommandBar:ConstructUI()
 		open.Title.Text = `Open {self.Config.SYSTEM.NAME}`
 		
 		self.LocalPlayer.OnTeleport:Connect(function()
-			if self.Config.SYSTEM.KEEP_ON_TELEPORT and (not self.States.teleportCheck) and queueteleport then
+			if self.Config.SYSTEM.KEEP_ON_TELEPORT
+				and (not self.States.teleportCheck)
+				and queueteleport
+				and (not self.deletedGlobal)
+			then
 				self.States.teleportCheck = true
 				queueteleport(self.Config.SYSTEM.RELOAD_LOADSTRING)
 			end
