@@ -345,6 +345,7 @@ function CommandBar.new(config, customGlobalName)
 		TextChatService = game:GetService("TextChatService"),
 		MarketplaceService = game:GetService("MarketplaceService"),
 		LocalizationService = game:GetService("LocalizationService"),
+		CollectionService = game:GetService("CollectionService"),
 	}
 	self.PreloadedModules = {
 		spring = loadedModules.Spring(),
