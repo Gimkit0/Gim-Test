@@ -6702,7 +6702,7 @@ function modules.UniversalCommands()
 			if differentVersion then
 				self:AddCommand({
 					Name = "AudioDistupter",
-					Description = "Disrupts every audio in workspace that is inside an attachment or part",
+					Description = "Disrupts every audio in workspace that is inside an attachment or part (LAGS THE SERVER)",
 
 					Aliases = {},
 					Arguments = {},
@@ -6711,6 +6711,7 @@ function modules.UniversalCommands()
 						-- 引数 --
 
 						-- 変数 --
+						local TAG_NAME = "AudioOrigin"
 
 						-- 関数 --
 
@@ -6719,42 +6720,95 @@ function modules.UniversalCommands()
 							audioDisruptConn = nil
 						end
 						
+						local function tryTagAudioOrigin(descendant)
+							if (descendant:IsA("BasePart") or descendant:IsA("Attachment")) then
+								for _, child in ipairs(descendant:GetChildren()) do
+									if child:IsA("Sound") then
+										self.Services.CollectionService:AddTag(descendant, TAG_NAME)
+										break
+									end
+								end
+							end
+						end
+
+						for _, descendant in ipairs(workspace:GetDescendants()) do
+							tryTagAudioOrigin(descendant)
+						end
+
+						workspace.DescendantAdded:Connect(function(descendant)
+							self.spawn(function()
+								tryTagAudioOrigin(descendant)
+							end)
+						end)
+
 						local tickCount = 0
 
 						audioDisruptConn = self.Services.RunService.Heartbeat:Connect(function()
 							tickCount += 1
-							if tickCount >= 15 then
+							if tickCount >= 10 then
 								tickCount = 0
-								for _, audio in ipairs(workspace:GetDescendants()) do
-									if audio:IsA("Sound") and (audio.Parent:IsA("BasePart") or audio.Parent:IsA("Attachment")) then
-										remotes.PlayAudio:FireServer({
-											{
-												Instance = audio,
-												Origin = audio.Parent,
-												Echo = true,
-												Silenced = false,
 
-												LoopData = {
-													Enabled = true,
-													Id = math.random(1, 9999999),
-												}
-											},
-											{
-												Instance = false,
-												Origin = false,
-												Echo = false,
-												Silenced = false,
-												LoopData = false,
-											},
-											nil,
-											true
-										})
+								local tagged = self.Services.CollectionService:GetTagged(TAG_NAME)
+								for _, origin in ipairs(tagged) do
+									if origin:IsA("BasePart") or origin:IsA("Attachment") then
+										for _, child in ipairs(origin:GetChildren()) do
+											if child:IsA("Sound") then
+												local users = self.getPlayer(speaker, "random")
+												for index, player in next, users do
+													if player.Character then
+														local hrp = self.fetchHrp(player.Character)
+														if hrp then
+															remotes.PlayAudio:FireServer({
+																{
+																	Instance = child,
+																	Origin = hrp,
+																	Echo = true,
+																	Silenced = false,
+																	LoopData = {
+																		Enabled = true,
+																		Id = math.random(1, 9999999),
+																	}
+																},
+																{
+																	Instance = false,
+																	Origin = false,
+																	Echo = false,
+																	Silenced = false,
+																	LoopData = false,
+																},
+																nil,
+																true
+															})
+														end
+														remotes.PlayAudio:FireServer({
+															{
+																Instance = child,
+																Origin = origin,
+																Echo = true,
+																Silenced = false,
+																LoopData = {
+																	Enabled = true,
+																	Id = math.random(1, 9999999),
+																}
+															},
+															{
+																Instance = false,
+																Origin = false,
+																Echo = false,
+																Silenced = false,
+																LoopData = false,
+															},
+															nil,
+															true
+														})
+													end
+												end
+												
+											end
+										end
 									end
-
 								end
 							end
-							
-
 						end)
 					end,
 				})
