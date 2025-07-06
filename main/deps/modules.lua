@@ -6508,7 +6508,8 @@ function modules.UniversalCommands()
 			local differentVersion = false
 			local notified = false
 			
-			if modules:FindFirstChild("GetSetting")
+			if remotes:FindFirstChild("InflictTarget")
+				and remotes.InflictTarget:IsA("RemoteEvent")
 				and modules:FindFirstChild("RayUpdateFolder")
 			then
 				differentVersion = true
