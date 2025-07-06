@@ -2710,6 +2710,8 @@ function modules.UniversalCommands()
 
 			esp_instances = {},
 		}
+		
+		local supportedGames = {}
 
 		if not self.Services.RunService:IsStudio() then
 			sethidden = sethiddenproperty or set_hidden_property or set_hidden_prop
@@ -2725,8 +2727,153 @@ function modules.UniversalCommands()
 				self:Notify(self.Config.SYSTEM.NAME, `Game detected: <b>{gameName}</b> new commands loaded or modified`, "INFO", nil, 5)
 			end)
 		end
+		
+		local function getData(url)
+			if type(url) ~= "string" then
+				return
+			end
+			
+			local successInfo, result = pcall(function()
+				local response = self.Services.HttpService:GetAsync(url)
+				local data = self.Services.HttpService:JSONDecode(response)
+				
+				return data
+			end)
+			
+			if successInfo then
+				return result
+			else
+				return false
+			end
+		end
+		
+		local function addSupportedTable(placeId, gameName)
+			local function getGameMetadata(placeId)
+				local success, info = pcall(function()
+					return self.Services.MarketplaceService:GetProductInfo(placeId, Enum.InfoType.Asset)
+				end)
+
+				if success then
+					return info
+				else
+					return nil
+				end
+			end
+
+			local function getUniverseId(placeId)
+				local url = "https://apis.roblox.com/universes/v1/places/" .. placeId .. "/universe"
+				local success, result = pcall(function()
+					return self.Services.HttpService:GetAsync(url)
+				end)
+
+				if success then
+					local data = self.Services.HttpService:JSONDecode(result)
+					return data.universeId
+				else
+					return nil
+				end
+			end
+
+			local function getGameDetails(universeId)
+				local url = "https://games.roblox.com/v1/games?universeIds=" .. universeId
+				local success, result = pcall(function()
+					return self.Services.HttpService:GetAsync(url)
+				end)
+
+				if success then
+					local data = self.Services.HttpService:JSONDecode(result)
+					return data.data[1]
+				else
+					return nil
+				end
+			end
+			
+			local function formatNumberLocalized(n, locale)
+				locale = locale or "en"
+
+				if locale == "jp" or locale == "cn" then
+					if n >= 100_000_000 then
+						return string.format("%.1f億", n / 100_000_000):gsub("%.0", "")
+					elseif n >= 10_000 then
+						return string.format("%.1f万", n / 10_000):gsub("%.0", "")
+					else
+						return tostring(n)
+					end
+
+				elseif locale == "kr" then
+					if n >= 100_000_000 then
+						return string.format("%.1f억", n / 100_000_000):gsub("%.0", "")
+					elseif n >= 10_000 then
+						return string.format("%.1f만", n / 10_000):gsub("%.0", "")
+					else
+						return tostring(n)
+					end
+
+				else
+					if n >= 1_000_000 then
+						return string.format("%.1fm", n / 1_000_000):gsub("%.0", "")
+					elseif n >= 1_000 then
+						return string.format("%.1fk", n / 1_000):gsub("%.0", "")
+					else
+						return tostring(n)
+					end
+				end
+			end
+
+			local function getLocaleCode()
+				local success, result = pcall(function()
+					return self.Services.LocalizationService.RobloxLocaleId
+				end)
+
+				if success and result then
+					local lang = result:lower():sub(1, 2)
+					return lang
+				else
+					return "jp"
+				end
+			end
+
+			self.spawn(function()
+				while true do
+					local gameData = getGameMetadata(placeId)
+
+					if gameData then
+						local gameTable = {
+							Name = gameName,
+							Description = gameData.Description or "",
+							Creator = gameData.Creator,
+							
+							Thumbnail = "https://www.roblox.com/asset-thumbnail/image?assetId="..placeId.."&width=768&height=432&format=png",
+
+							Players = 0,
+							MaxPlayers = 0,
+							PlaceId = placeId,
+						}
+						
+						local locale = getLocaleCode()
+
+						if not self.Services.RunService:IsStudio() then
+							local universeId = getUniverseId(placeId)
+							if universeId then
+								local gameData = getGameDetails(universeId)
+								if gameData then
+									gameTable.Players = formatNumberLocalized(gameData.playing, locale) or 0
+									gameTable.MaxPlayers = gameData.maxPlayers or 0
+								end
+							end
+						end
+						
+						supportedGames[placeId] = gameTable
+					end
+					
+					task.wait(30)
+				end
+			end)
+		end
 
 		local function loadSupportedGame(placeId, gameName, func)
+			addSupportedTable(placeId, gameName)
+			
 			if game.PlaceId == placeId then
 				gameDetectedNotify(gameName)
 				if type(func) == "function" then
@@ -3325,6 +3472,50 @@ function modules.UniversalCommands()
 		--------------------------------------------------------------------
 		--[[							END								]]--
 		--------------------------------------------------------------------
+		
+		self:AddCommand({
+			Name = "GameHub",
+			Description = "Shows you a list of supported games",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				local window = self.Toshokan:Window({
+					TITLE = "Game Hub",
+				})
+
+				local gamesPage = window:Page({
+					TITLE = "Games",
+					DESCRIPTION = "Shows you a list of supported games",
+					ICON = 1557343445,
+					
+					LAYOUT_TYPE = "grid",
+					LAYOUT_PROPERTIES = {
+						["CellPadding"] = UDim2.new(0.05, 0, 0, 20),
+						["CellSize"] = UDim2.new(.45, 0, 0, 175),
+						["SortOrder"] = Enum.SortOrder.LayoutOrder,
+					},
+				})
+				
+				for index, gamePage in pairs(supportedGames) do
+					local palete = gamesPage:GamePalete({
+						GAME_TABLE = gamePage,
+					})
+					
+					self.spawn(function()
+						while task.wait(5) do
+							palete.changeGamePalete(supportedGames[gamePage.PlaceId])
+						end
+					end)
+				end
+			end,
+		})
 
 		self:AddCommand({
 			Name = "View",
