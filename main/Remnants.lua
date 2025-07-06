@@ -31,6 +31,11 @@ function CommandBar.new(config, customGlobalName)
 	
 	self.deletedGlobal = false
 	
+	local _G = _G
+	if (not game:GetService("RunService"):IsStudio()) and (getgenv) then
+		_G = getgenv()
+	end
+	
 	if _G[globalName] then
 		_G[globalName]:Destroy()
 		self.deletedGlobal = true
@@ -160,6 +165,8 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(115, 255, 0),
 					ERROR = Color3.fromRGB(255, 0, 0),
 					INFO = Color3.fromRGB(5, 138, 255),
+					
+					ACRYLIC = true,
 				},
 				Light = {
 					THEME_COLOR = Color3.fromRGB(30, 131, 255),
@@ -205,6 +212,8 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(116, 227, 154),
 					ERROR = Color3.fromRGB(255, 0, 0),
 					INFO = Color3.fromRGB(5, 138, 255),
+					
+					ACRYLIC = true,
 				},
 				Mocha = {
 					THEME_COLOR = Color3.fromRGB(231, 130, 132), -- Rosewater
@@ -250,6 +259,8 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(166, 218, 149), -- Green
 					ERROR = Color3.fromRGB(243, 139, 168), -- Red
 					INFO = Color3.fromRGB(137, 180, 250), -- Blue
+					
+					ACRYLIC = true,
 				},
 				Frappe = {
 					THEME_COLOR = Color3.fromRGB(198, 160, 246), -- Lavender
@@ -295,6 +306,8 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(166, 209, 137), -- Green
 					ERROR = Color3.fromRGB(237, 135, 150), -- Red
 					INFO = Color3.fromRGB(140, 170, 238), -- Blue
+					
+					ACRYLIC = true,
 				},
 			},
 		},
@@ -331,6 +344,7 @@ function CommandBar.new(config, customGlobalName)
 		ContextActionService = game:GetService("ContextActionService"),
 		TextChatService = game:GetService("TextChatService"),
 		MarketplaceService = game:GetService("MarketplaceService"),
+		LocalizationService = game:GetService("LocalizationService"),
 	}
 	self.PreloadedModules = {
 		spring = loadedModules.Spring(),
@@ -386,6 +400,9 @@ function CommandBar.new(config, customGlobalName)
 			local function themeChangeTween(obj, goal)
 				self.tween(obj, TweenInfo.new(self.Config.UI.THEME_CHANGE_SPEED, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut), goal)
 			end
+			
+			self.Toshokan.switchConfig(self.Config.UI)
+			self.Toshokan.selectTheme(self.Config.UI.THEMES, themeName)
 
 			for _, themeConn in pairs(self.Storage.onThemeChangeConns) do
 				themeConn(self.Theme, themeChangeTween)
@@ -483,27 +500,27 @@ function CommandBar.new(config, customGlobalName)
 		return nil
 	end
 	self.getBool = function(str)
-		str = tostring(str)
-		str = str:lower()
+		str = tostring(str):lower()
 		str = self.cleanWhiteSpaces(str)
-		
-		if str == "affirmative"
-			or str == "yes" or str == "hai" or str == "si"
-			or str == "yeah" or str == "yep" or str == "yea" or str == "yah" or str == "yuh"
-			or str == "true"
-			or str == "indeed"
-			or str == "sure"
-			or str == "ok" or str == "okay" or str == "okey"
-			or str == "certainly"
-			or str == "absolutely"
-			or str == "alright"
-			or str == "fine"
-			or str == "1" or str == "one"
-		then
-			return true
-		else
-			return false
-		end
+
+		local validKeywords = {
+			-- English
+			["affirmative"] = true, ["yes"] = true, ["yeah"] = true,
+			["yep"] = true, ["yea"] = true, ["yah"] = true, ["yuh"] = true,
+			["true"] = true, ["indeed"] = true, ["sure"] = true,
+			["ok"] = true, ["okay"] = true, ["okey"] = true,
+			["certainly"] = true, ["absolutely"] = true,
+			["alright"] = true, ["alrighty"] = true, ["fine"] = true,
+			["1"] = true, ["one"] = true,
+
+			-- Espanol
+			["si"] = true, ["Verdadero"] = true,
+
+			-- にほんご
+			["はい"] = true, ["真実"] = true,
+		}
+
+		return validKeywords[str] and true or false
 	end
 	self.getNum = function(str)
 		str = tostring(str)
