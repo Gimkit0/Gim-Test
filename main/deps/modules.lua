@@ -6508,10 +6508,7 @@ function modules.UniversalCommands()
 			local differentVersion = false
 			local notified = false
 			
-			if remotes:FindFirstChild("InflictTarget")
-				and remotes.InflictTarget:IsA("RemoteEvent")
-				and modules:FindFirstChild("RayUpdateFolder")
-			then
+			if modules:FindFirstChild("RayUpdateFolder") then
 				differentVersion = true
 			end
 
@@ -6629,25 +6626,48 @@ function modules.UniversalCommands()
 										ChargeLevel = 3,
 									}, 0)
 								else
-									remotes.InflictTarget:FireServer("Gun",
-										returned.tool,
-										head,
-										{
+									if remotes.InflictTarget:IsA("RemoteEvent") then
+										remotes.InflictTarget:FireServer("Gun",
+											returned.tool,
+											head,
 											{
-												ChargeLevel = 0,
-												ClientHitSize = head.Size,
-												ModuleName = "1",
-												Distance = 0,
-												BulletId = "25,18|Bullet_{03faee76-ba15-465!1 9 8 4 4 - f 7 4 0 7 3!/ 4 7 d 4 }"
-											},
+												{
+													ChargeLevel = 0,
+													ClientHitSize = head.Size,
+													ModuleName = "1",
+													Distance = 0,
+													BulletId = "25,18|Bullet_{03faee76-ba15-465!1 9 8 4 4 - f 7 4 0 7 3!/ 4 7 d 4 }"
+												},
+												{
+													ChargeLevel = false,
+													ClientHitSize = false,
+													ModuleName = false,
+													Distance = false,
+													BulletId = true
+												}
+											})
+									elseif remotes.InflictTarget:IsA("RemoteFunction") then
+										remotes.InflictTarget:InvokeServer("Gun",
+											returned.tool,
+											head,
 											{
-												ChargeLevel = false,
-												ClientHitSize = false,
-												ModuleName = false,
-												Distance = false,
-												BulletId = true
-											}
-										})
+												{
+													ChargeLevel = 0,
+													ClientHitSize = head.Size,
+													ModuleName = "1",
+													Distance = 0,
+													BulletId = "25,18|Bullet_{03faee76-ba15-465!1 9 8 4 4 - f 7 4 0 7 3!/ 4 7 d 4 }"
+												},
+												{
+													ChargeLevel = false,
+													ClientHitSize = false,
+													ModuleName = false,
+													Distance = false,
+													BulletId = true
+												}
+											})
+									end
+									
 								end
 							end)
 						end
