@@ -6701,7 +6701,7 @@ function modules.UniversalCommands()
 			
 			if differentVersion then
 				self:AddCommand({
-					Name = "AudioDistupter",
+					Name = "AudioDisrupter",
 					Description = "Disrupts every audio in workspace that is inside an attachment or part (LAGS THE SERVER)",
 
 					Aliases = {},
@@ -6731,11 +6731,11 @@ function modules.UniversalCommands()
 							end
 						end
 
-						for _, descendant in ipairs(workspace:GetDescendants()) do
+						for _, descendant in ipairs(game:GetDescendants()) do
 							tryTagAudioOrigin(descendant)
 						end
 
-						workspace.DescendantAdded:Connect(function(descendant)
+						game.DescendantAdded:Connect(function(descendant)
 							self.spawn(function()
 								tryTagAudioOrigin(descendant)
 							end)
@@ -6745,7 +6745,7 @@ function modules.UniversalCommands()
 
 						audioDisruptConn = self.Services.RunService.Heartbeat:Connect(function()
 							tickCount += 1
-							if tickCount >= 10 then
+							if tickCount >= 20 then
 								tickCount = 0
 
 								local tagged = self.Services.CollectionService:GetTagged(TAG_NAME)
@@ -6764,10 +6764,6 @@ function modules.UniversalCommands()
 																	Origin = hrp,
 																	Echo = true,
 																	Silenced = false,
-																	LoopData = {
-																		Enabled = true,
-																		Id = math.random(1, 9999999),
-																	}
 																},
 																{
 																	Instance = false,
@@ -6786,10 +6782,6 @@ function modules.UniversalCommands()
 																Origin = origin,
 																Echo = true,
 																Silenced = false,
-																LoopData = {
-																	Enabled = true,
-																	Id = math.random(1, 9999999),
-																}
 															},
 															{
 																Instance = false,
