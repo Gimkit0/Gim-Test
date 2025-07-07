@@ -6766,7 +6766,7 @@ function modules.UniversalCommands()
 																		Echo = true,
 																		Silenced = false,
 																		LoopData = {
-																			Enabled = true,
+																			Enabled = false,
 																			Id = math.random(1, 9999999),
 																		}
 																	},
@@ -6788,7 +6788,7 @@ function modules.UniversalCommands()
 																	Echo = true,
 																	Silenced = false,
 																	LoopData = {
-																		Enabled = false,
+																		Enabled = true,
 																		Id = math.random(1, 9999999),
 																	}
 																},
