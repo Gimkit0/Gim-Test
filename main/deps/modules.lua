@@ -8349,9 +8349,6 @@ function modules.UniversalCommands()
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6741125648 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6909074346 },
 					}
-					
-					local tickCount1 = 0
-					local tickCount2 = 0
 
 					local accesoryList = {}
 					for index, value in ipairs(accessoryIds) do
@@ -8367,7 +8364,7 @@ function modules.UniversalCommands()
 					-- 関数 --
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
-							for i = 1, 20 do
+							for i = 1, 25 do
 								applyOutfit:FireServer({
 									WalkAnimation = 0,
 									RunAnimation = 0,
@@ -8399,48 +8396,6 @@ function modules.UniversalCommands()
 									HeadScale = 1,
 									HeightScale = 1,
 									ProportionScale = 0,
-									LeftLeg = 0
-								})
-							end
-						end)
-					end)
-					
-					self.spawn(function()
-						self.Services.RunService.Heartbeat:Connect(function()
-							tickCount2 += 1
-							if tickCount2 >= 10 then
-								tickCount2 = 0
-								applyOutfit:FireServer({
-									WalkAnimation = 0,
-									RunAnimation = 0,
-									RightLegColor = BrickColor.White().Color,
-									MoodAnimation = 0,
-									LeftLegColor = BrickColor.White().Color,
-									JumpAnimation = 0,
-									RightLeg = 0,
-									BodyTypeScale = 0,
-									ClimbAnimation = 0,
-									LeftArmColor = BrickColor.White().Color,
-									SwimAnimation = 0,
-									Pants = 0,
-									RightArmColor = BrickColor.White().Color,
-									Accessories = {},
-									WidthScale = 1,
-									FallAnimation = 0,
-									RightArm = 0,
-									DepthScale = 1,
-									Head = 0,
-									GraphicTShirt = 0,
-									Face = 0,
-									Shirt = 0,
-									Torso = 0,
-									HeadColor = BrickColor.White().Color,
-									TorsoColor = BrickColor.White().Color,
-									IdleAnimation = 0,
-									LeftArm = 0,
-									HeadScale = 1,
-									HeightScale = 1,
-									ProportionScale = 1,
 									LeftLeg = 0
 								})
 							end
