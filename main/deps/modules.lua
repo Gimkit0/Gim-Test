@@ -7839,6 +7839,241 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
+		
+		loadDetection("Bloxbiz Avatar Editor", function()
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("BloxbizRemotes")
+			if remotes then
+				local avatarEnabled = remotes:FindFirstChild("CatalogOnApplyToRealHumanoid")
+				if avatarEnabled then
+					return true
+				end
+			end
+			return false
+		end, function()
+			local remotes = self.Services.ReplicatedStorage:FindFirstChild("BloxbizRemotes")
+			
+			local rainbowConn = nil
+			local glitchConn = nil
+			
+			local applyEvent = remotes:WaitForChild("CatalogOnApplyToRealHumanoid")
+			local applyOutfit = remotes:WaitForChild("CatalogOnApplyOutfit")
+			
+			self:AddCommand({
+				Name = "Naked",
+				Description = "Makes you naked",
+
+				Aliases = {"Nude"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					applyEvent:FireServer({
+						AssetId = 0,
+						Property = "Pants"
+					})
+
+					applyEvent:FireServer({
+						AssetId = 0,
+						Property = "Shirt"
+					})
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Rainbow",
+				Description = "Makes your skin into a rainbow",
+
+				Aliases = {"Rainbowify"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local tickCount = 0
+					local hue = 0
+
+					-- 関数 --
+					if rainbowConn then
+						rainbowConn:Disconnect()
+						rainbowConn = nil
+					end
+					
+					rainbowConn = self.Services.RunService.Heartbeat:Connect(function()
+						tickCount += 1
+						if tickCount >= 3 then
+							tickCount = 0
+							
+							local color = Color3.fromHSV(hue, 1, 1)
+							
+							applyEvent:FireServer({
+								BodyColor = color
+							})
+							
+							hue = (hue + 0.01) % 1
+						end
+					end)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Unrainbow",
+				Description = "Stops the rainbow",
+
+				Aliases = {"Unrainbowify"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if rainbowConn then
+						rainbowConn:Disconnect()
+						rainbowConn = nil
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Glitch",
+				Description = "Glitches your avatar",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local tickCount = 0
+
+					-- 関数 --
+					if glitchConn then
+						glitchConn:Disconnect()
+						glitchConn = nil
+					end
+					
+					glitchConn = self.Services.RunService.Heartbeat:Connect(function()
+						tickCount += 1
+						if tickCount >= 2 then
+							tickCount = 0
+							
+							applyEvent:FireServer({
+								BodyScale = {
+									BodyTypeScale = math.random(0, 2),
+									HeadScale = math.random(0, 2),
+									HeightScale = math.random(0, 2),
+									WidthScale = math.random(0, 2),
+									ProportionScale = math.random(0, 2)
+								}
+							})
+						end
+					end)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Unglitch",
+				Description = "Stops glitching your avatar",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if glitchConn then
+						glitchConn:Disconnect()
+						glitchConn = nil
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Character",
+				Description = "Changes your character to [Player]'s character",
+
+				Aliases = {"Char"},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					local user = args[1]
+					local users = self.getPlayer(speaker, user)
+
+					for _, player in users do
+						if not player.Character then
+							return
+						end
+
+						local hum = self.fetchHum(player.Character)
+						if not hum then
+							return
+						end
+
+						local desc = hum:GetAppliedDescription()
+						local applied = {
+							Accessories = {},
+						}
+
+						local propertiesToApply = {
+							"Face", "Pants", "Shirt", "GraphicTShirt",
+							"Head", "Torso", "LeftArm", "RightArm", "LeftLeg", "RightLeg",
+							"ClimbAnimation", "FallAnimation", "IdleAnimation", "JumpAnimation",
+							"RunAnimation", "SwimAnimation", "WalkAnimation"
+						}
+						
+						for _, prop in ipairs(propertiesToApply) do
+							local assetId = desc[prop]
+							if assetId and tonumber(assetId) then
+								applied[prop] = assetId
+							end
+						end
+
+						local bodyScales = {
+							HeightScale = desc.HeightScale,
+							DepthScale = desc.DepthScale,
+							WidthScale = desc.WidthScale,
+							HeadScale = desc.HeadScale,
+							ProportionScale = desc.ProportionScale,
+							BodyTypeScale = desc.BodyTypeScale,
+						}
+						applyEvent:FireServer({
+							BodyScale = bodyScales
+						})
+
+						local accessories = desc:GetAccessories(true)
+						for index, accessory in ipairs(accessories) do
+							applied.Accessories[index] = accessory
+						end
+						
+						applyOutfit:FireServer(applied)
+						
+						task.wait(.75)
+						
+						local bodyColors = {
+							HeadColor = desc.HeadColor,
+							LeftArmColor = desc.LeftArmColor,
+							RightArmColor = desc.RightArmColor,
+							LeftLegColor = desc.LeftLegColor,
+							RightLegColor = desc.RightLegColor,
+							TorsoColor = desc.TorsoColor,
+						}
+						applyEvent:FireServer({
+							BodyColor = bodyColors
+						})
+					end
+				end
+			})
+		end)
 
 		loadDetection("ACS Gun System", function()
 			if self.Services.ReplicatedStorage:FindFirstChild("ACS_Engine")
