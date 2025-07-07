@@ -8084,6 +8084,8 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
+					local thread = 10
+					
 					local accessoryIds = {
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 305888394 },
 						{ AccessoryType = Enum.AccessoryType.Neck, Id = 33070696 },
@@ -8401,7 +8403,7 @@ function modules.UniversalCommands()
 								end
 								speaker.Character:Destroy()
 							end
-							for i = 1, 15 do
+							for i = 1, thread do
 								applyOutfit:FireServer({
 									WalkAnimation = 0,
 									RunAnimation = 0,
