@@ -8084,7 +8084,7 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local thread = 10
+					local thread = 2
 					
 					local accessoryIds = {
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 305888394 },
@@ -8389,7 +8389,7 @@ function modules.UniversalCommands()
 							AssetId = value.Id,
 							Position = vector.zero,
 							Scale = vector.one,
-							IsLayered = false,
+							IsLayered = true,
 							AccessoryType = value.AccessoryType
 						}
 					end
