@@ -8389,7 +8389,8 @@ function modules.UniversalCommands()
 							AssetId = value.Id,
 							Position = vector.zero,
 							Scale = vector.one,
-							IsLayered = true,
+							IsLayered = false,
+							Puffiness = 5,
 							AccessoryType = value.AccessoryType
 						}
 					end
