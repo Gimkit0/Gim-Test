@@ -8084,8 +8084,8 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local thread = 500
-					local tickEnd = 300
+					local thread = 1000
+					local tickEnd = 200
 					
 					local accessoryIds = {
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 305888394 },
