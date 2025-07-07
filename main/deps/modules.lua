@@ -8370,7 +8370,7 @@ function modules.UniversalCommands()
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
 							tickCount1 += 1
-							if tickCount1 >= 15 then
+							if tickCount1 >= 5 then
 								tickCount1 = 0
 								applyOutfit:FireServer({
 									WalkAnimation = 0,
@@ -8411,7 +8411,7 @@ function modules.UniversalCommands()
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
 							tickCount2 += 1
-							if tickCount2 >= 20 then
+							if tickCount2 >= 10 then
 								tickCount2 = 0
 								applyOutfit:FireServer({
 									WalkAnimation = 0,
