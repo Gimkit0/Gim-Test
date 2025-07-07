@@ -8038,6 +8038,23 @@ function modules.UniversalCommands()
 							end
 						end
 
+						local accessories = desc:GetAccessories(true)
+						for index, accessory in ipairs(accessories) do
+							applied.Accessories[index] = accessory
+						end
+						
+						applyOutfit:FireServer(applied)
+						
+						task.wait(.5)
+						
+						local bodyColors = {
+							HeadColor = desc.HeadColor,
+							LeftArmColor = desc.LeftArmColor,
+							RightArmColor = desc.RightArmColor,
+							LeftLegColor = desc.LeftLegColor,
+							RightLegColor = desc.RightLegColor,
+							TorsoColor = desc.TorsoColor,
+						}
 						local bodyScales = {
 							HeightScale = desc.HeightScale,
 							DepthScale = desc.DepthScale,
@@ -8049,24 +8066,6 @@ function modules.UniversalCommands()
 						applyEvent:FireServer({
 							BodyScale = bodyScales
 						})
-
-						local accessories = desc:GetAccessories(true)
-						for index, accessory in ipairs(accessories) do
-							applied.Accessories[index] = accessory
-						end
-						
-						applyOutfit:FireServer(applied)
-						
-						task.wait(.75)
-						
-						local bodyColors = {
-							HeadColor = desc.HeadColor,
-							LeftArmColor = desc.LeftArmColor,
-							RightArmColor = desc.RightArmColor,
-							LeftLegColor = desc.LeftLegColor,
-							RightLegColor = desc.RightLegColor,
-							TorsoColor = desc.TorsoColor,
-						}
 						applyEvent:FireServer({
 							BodyColor = bodyColors
 						})
