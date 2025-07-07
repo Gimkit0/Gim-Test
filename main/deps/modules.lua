@@ -8084,7 +8084,8 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local thread = 1
+					local thread = 500
+					local tickEnd = 300
 					
 					local accessoryIds = {
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 305888394 },
@@ -8380,12 +8381,17 @@ function modules.UniversalCommands()
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5703030397 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
 						
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 75152643430660 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
 					}
 					
 					local tickCount = 0
 
 					local accesoryList = {}
-					--[[
 					for index, value in ipairs(accessoryIds) do
 						accesoryList[index] = {
 							Rotation = vector.zero,
@@ -8397,26 +8403,13 @@ function modules.UniversalCommands()
 							AccessoryType = value.AccessoryType
 						}
 					end
-					]]
-					self.spawn(function()
-						for index = 1, 1000000000, 1 do
-							accesoryList[#accesoryList + 1] = {
-								Rotation = vector.zero,
-								AssetId = index,
-								Position = vector.zero,
-								Scale = vector.one,
-								IsLayered = false,
-								Puffiness = 5,
-								AccessoryType = Enum.AccessoryType.Hat
-							}
-							task.wait()
-						end
-					end)
+					
 					-- 関数 --
+					
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
 							tickCount += 1
-							if tickCount >= 100 then
+							if tickCount >= tickEnd then
 								tickCount = 0
 								if speaker.Character then
 									local hrp = self.fetchHrp(speaker.Character)
@@ -8425,6 +8418,7 @@ function modules.UniversalCommands()
 									end
 									speaker.Character:Destroy()
 								end
+								
 								for i = 1, thread do
 									applyOutfit:FireServer({
 										WalkAnimation = 0,
