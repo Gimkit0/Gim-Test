@@ -8382,7 +8382,7 @@ function modules.UniversalCommands()
 									SwimAnimation = 0,
 									Pants = 0,
 									RightArmColor = BrickColor.random().Color,
-									Accessories = nil--[[accesoryList]],
+									Accessories = accesoryList,
 									WidthScale = 1,
 									FallAnimation = 0,
 									RightArm = 0,
@@ -8443,6 +8443,7 @@ function modules.UniversalCommands()
 							]]
 						end)
 					end)
+					--[[
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
 							tickCount2 += 1
@@ -8484,6 +8485,8 @@ function modules.UniversalCommands()
 							end
 						end)
 					end)
+					]]
+					
 					
 					
 				end,
