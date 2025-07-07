@@ -8084,7 +8084,7 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local thread = 2
+					local thread = 1
 					
 					local accessoryIds = {
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 305888394 },
@@ -8381,8 +8381,11 @@ function modules.UniversalCommands()
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
 						
 					}
+					
+					local tickCount = 0
 
 					local accesoryList = {}
+					--[[
 					for index, value in ipairs(accessoryIds) do
 						accesoryList[index] = {
 							Rotation = vector.zero,
@@ -8394,51 +8397,71 @@ function modules.UniversalCommands()
 							AccessoryType = value.AccessoryType
 						}
 					end
+					]]
+					self.spawn(function()
+						for index = 1, 1000000000, 1 do
+							accesoryList[#accesoryList + 1] = {
+								Rotation = vector.zero,
+								AssetId = index,
+								Position = vector.zero,
+								Scale = vector.one,
+								IsLayered = false,
+								Puffiness = 5,
+								AccessoryType = Enum.AccessoryType.Hat
+							}
+							task.wait()
+						end
+					end)
 					-- 関数 --
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
-							if speaker.Character then
-								local hrp = self.fetchHrp(speaker.Character)
-								if hrp then
-									hrp.Anchored = true
+							tickCount += 1
+							if tickCount >= 100 then
+								tickCount = 0
+								if speaker.Character then
+									local hrp = self.fetchHrp(speaker.Character)
+									if hrp then
+										hrp.Anchored = true
+									end
+									speaker.Character:Destroy()
 								end
-								speaker.Character:Destroy()
+								for i = 1, thread do
+									applyOutfit:FireServer({
+										WalkAnimation = 0,
+										RunAnimation = 0,
+										RightLegColor = BrickColor.random().Color,
+										MoodAnimation = 0,
+										LeftLegColor = BrickColor.random().Color,
+										JumpAnimation = 0,
+										RightLeg = 0,
+										BodyTypeScale = 0,
+										ClimbAnimation = 0,
+										LeftArmColor = BrickColor.random().Color,
+										SwimAnimation = 0,
+										Pants = 0,
+										RightArmColor = BrickColor.random().Color,
+										Accessories = accesoryList,
+										WidthScale = 1,
+										FallAnimation = 0,
+										RightArm = 0,
+										DepthScale = 1,
+										Head = 16580493236,
+										GraphicTShirt = 0,
+										Face = 0,
+										Shirt = 0,
+										Torso = 16580491126,
+										HeadColor = BrickColor.random().Color,
+										TorsoColor = BrickColor.random().Color,
+										IdleAnimation = 0,
+										LeftArm = 0,
+										HeadScale = 1,
+										HeightScale = 1,
+										ProportionScale = 0,
+										LeftLeg = 0
+									})
+								end
 							end
-							for i = 1, thread do
-								applyOutfit:FireServer({
-									WalkAnimation = 0,
-									RunAnimation = 0,
-									RightLegColor = BrickColor.random().Color,
-									MoodAnimation = 0,
-									LeftLegColor = BrickColor.random().Color,
-									JumpAnimation = 0,
-									RightLeg = 0,
-									BodyTypeScale = 0,
-									ClimbAnimation = 0,
-									LeftArmColor = BrickColor.random().Color,
-									SwimAnimation = 0,
-									Pants = 0,
-									RightArmColor = BrickColor.random().Color,
-									Accessories = accesoryList,
-									WidthScale = 1,
-									FallAnimation = 0,
-									RightArm = 0,
-									DepthScale = 1,
-									Head = 16580493236,
-									GraphicTShirt = 0,
-									Face = 0,
-									Shirt = 0,
-									Torso = 16580491126,
-									HeadColor = BrickColor.random().Color,
-									TorsoColor = BrickColor.random().Color,
-									IdleAnimation = 0,
-									LeftArm = 0,
-									HeadScale = 1,
-									HeightScale = 1,
-									ProportionScale = 0,
-									LeftLeg = 0
-								})
-							end
+							
 						end)
 					end)
 				end,
