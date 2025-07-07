@@ -8348,6 +8348,36 @@ function modules.UniversalCommands()
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 104117401833251 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6741125648 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6909074346 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6065923218 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5164293775 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7466083397 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 12337910749 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4855031321 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4708259348 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7154630802 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 215719598 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7062036000 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5064651922 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 12593547548 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7284112915 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 2906895276 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4391089678 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6773806697 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 19380685 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4368717651 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5861465755 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6958771908 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4196166312 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5231223671 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6076612186 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6361582090 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7485912398 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7676195837 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4258729989 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4933287912 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5703030397 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
+						
 					}
 
 					local accesoryList = {}
@@ -8364,7 +8394,14 @@ function modules.UniversalCommands()
 					-- 関数 --
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
-							for i = 1, 25 do
+							if speaker.Character then
+								local hrp = self.fetchHrp(speaker.Character)
+								if hrp then
+									hrp.Anchored = true
+								end
+								speaker.Character:Destroy()
+							end
+							for i = 1, 15 do
 								applyOutfit:FireServer({
 									WalkAnimation = 0,
 									RunAnimation = 0,
