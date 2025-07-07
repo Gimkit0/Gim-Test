@@ -6750,20 +6750,47 @@ function modules.UniversalCommands()
 
 								local tagged = self.Services.CollectionService:GetTagged(TAG_NAME)
 								for _, origin in ipairs(tagged) do
-									if origin:IsA("BasePart") or origin:IsA("Attachment") then
-										for _, child in ipairs(origin:GetChildren()) do
-											if child:IsA("Sound") then
-												local users = self.getPlayer(speaker, "random")
-												for index, player in next, users do
-													if player.Character then
-														local hrp = self.fetchHrp(player.Character)
-														if hrp then
+									self.spawn(function()
+										if origin:IsA("BasePart") or origin:IsA("Attachment") then
+											for _, child in ipairs(origin:GetChildren()) do
+												if child:IsA("Sound") then
+													local users = self.getPlayer(speaker, "random")
+													for index, player in next, users do
+														if player.Character then
+															local hrp = self.fetchHrp(player.Character)
+															if hrp then
+																remotes.PlayAudio:FireServer({
+																	{
+																		Instance = child,
+																		Origin = hrp,
+																		Echo = true,
+																		Silenced = false,
+																		LoopData = {
+																			Enabled = true,
+																			Id = math.random(1, 9999999),
+																		}
+																	},
+																	{
+																		Instance = false,
+																		Origin = false,
+																		Echo = false,
+																		Silenced = false,
+																		LoopData = false,
+																	},
+																	nil,
+																	true
+																})
+															end
 															remotes.PlayAudio:FireServer({
 																{
 																	Instance = child,
-																	Origin = hrp,
+																	Origin = origin,
 																	Echo = true,
 																	Silenced = false,
+																	LoopData = {
+																		Enabled = false,
+																		Id = math.random(1, 9999999),
+																	}
 																},
 																{
 																	Instance = false,
@@ -6776,29 +6803,13 @@ function modules.UniversalCommands()
 																true
 															})
 														end
-														remotes.PlayAudio:FireServer({
-															{
-																Instance = child,
-																Origin = origin,
-																Echo = true,
-																Silenced = false,
-															},
-															{
-																Instance = false,
-																Origin = false,
-																Echo = false,
-																Silenced = false,
-																LoopData = false,
-															},
-															nil,
-															true
-														})
 													end
+
 												end
-												
 											end
 										end
-									end
+									end)
+									
 								end
 							end
 						end)
@@ -6806,7 +6817,7 @@ function modules.UniversalCommands()
 				})
 				
 				self:AddCommand({
-					Name = "StopAudioDistupter",
+					Name = "StopAudioDisrupter",
 					Description = "Stops the disruption of audios",
 
 					Aliases = {},
