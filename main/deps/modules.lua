@@ -8304,7 +8304,6 @@ function modules.UniversalCommands()
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5945438043 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 8208605869 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5727822995 },
-						
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6380246734 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7795508934 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 17213230300 },
@@ -8321,7 +8320,6 @@ function modules.UniversalCommands()
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7104069343 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5355333720 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5004226312 },
-						
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6441016373 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 7212268341 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 15227777707 },
@@ -8369,9 +8367,7 @@ function modules.UniversalCommands()
 					-- 関数 --
 					self.spawn(function()
 						self.Services.RunService.Heartbeat:Connect(function()
-							tickCount1 += 1
-							if tickCount1 >= 5 then
-								tickCount1 = 0
+							for i = 1, 20 do
 								applyOutfit:FireServer({
 									WalkAnimation = 0,
 									RunAnimation = 0,
@@ -8386,7 +8382,7 @@ function modules.UniversalCommands()
 									SwimAnimation = 0,
 									Pants = 0,
 									RightArmColor = BrickColor.random().Color,
-									Accessories = accesoryList,
+									Accessories = nil--[[accesoryList]],
 									WidthScale = 1,
 									FallAnimation = 0,
 									RightArm = 0,
@@ -8406,6 +8402,45 @@ function modules.UniversalCommands()
 									LeftLeg = 0
 								})
 							end
+							--[[
+							tickCount1 += 1
+							if tickCount1 >= 5 then
+								tickCount1 = 0
+								applyOutfit:FireServer({
+									WalkAnimation = 0,
+									RunAnimation = 0,
+									RightLegColor = BrickColor.random().Color,
+									MoodAnimation = 0,
+									LeftLegColor = BrickColor.random().Color,
+									JumpAnimation = 0,
+									RightLeg = 0,
+									BodyTypeScale = 0,
+									ClimbAnimation = 0,
+									LeftArmColor = BrickColor.random().Color,
+									SwimAnimation = 0,
+									Pants = 0,
+									RightArmColor = BrickColor.random().Color,
+									Accessories = nil,
+									WidthScale = 1,
+									FallAnimation = 0,
+									RightArm = 0,
+									DepthScale = 1,
+									Head = 16580493236,
+									GraphicTShirt = 0,
+									Face = 0,
+									Shirt = 0,
+									Torso = 16580491126,
+									HeadColor = BrickColor.random().Color,
+									TorsoColor = BrickColor.random().Color,
+									IdleAnimation = 0,
+									LeftArm = 0,
+									HeadScale = 1,
+									HeightScale = 1,
+									ProportionScale = 0,
+									LeftLeg = 0
+								})
+							end
+							]]
 						end)
 					end)
 					self.spawn(function()
