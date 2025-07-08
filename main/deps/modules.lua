@@ -8084,8 +8084,8 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local thread = 100
-					local tickEnd = 200
+					local thread = 1
+					local tickEnd = 50
 					
 					local accessoryIds = {
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 305888394 },
@@ -8439,8 +8439,6 @@ function modules.UniversalCommands()
 					}
 					
 					local tickCount = 0
-					
-					local secondRun = false
 
 					local accesoryList = {}
 					for index, value in ipairs(accessoryIds) do
@@ -8458,11 +8456,6 @@ function modules.UniversalCommands()
 							if tickCount >= tickEnd then
 								tickCount = 0
 								
-								if not secondRun then
-									secondRun = true else
-									secondRun = false
-								end
-								
 								if speaker.Character then
 									local hrp = self.fetchHrp(speaker.Character)
 									if hrp then
@@ -8471,78 +8464,40 @@ function modules.UniversalCommands()
 									speaker.Character:Destroy()
 								end
 								
-								if secondRun then
-									for i = 1, thread do
-										applyOutfit:FireServer({
-											WalkAnimation = 0,
-											RunAnimation = 0,
-											RightLegColor = BrickColor.White().Color,
-											MoodAnimation = 0,
-											LeftLegColor = BrickColor.White().Color,
-											JumpAnimation = 0,
-											RightLeg = 0,
-											BodyTypeScale = 0,
-											ClimbAnimation = 0,
-											LeftArmColor = BrickColor.White().Color,
-											SwimAnimation = 0,
-											Pants = 0,
-											RightArmColor = BrickColor.White().Color,
-											Accessories = {},
-											WidthScale = 1,
-											FallAnimation = 0,
-											RightArm = 0,
-											DepthScale = 1,
-											Head = 0,
-											GraphicTShirt = 0,
-											Face = 0,
-											Shirt = 0,
-											Torso = 0,
-											HeadColor = BrickColor.White().Color,
-											TorsoColor = BrickColor.White().Color,
-											IdleAnimation = 0,
-											LeftArm = 0,
-											HeadScale = 1,
-											HeightScale = 1,
-											ProportionScale = 0,
-											LeftLeg = 0
-										})
-									end
-								else
-									for i = 1, thread do
-										applyOutfit:FireServer({
-											WalkAnimation = 0,
-											RunAnimation = 0,
-											RightLegColor = BrickColor.random().Color,
-											MoodAnimation = 0,
-											LeftLegColor = BrickColor.random().Color,
-											JumpAnimation = 0,
-											RightLeg = 0,
-											BodyTypeScale = 0,
-											ClimbAnimation = 0,
-											LeftArmColor = BrickColor.random().Color,
-											SwimAnimation = 0,
-											Pants = 0,
-											RightArmColor = BrickColor.random().Color,
-											Accessories = accesoryList,
-											WidthScale = 1,
-											FallAnimation = 0,
-											RightArm = 0,
-											DepthScale = 1,
-											Head = 16580493236,
-											GraphicTShirt = 0,
-											Face = 0,
-											Shirt = 0,
-											Torso = 16580491126,
-											HeadColor = BrickColor.random().Color,
-											TorsoColor = BrickColor.random().Color,
-											IdleAnimation = 0,
-											LeftArm = 0,
-											HeadScale = 1,
-											HeightScale = 1,
-											ProportionScale = 0,
-											LeftLeg = 0
-										})
-									end
+								for i = 1, thread do
+									applyOutfit:FireServer({
+										WalkAnimation = 0,
+										RunAnimation = 0,
+										RightLegColor = BrickColor.random().Color,
+										MoodAnimation = 0,
+										LeftLegColor = BrickColor.random().Color,
+										JumpAnimation = 0,
+										RightLeg = 0,
+										BodyTypeScale = 0,
+										ClimbAnimation = 0,
+										LeftArmColor = BrickColor.random().Color,
+										SwimAnimation = 0,
+										Pants = 0,
+										RightArmColor = BrickColor.random().Color,
+										Accessories = accesoryList,
+										WidthScale = 1,
+										FallAnimation = 0,
+										RightArm = 0,
+										DepthScale = 1,
+										Head = 16580493236,
+										GraphicTShirt = 0,
+										Face = 0,
+										Shirt = 0,
+										Torso = 16580491126,
+										HeadColor = BrickColor.random().Color,
+										TorsoColor = BrickColor.random().Color,
+										IdleAnimation = 0,
+										LeftArm = 0,
+										HeadScale = 1,
+										HeightScale = 1,
+										ProportionScale = 0,
+										LeftLeg = 0
+									})
 								end
 							end
 							
