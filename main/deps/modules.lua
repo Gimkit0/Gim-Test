@@ -8075,17 +8075,19 @@ function modules.UniversalCommands()
 			
 			self:AddCommand({
 				Name = "Crash",
-				Description = "Starts crashing the server",
+				Description = "Starts crashing the server (DEPENDING ON HOW BULKY YOUR PC IS THE HIGHER THE THREAD RECOMMENDATION)",
 
 				Aliases = {},
-				Arguments = {},
+				Arguments = {"Thread", "TicksUntilEnd"},
 
 				Function = function(speaker, args)
 					-- 引数 --
+					local threadArg = self.getNum(args[1])
+					local tickArg = self.getNum(args[2])
 
 					-- 変数 --
-					local thread = 1
-					local tickEnd = 50
+					local thread = threadArg or 2
+					local tickEnd = tickArg or 35
 					
 					local accessoryIds = {
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 305888394 },
