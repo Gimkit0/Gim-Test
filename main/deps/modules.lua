@@ -8084,7 +8084,7 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local thread = 1000
+					local thread = 100
 					local tickEnd = 200
 					
 					local accessoryIds = {
@@ -8380,26 +8380,72 @@ function modules.UniversalCommands()
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4933287912 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5703030397 },
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
-						
 						{ AccessoryType = Enum.AccessoryType.Hat, Id = 75152643430660 },
-						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
-						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
-						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
-						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
-						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5165287698 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4875701013 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 15967743 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 2988779745 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6419516033 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5968041061 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5591898874 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6536243519 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4597874025 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5354918926 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 21070012 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6239375692 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 8303730595 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 62724852 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6413809900 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6837506 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 10149308721 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4735630382 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 10193380914 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5205483683 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4602272831 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5621576440 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 10084548738 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 3798231832 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4771109038 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4753645975 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5459995751 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 13388767855 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4932554634 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5890452119 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4876357616 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 8571464395 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6279540141 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 456225312 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5104122288 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 1708329071 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5354933046 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5830798662 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 13989741745 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5319940357 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 8207677764 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 9560392730 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5063538761 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6682204447 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 5227164371 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 4665773975 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6938664526 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 17225320544 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 17520094851 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 13803148089 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 9731173784 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 10084537101 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6594218415 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 6101407082 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 9008148855 },
+						{ AccessoryType = Enum.AccessoryType.Hat, Id = 12096573985 },
 					}
 					
 					local tickCount = 0
+					
+					local secondRun = false
 
 					local accesoryList = {}
 					for index, value in ipairs(accessoryIds) do
 						accesoryList[index] = {
-							Rotation = vector.zero,
 							AssetId = value.Id,
-							Position = vector.zero,
-							Scale = vector.one,
-							IsLayered = false,
-							Puffiness = 5,
 							AccessoryType = value.AccessoryType
 						}
 					end
@@ -8411,6 +8457,12 @@ function modules.UniversalCommands()
 							tickCount += 1
 							if tickCount >= tickEnd then
 								tickCount = 0
+								
+								if not secondRun then
+									secondRun = true else
+									secondRun = false
+								end
+								
 								if speaker.Character then
 									local hrp = self.fetchHrp(speaker.Character)
 									if hrp then
@@ -8419,40 +8471,78 @@ function modules.UniversalCommands()
 									speaker.Character:Destroy()
 								end
 								
-								for i = 1, thread do
-									applyOutfit:FireServer({
-										WalkAnimation = 0,
-										RunAnimation = 0,
-										RightLegColor = BrickColor.random().Color,
-										MoodAnimation = 0,
-										LeftLegColor = BrickColor.random().Color,
-										JumpAnimation = 0,
-										RightLeg = 0,
-										BodyTypeScale = 0,
-										ClimbAnimation = 0,
-										LeftArmColor = BrickColor.random().Color,
-										SwimAnimation = 0,
-										Pants = 0,
-										RightArmColor = BrickColor.random().Color,
-										Accessories = accesoryList,
-										WidthScale = 1,
-										FallAnimation = 0,
-										RightArm = 0,
-										DepthScale = 1,
-										Head = 16580493236,
-										GraphicTShirt = 0,
-										Face = 0,
-										Shirt = 0,
-										Torso = 16580491126,
-										HeadColor = BrickColor.random().Color,
-										TorsoColor = BrickColor.random().Color,
-										IdleAnimation = 0,
-										LeftArm = 0,
-										HeadScale = 1,
-										HeightScale = 1,
-										ProportionScale = 0,
-										LeftLeg = 0
-									})
+								if secondRun then
+									for i = 1, thread do
+										applyOutfit:FireServer({
+											WalkAnimation = 0,
+											RunAnimation = 0,
+											RightLegColor = BrickColor.White().Color,
+											MoodAnimation = 0,
+											LeftLegColor = BrickColor.White().Color,
+											JumpAnimation = 0,
+											RightLeg = 0,
+											BodyTypeScale = 0,
+											ClimbAnimation = 0,
+											LeftArmColor = BrickColor.White().Color,
+											SwimAnimation = 0,
+											Pants = 0,
+											RightArmColor = BrickColor.White().Color,
+											Accessories = {},
+											WidthScale = 1,
+											FallAnimation = 0,
+											RightArm = 0,
+											DepthScale = 1,
+											Head = 0,
+											GraphicTShirt = 0,
+											Face = 0,
+											Shirt = 0,
+											Torso = 0,
+											HeadColor = BrickColor.White().Color,
+											TorsoColor = BrickColor.White().Color,
+											IdleAnimation = 0,
+											LeftArm = 0,
+											HeadScale = 1,
+											HeightScale = 1,
+											ProportionScale = 0,
+											LeftLeg = 0
+										})
+									end
+								else
+									for i = 1, thread do
+										applyOutfit:FireServer({
+											WalkAnimation = 0,
+											RunAnimation = 0,
+											RightLegColor = BrickColor.random().Color,
+											MoodAnimation = 0,
+											LeftLegColor = BrickColor.random().Color,
+											JumpAnimation = 0,
+											RightLeg = 0,
+											BodyTypeScale = 0,
+											ClimbAnimation = 0,
+											LeftArmColor = BrickColor.random().Color,
+											SwimAnimation = 0,
+											Pants = 0,
+											RightArmColor = BrickColor.random().Color,
+											Accessories = accesoryList,
+											WidthScale = 1,
+											FallAnimation = 0,
+											RightArm = 0,
+											DepthScale = 1,
+											Head = 16580493236,
+											GraphicTShirt = 0,
+											Face = 0,
+											Shirt = 0,
+											Torso = 16580491126,
+											HeadColor = BrickColor.random().Color,
+											TorsoColor = BrickColor.random().Color,
+											IdleAnimation = 0,
+											LeftArm = 0,
+											HeadScale = 1,
+											HeightScale = 1,
+											ProportionScale = 0,
+											LeftLeg = 0
+										})
+									end
 								end
 							end
 							
