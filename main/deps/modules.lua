@@ -8218,7 +8218,7 @@ function modules.UniversalCommands()
 					local tickCount = 0
 
 					local accesoryList = {}
-					for index = 1, #accessoryIds/10 do
+					for index = 1, #accessoryIds/6 do
 						accesoryList[index] = {
 							AssetId = accessoryIds[index].Id,
 							AccessoryType = accessoryIds[index].AccessoryType
