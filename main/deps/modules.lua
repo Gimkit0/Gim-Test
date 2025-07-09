@@ -8237,7 +8237,6 @@ function modules.UniversalCommands()
 									local hrp = self.fetchHrp(speaker.Character)
 									if hrp then
 										hrp.Anchored = true
-										self.Modules.core:TeleportToLocation(hrp.CFrame * CFrame.new(0, 2, 0))
 									end
 									speaker.Character:Destroy()
 								end
