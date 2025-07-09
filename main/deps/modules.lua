@@ -2757,7 +2757,10 @@ function modules.UniversalCommands()
 			end
 		end
 		
-		local function addSupportedTable(placeId, gameName)
+		local function addSupportedTable(placeId)
+			local data = nil
+			
+			local failAttempts = 0
 			local function getGameMetadata(placeId)
 				local success, info = pcall(function()
 					return self.Services.MarketplaceService:GetProductInfo(placeId, Enum.InfoType.Asset)
@@ -2766,35 +2769,13 @@ function modules.UniversalCommands()
 				if success then
 					return info
 				else
-					return nil
-				end
-			end
-
-			local function getUniverseId(placeId)
-				local url = "https://apis.roblox.com/universes/v1/places/" .. placeId .. "/universe"
-				local success, result = pcall(function()
-					return self.Services.HttpService:GetAsync(url)
-				end)
-
-				if success then
-					local data = self.Services.HttpService:JSONDecode(result)
-					return data.universeId
-				else
-					return nil
-				end
-			end
-
-			local function getGameDetails(universeId)
-				local url = "https://games.roblox.com/v1/games?universeIds=" .. universeId
-				local success, result = pcall(function()
-					return self.Services.HttpService:GetAsync(url)
-				end)
-
-				if success then
-					local data = self.Services.HttpService:JSONDecode(result)
-					return data.data[1]
-				else
-					return nil
+					failAttempts += 1
+					if failAttempts <= self.Config.FAILING.MAX_RETRIES then
+						task.wait(self.Config.FAILING.RETRY_COOLDOWN)
+						getGameMetadata(placeId)
+					else
+						return nil
+					end
 				end
 			end
 			
@@ -2846,10 +2827,10 @@ function modules.UniversalCommands()
 			self.spawn(function()
 				while true do
 					local gameData = getGameMetadata(placeId)
-
+					
 					if gameData then
 						local gameTable = {
-							Name = gameName,
+							Name = gameData.Name,
 							Description = gameData.Description or "",
 							Creator = gameData.Creator,
 							
@@ -2860,32 +2841,30 @@ function modules.UniversalCommands()
 							PlaceId = placeId,
 						}
 						
-						local locale = getLocaleCode()
-
-						if not self.Services.RunService:IsStudio() then
-							local universeId = getUniverseId(placeId)
-							if universeId then
-								local gameData = getGameDetails(universeId)
-								if gameData then
-									gameTable.Players = formatNumberLocalized(gameData.playing, locale) or 0
-									gameTable.MaxPlayers = gameData.maxPlayers or 0
-								end
-							end
-						end
-						
 						supportedGames[placeId] = gameTable
+						data = gameTable
 					end
 					
 					task.wait(30)
 				end
 			end)
+			
+			repeat task.wait() until data
+			
+			return data
 		end
 
-		local function loadSupportedGame(placeId, gameName, func)
-			addSupportedTable(placeId, gameName)
+		local function loadSupportedGame(placeId, func)
+			local data
+			self.spawn(function()
+				data = addSupportedTable(placeId)
+			end)
 			
 			if game.PlaceId == placeId then
-				gameDetectedNotify(gameName)
+				self.spawn(function()
+					repeat task.wait() until data
+					gameDetectedNotify(data.Name)
+				end)
 				if type(func) == "function" then
 					func()
 				end
@@ -2902,8 +2881,14 @@ function modules.UniversalCommands()
 				end
 			end
 		end
+		
+		self.spawn(function()
+			for _, placeId in ipairs(self.Config.SYSTEM.SUPPORTED_GAMES) do
+				addSupportedTable(placeId)
+			end
+		end)
 
-		loadSupportedGame(9872472334, "Evade", function()
+		loadSupportedGame(9872472334, function()
 			local ticketWaitInterval = .5
 
 			self:AddCommand({
@@ -3119,7 +3104,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		loadSupportedGame(1662219031, "Life in Paradise", function()
+		loadSupportedGame(1662219031, function()
 			local wearItem = self.Services.ReplicatedStorage:WaitForChild("WearItem")
 
 			self:AddCommand({
@@ -3135,6 +3120,10 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
+					if speaker.Character then
+						speaker.Character:Destroy()
+					end
+					
 					local conn = self.Services.RunService.RenderStepped:Connect(function()
 						self.spawn(function()
 							for i = 1, 3500 do
@@ -3148,11 +3137,6 @@ function modules.UniversalCommands()
 					end)
 
 					task.wait(35)
-					local head = speaker.Character:FindFirstChild("Head")
-					if head then
-						head:Destroy() else
-						self.Modules.core:TeleportToLocation(0, -500, 0)
-					end
 					
 					if conn then
 						conn:Disconnect()
@@ -3187,7 +3171,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		loadSupportedGame(662417684, "Lucky Block Battle Grounds", function()
+		loadSupportedGame(662417684, function()
 			self:AddCommand({
 				Name = "GiveLuckyBlock",
 				Description = "Gives you [Amount] of lucky blocks",
@@ -3313,7 +3297,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		loadSupportedGame(95963293166138, "Namgyu Land for Namgyu Ethusiasts", function()
+		loadSupportedGame(95963293166138, function()
 			self:AddCommand({
 				Name = "CollectAllCoins",
 				Description = "Makes you collect all coins in the map",
@@ -3339,7 +3323,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		loadSupportedGame(185655149, "Welcome To Bloxburg", function()
+		loadSupportedGame(185655149, function()
 			self:AddCommand({
 				Name = "Autogrind",
 				Description = "Makes you autogrind in the Pizza Place",
@@ -3402,82 +3386,6 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		loadSupportedGame(15523276627, "CraftBlox", function()
-			local oreEsp = false
-			local oreHighlights = {}
-
-			self:AddCommand({
-				Name = "OreESP",
-				Description = "Lets you see all of the ores around you [RefreshRate]",
-
-				Aliases = {},
-				Arguments = {},
-
-				Function = function(speaker, args)
-					-- 引数 --
-					local refreshRate = self.getNum(args[1])
-
-					-- 変数 --
-					local blocks = workspace:WaitForChild("Blocks")
-
-					-- 関数 --
-					if not refreshRate then
-						refreshRate = 5
-					end
-
-					self.Modules.parser:RunCommand(speaker, "UnOreESP")
-
-					oreEsp = true
-
-					local function updateHighlights()
-						for _, folder in ipairs(blocks:GetDescendants()) do
-							if folder.ClassName == "Folder" then
-								for _, block in ipairs(folder:GetChildren()) do
-									if block.ClassName == "MeshPart" and block.BrickColor ~= BrickColor.new("Medium stone grey") then
-										local highlight = block:FindFirstChild("ORE_HIGHLIGHT")
-										if not highlight then
-											highlight = Instance.new("Highlight", block)
-											highlight.FillColor = block.BrickColor.Color
-											highlight.OutlineColor = Color3.new(0, 0, 0)
-											highlight.OutlineTransparency = 0.7
-											highlight.Name = "ORE_HIGHLIGHT"
-											table.insert(oreHighlights, highlight)
-										end
-									end
-								end
-							end
-						end
-					end
-
-					while oreEsp do
-						updateHighlights()
-						task.wait(refreshRate)
-					end
-				end,
-			})
-
-			self:AddCommand({
-				Name = "UnOreESP",
-				Description = "Stops Ore ESP",
-
-				Aliases = {},
-				Arguments = {},
-
-				Function = function(speaker, args)
-					-- 引数 --
-
-					-- 変数 --
-
-					-- 関数 --
-					if oreEsp then
-						oreEsp = false
-						for _, highlight in ipairs(oreHighlights) do
-							highlight:Destroy()
-						end
-					end
-				end,
-			})
-		end)
 
 		--------------------------------------------------------------------
 		--[[							END								]]--
@@ -3508,8 +3416,8 @@ function modules.UniversalCommands()
 					LAYOUT_TYPE = "grid",
 					LAYOUT_PROPERTIES = {
 						["CellPadding"] = UDim2.new(0.05, 0, 0, 20),
-						["CellSize"] = UDim2.new(.45, 0, 0, 175),
-						["SortOrder"] = Enum.SortOrder.LayoutOrder,
+						["CellSize"] = UDim2.new(.45, 0, 0.55, 0),
+						["SortOrder"] = Enum.SortOrder.Name,
 					},
 				})
 				
@@ -8033,6 +7941,96 @@ function modules.UniversalCommands()
 			})
 			
 			self:AddCommand({
+				Name = "Chicken",
+				Description = "Makes you a chicken",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					applyOutfit:FireServer({
+						WalkAnimation = 0,
+						RunAnimation = 0,
+						RightLegColor = BrickColor.Yellow().Color,
+						MoodAnimation = 0,
+						LeftLegColor = BrickColor.Yellow().Color,
+						JumpAnimation = 0,
+						RightLeg = 0,
+						BodyTypeScale = 0,
+						ClimbAnimation = 0,
+						LeftArmColor = BrickColor.Yellow().Color,
+						SwimAnimation = 0,
+						Pants = 16250801316,
+						RightArmColor = BrickColor.Yellow().Color,
+						Accessories = {
+							{
+								AssetId = 24112667,
+								AccessoryType = Enum.AccessoryType.Hat
+							},
+						},
+						WidthScale = 1,
+						FallAnimation = 0,
+						RightArm = 0,
+						DepthScale = 1,
+						Head = 0,
+						GraphicTShirt = 0,
+						Face = 0,
+						Shirt = 7157559030,
+						Torso = 0,
+						HeadColor = BrickColor.Yellow().Color,
+						TorsoColor = BrickColor.Yellow().Color,
+						IdleAnimation = 0,
+						LeftArm = 0,
+						HeadScale = 1,
+						HeightScale = 1,
+						ProportionScale = 0,
+						LeftLeg = 0
+					})
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "AnnoyingHats",
+				Description = "Gives you the most annoying sound hats",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					applyOutfit:FireServer({
+						Accessories = {
+							{
+								AssetId = 24112667,
+								AccessoryType = Enum.AccessoryType.Hat
+							},
+							{
+								AssetId = 305888394,
+								AccessoryType = Enum.AccessoryType.Hat
+							},
+							{
+								AssetId = 24114402,
+								AccessoryType = Enum.AccessoryType.Hat
+							},
+							{
+								AssetId = 33070696,
+								AccessoryType = Enum.AccessoryType.Hat
+							},
+						},
+					})
+				end,
+			})
+			
+			self:AddCommand({
 				Name = "Character",
 				Description = "Changes your character to [Player]'s character",
 
@@ -8052,76 +8050,76 @@ function modules.UniversalCommands()
 						if not hum then
 							return
 						end
-
-						local desc = hum:GetAppliedDescription()
-						local applied = {
-							Accessories = {},
-						}
-
-						local propertiesToApply = {
-							"Face", "Pants", "Shirt", "GraphicTShirt",
-							"Head", "Torso", "LeftArm", "RightArm", "LeftLeg", "RightLeg",
-							"ClimbAnimation", "FallAnimation", "IdleAnimation", "JumpAnimation",
-							"RunAnimation", "SwimAnimation", "WalkAnimation"
-						}
 						
-						for _, prop in ipairs(propertiesToApply) do
-							local assetId = desc[prop]
-							if assetId and tonumber(assetId) then
-								applied[prop] = assetId
+						for index = 1, 3 do
+							local desc = hum:GetAppliedDescription()
+							local applied = {
+								Accessories = {},
+							}
+
+							local propertiesToApply = {
+								"Face", "Pants", "Shirt", "GraphicTShirt",
+								"Head", "Torso", "LeftArm", "RightArm", "LeftLeg", "RightLeg",
+								"ClimbAnimation", "FallAnimation", "IdleAnimation", "JumpAnimation",
+								"RunAnimation", "SwimAnimation", "WalkAnimation"
+							}
+
+							for _, prop in ipairs(propertiesToApply) do
+								local assetId = desc[prop]
+								if assetId and tonumber(assetId) then
+									applied[prop] = assetId
+								end
 							end
-						end
 
-						local accessories = desc:GetAccessories(true)
-						for index, accessory in ipairs(accessories) do
-							applied.Accessories[index] = accessory
+							local accessories = desc:GetAccessories(true)
+							for index, accessory in ipairs(accessories) do
+								applied.Accessories[index] = accessory
+							end
+
+							applyOutfit:FireServer(applied)
+
+							task.wait(.1)
+
+							local bodyColors = {
+								HeadColor = desc.HeadColor,
+								LeftArmColor = desc.LeftArmColor,
+								RightArmColor = desc.RightArmColor,
+								LeftLegColor = desc.LeftLegColor,
+								RightLegColor = desc.RightLegColor,
+								TorsoColor = desc.TorsoColor,
+							}
+							local bodyScales = {
+								HeightScale = desc.HeightScale,
+								DepthScale = desc.DepthScale,
+								WidthScale = desc.WidthScale,
+								HeadScale = desc.HeadScale,
+								ProportionScale = desc.ProportionScale,
+								BodyTypeScale = desc.BodyTypeScale,
+							}
+							applyEvent:FireServer({
+								BodyScale = bodyScales
+							})
+							applyEvent:FireServer({
+								BodyColor = bodyColors
+							})
 						end
-						
-						applyOutfit:FireServer(applied)
-						
-						task.wait(.25)
-						
-						local bodyColors = {
-							HeadColor = desc.HeadColor,
-							LeftArmColor = desc.LeftArmColor,
-							RightArmColor = desc.RightArmColor,
-							LeftLegColor = desc.LeftLegColor,
-							RightLegColor = desc.RightLegColor,
-							TorsoColor = desc.TorsoColor,
-						}
-						local bodyScales = {
-							HeightScale = desc.HeightScale,
-							DepthScale = desc.DepthScale,
-							WidthScale = desc.WidthScale,
-							HeadScale = desc.HeadScale,
-							ProportionScale = desc.ProportionScale,
-							BodyTypeScale = desc.BodyTypeScale,
-						}
-						applyEvent:FireServer({
-							BodyScale = bodyScales
-						})
-						applyEvent:FireServer({
-							BodyColor = bodyColors
-						})
 					end
 				end
 			})
 			
 			self:AddCommand({
 				Name = "Crash",
-				Description = "Starts crashing the server (DEPENDING ON HOW BULKY YOUR PC IS THE HIGHER THE THREAD RECOMMENDATION, DEFAULT: 5)",
+				Description = "Starts crashing the server",
 
 				Aliases = {},
-				Arguments = {"Thread", "TicksUntilEnd"},
+				Arguments = {},
 
 				Function = function(speaker, args)
 					-- 引数 --
-					local threadArg = self.getNum(args[1])
-					local tickArg = self.getNum(args[2])
 
 					-- 変数 --
-					local thread = threadArg or 1
-					local tickEnd = tickArg or 35
+					local thread = 1
+					local tickEnd = 35
 					
 					local accessoryIds
 					if self.Services.RunService:IsStudio() then
@@ -8192,6 +8190,94 @@ function modules.UniversalCommands()
 								end
 							end
 							
+						end)
+					end)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Lag",
+				Description = "Starts lagging the server",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local thread = 1
+					local tickEnd = 35
+
+					local accessoryIds
+					if self.Services.RunService:IsStudio() then
+						accessoryIds = require(script.Accessories) else
+						accessoryIds = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/accessories.lua"))()
+					end
+
+					local tickCount = 0
+
+					local accesoryList = {}
+					for index = 1, #accessoryIds/10 do
+						accesoryList[index] = {
+							AssetId = accessoryIds[index].Id,
+							AccessoryType = accessoryIds[index].AccessoryType
+						}
+					end
+
+					-- 関数 --
+
+					self.spawn(function()
+						self.Services.RunService.Heartbeat:Connect(function()
+							tickCount += 1
+							if tickCount >= tickEnd then
+								tickCount = 0
+
+								if speaker.Character then
+									local hrp = self.fetchHrp(speaker.Character)
+									if hrp then
+										hrp.Anchored = true
+									end
+									speaker.Character:Destroy()
+								end
+
+								for i = 1, thread do
+									applyOutfit:FireServer({
+										WalkAnimation = 0,
+										RunAnimation = 0,
+										RightLegColor = BrickColor.random().Color,
+										MoodAnimation = 0,
+										LeftLegColor = BrickColor.random().Color,
+										JumpAnimation = 0,
+										RightLeg = 0,
+										BodyTypeScale = 0,
+										ClimbAnimation = 0,
+										LeftArmColor = BrickColor.random().Color,
+										SwimAnimation = 0,
+										Pants = 0,
+										RightArmColor = BrickColor.random().Color,
+										Accessories = accesoryList,
+										WidthScale = 1,
+										FallAnimation = 0,
+										RightArm = 0,
+										DepthScale = 1,
+										Head = 16580493236,
+										GraphicTShirt = 0,
+										Face = 0,
+										Shirt = 0,
+										Torso = 16580491126,
+										HeadColor = BrickColor.random().Color,
+										TorsoColor = BrickColor.random().Color,
+										IdleAnimation = 0,
+										LeftArm = 0,
+										HeadScale = 1,
+										HeightScale = 1,
+										ProportionScale = 0,
+										LeftLeg = 0
+									})
+								end
+							end
+
 						end)
 					end)
 				end,
