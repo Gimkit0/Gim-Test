@@ -8234,6 +8234,7 @@ function modules.UniversalCommands()
 								tickCount = 0
 
 								if speaker.Character then
+									self.Modules.core:TeleportToLocation(CFrame.new(math.random(4000, 5000), 5000, math.random(4000, 5000)))
 									local hrp = self.fetchHrp(speaker.Character)
 									if hrp then
 										hrp.Anchored = true
