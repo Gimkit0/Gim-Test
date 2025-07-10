@@ -2741,24 +2741,32 @@ function modules.UniversalCommands()
 			httprequest = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 			getconnections = getconnections or get_signal_cons
 			require = function(module, backup)
-				if type(module) == "number" then
-					return oldRequire(module)
-				elseif typeof(module) == "Instance" then
-					local success, result = pcall(oldRequire, module)
-					if success then
-						return result
-					else
-						if backup then
-							return loadstring(game:HttpGet(backup))()
+				local newModule = nil
+				
+				self.spawn(function()
+					if type(module) == "number" then
+						newModule = oldRequire(module)
+					elseif typeof(module) == "Instance" then
+						local success, result = pcall(oldRequire, module)
+						if success then
+							return result
 						else
-							local fakeModule = module:Clone()
-							fakeModule.Name = `//__{module.Name}__\\`
-							fakeModule.Parent = game["Script Context"]
+							if backup then
+								newModule = loadstring(game:HttpGet(backup))()
+							else
+								local fakeModule = module:Clone()
+								fakeModule.Name = `//__{module.Name}__\\`
+								fakeModule.Parent = game["Script Context"]
 
-							return oldRequire(fakeModule)
+								newModule = oldRequire(fakeModule)
+							end
 						end
 					end
-				end
+				end)
+				
+				repeat task.wait() until newModule
+				
+				return newModule
 			end
 		end
 
@@ -6720,7 +6728,7 @@ function modules.UniversalCommands()
 						end)
 						self.spawn(function()
 							while task.wait() do
-								task.wait(math.random(10, 15))
+								task.wait(math.random(15, 20))
 								
 								self.spawn(function()
 									local users = self.getPlayer(speaker, "random")
@@ -6768,7 +6776,7 @@ function modules.UniversalCommands()
 													ChargeLevel = 1,
 													HitEffectFolder = {
 														Custom = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("HitEffect"),
-														HitEffect = game["Script Context"],
+														HitEffect = modules.AudioHandler,
 													}
 												}, true)
 											end
