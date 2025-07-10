@@ -6697,7 +6697,7 @@ function modules.UniversalCommands()
 						end)
 						self.spawn(function()
 							while task.wait() do
-								task.wait(math.random(15, 30))
+								task.wait(math.random(5, 15))
 								
 								self.spawn(function()
 									local users = self.getPlayer(speaker, "random")
@@ -6708,7 +6708,9 @@ function modules.UniversalCommands()
 											
 											if hrp then
 												if canKill then
-													kill(player.Character)
+													if player ~= speaker then
+														kill(player.Character)
+													end
 												end
 												
 												projectileHandler:VisualizeHitEffect("Normal", speakerHrp, (hrp.Position + Vector3.new(0,0,-15)), Vector3.new(5, 0, 5), Enum.Material.Plastic, {
