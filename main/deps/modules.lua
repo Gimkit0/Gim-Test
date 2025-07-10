@@ -6707,13 +6707,16 @@ function modules.UniversalCommands()
 											local speakerHrp = self.fetchHrp(speaker.Character)
 											
 											if hrp then
+												if speakerHrp then
+													speakerHrp.Anchored = true
+												end
 												if canKill then
 													if player ~= speaker then
 														kill(player.Character)
 													end
 												end
 												
-												projectileHandler:VisualizeHitEffect("Normal", speakerHrp, (hrp.Position + Vector3.new(0,0,-15)), Vector3.new(5, 0, 5), Enum.Material.Plastic, {
+												projectileHandler:VisualizeHitEffect("Normal", speakerHrp, (hrp.Position + Vector3.new(0,0,15)), Vector3.new(5, 0, 5), Enum.Material.Plastic, {
 													MeleeHitEffectEnabled = true,
 													MeleeHitSoundIDs = {
 														7236490488,
