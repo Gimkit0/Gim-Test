@@ -1858,6 +1858,8 @@ function modules.Core()
 	end
 
 	function Core:PlayFakeSound(musicId, volume, pitch, parent)
+		local sound = nil
+		
 		if not parent then
 			parent = game.SoundService
 		end
@@ -1872,13 +1874,19 @@ function modules.Core()
 			repeat
 				task.wait()
 			until fakeSound.TimeLength ~= 0
+			
+			sound = fakeSound
 
 			fakeSound:Play()
-
 			fakeSound.Ended:Connect(function()
+				task.wait(.5)
 				fakeSound:Destroy()
 			end)
 		end)
+		
+		repeat task.wait() until sound
+		
+		return sound
 	end
 
 	function Core:IsAssetBanned(assetId)
@@ -6512,7 +6520,7 @@ function modules.UniversalCommands()
 
 				return nil
 			end
-			local playAudio = function(musicId, volume, pitch, parent, checkIfBanned)
+			local function playAudio(musicId, volume, pitch, parent, looped, checkIfBanned)
 				if not pitch then
 					pitch = 1
 				end
@@ -6548,8 +6556,13 @@ function modules.UniversalCommands()
 					self:Notify(self.Config.SYSTEM.NAME, "Unfortunately the new version of FE Gun Kit patched audio", "ERROR", nil, 5)
 					return false
 				end
-				self.Modules.core:PlayFakeSound(musicId, volume, pitch, parent)
-				return true
+				local sound = self.Modules.core:PlayFakeSound(musicId, volume, pitch, parent)
+				if looped then
+					sound.Ended:Connect(function()
+						playAudio(musicId, volume, pitch, parent, true, checkIfBanned)
+					end)
+				end
+				return true, sound
 			end
 			local kill = function(char)
 				local hum = self.fetchHum(char)
@@ -6638,6 +6651,105 @@ function modules.UniversalCommands()
 					end
 
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "SummonSatan",
+				Description = "Summons Satan in the map (SCARY)",
+
+				Aliases = {},
+				Arguments = {"CanKill"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local canKill = self.getBool(args[1])
+
+					-- 変数 --
+					local projectileHandler = require(modules.ProjectileHandler)
+					
+					local scaryAudios = {
+						{Id = 9113980680, Volume = 10, Pitch = .5},
+						{Id = 9113980319, Volume = 10, Pitch = .5},
+						{Id = 9113980507, Volume = 10, Pitch = .5},
+						{Id = 124131023712641, Volume = 10, Pitch = .5},
+						{Id = 78692849637332, Volume = 10, Pitch = .5},
+						{Id = 8573647497, Volume = 10, Pitch = .5},
+						{Id = 18929141493, Volume = 10, Pitch = .5},
+						{Id = 6916012342, Volume = 10, Pitch = .5},
+						{Id = 7298287490, Volume = 10, Pitch = .5},
+						{Id = 7816195044, Volume = 10, Pitch = .5},
+					}
+
+					-- 関数 --
+					self.spawn(function()
+						playAudio(9046435309, 5, .8, nil, true, false)
+						
+						self.spawn(function()
+							while task.wait() do
+								task.wait(math.random(8, 20))
+								
+								local audio = scaryAudios[math.random(1, #scaryAudios)]
+								local _, sound = playAudio(audio.Id, audio.Volume, audio.Pitch, nil, false, false)
+								
+								sound.Ended:Wait()
+							end
+						end)
+						self.spawn(function()
+							while task.wait() do
+								task.wait(math.random(15, 30))
+								
+								self.spawn(function()
+									local users = self.getPlayer(speaker, "random")
+									for index, player in next, users do
+										if player.Character then
+											local hrp = self.fetchHrp(player.Character)
+											local speakerHrp = self.fetchHrp(speaker.Character)
+											
+											if hrp then
+												if canKill then
+													kill(player.Character)
+												end
+												
+												projectileHandler:VisualizeHitEffect("Normal", speakerHrp, (hrp.Position + Vector3.new(0,0,-15)), Vector3.new(5, 0, 5), Enum.Material.Plastic, {
+													MeleeHitEffectEnabled = true,
+													MeleeHitSoundIDs = {
+														7236490488,
+														5710016194,
+														85271883712040,
+													},
+													MeleeHitSoundPitchMin = .5,
+													MeleeHitSoundPitchMax = .8,
+													MeleeHitSoundVolume = 10,
+													CustomMeleeHitEffect = true,
+
+													MarkerEffectEnabled = true,
+													MarkerEffectSize = 30,
+													MarkerEffectTexture = {105190503785408},
+													MarkerEffectVisibleTime = 5,
+													MarkerEffectFadeTime = 5,
+
+													MarkerPartColor = true,
+
+													ChargeAlterTable = {},
+												}, {
+													ChargeLevel = 1,
+													HitEffectFolder = {
+														Custom = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("HitEffect"),
+														HitEffect = game["Script Context"],
+													}
+												}, true)
+											end
+										end
+
+									end
+								end)
+								
+							end
+						end)
+					end)
+					
+					
 				end,
 			})
 			
@@ -6814,7 +6926,7 @@ function modules.UniversalCommands()
 
 							if hrp then
 								hum.Died:Connect(function()
-									playAudio(musicId, volume, pitch, hrp, false)
+									playAudio(musicId, volume, pitch, hrp, false, false)
 								end)
 							end
 						end
@@ -7457,7 +7569,7 @@ function modules.UniversalCommands()
 							else
 								projectileHandler:SimulateProjectile(unpack(args))
 							end
-							playAudio(8561500387, 1, 1, fakeTool, false)
+							playAudio(8561500387, 1, 1, fakeTool, false, false)
 						end
 						task.wait()
 					end
@@ -7705,8 +7817,10 @@ function modules.UniversalCommands()
 						pitch = pitch,
 						dist = {10, 10000}
 					})
-
-					self.Modules.core:PlayFakeSound(musicId, volume, pitch)
+					
+					self.spawn(function()
+						self.Modules.core:PlayFakeSound(musicId, volume, pitch)
+					end)
 
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
 				end,
