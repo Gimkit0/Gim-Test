@@ -2741,14 +2741,14 @@ function modules.UniversalCommands()
 			getconnections = getconnections or get_signal_cons
 			require = function(module, backup)
 				local newModule = nil
-				
+
 				self.spawn(function()
 					if type(module) == "number" then
 						newModule = oldRequire(module)
 					elseif typeof(module) == "Instance" then
 						local success, result = pcall(oldRequire, module)
 						if success then
-							return result
+							newModule = result
 						else
 							if backup then
 								newModule = loadstring(game:HttpGet(backup))()
@@ -2762,9 +2762,9 @@ function modules.UniversalCommands()
 						end
 					end
 				end)
-				
+
 				repeat task.wait() until newModule
-				
+
 				return newModule
 			end
 		end
@@ -6764,8 +6764,7 @@ function modules.UniversalCommands()
 						fakePart.Anchored = true
 						
 						if target:IsA("BasePart") then
-							fakePart.CFrame = target.CFrame
-						else
+							fakePart.CFrame = target.CFrame else
 							fakePart.CFrame = target
 						end
 						
