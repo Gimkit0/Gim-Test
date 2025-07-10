@@ -2691,7 +2691,7 @@ function modules.UniversalCommands()
 		local queueteleport
 		local httprequest
 		local getconnections
-		local require
+		local require = oldRequire
 
 		local universalValues = {
 			-- Evade --
@@ -6689,7 +6689,7 @@ function modules.UniversalCommands()
 					local canKill = self.getBool(args[1])
 
 					-- 変数 --
-					local projectileHandler = require(modules.ProjectileHandler)
+					local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
 					
 					local scaryAudios = {
 						{Id = 9113980680, Volume = 10, Pitch = .5},
@@ -6720,7 +6720,7 @@ function modules.UniversalCommands()
 						end)
 						self.spawn(function()
 							while task.wait() do
-								task.wait(math.random(5, 15))
+								task.wait(math.random(10, 15))
 								
 								self.spawn(function()
 									local users = self.getPlayer(speaker, "random")
@@ -6731,7 +6731,11 @@ function modules.UniversalCommands()
 											
 											if hrp then
 												if speakerHrp then
-													speakerHrp.Anchored = true
+													self.spawn(function()
+														speakerHrp.Anchored = true
+														task.wait(10)
+														speakerHrp.Anchored = false
+													end)
 												end
 												if canKill then
 													if player ~= speaker then
