@@ -1094,7 +1094,6 @@ function modules.SimplePath()
 	end
 
 	function Path:Run(target)
-
 		--Non-humanoid handle case
 		if not target and not self._humanoid and self._target then
 			moveToFinished(self, true)
@@ -1813,7 +1812,7 @@ function modules.Core()
 		end
 	end
 
-	function Core:Pathfind(goal, params, visualize, events, override, noHum)
+	function Core:Pathfind(char, goal, params, visualize, events, override, noHum)
 		if not goal then
 			return
 		end
@@ -1821,7 +1820,7 @@ function modules.Core()
 			events = {}
 		end
 
-		local path = self:_createNewPath(self.Client.LocalPlayer.Character, params, override, noHum)
+		local path = self:_createNewPath(char, params, override, noHum)
 		path.Visualize = visualize
 
 		path.Ranned:Connect(function(model, currentWaypoint, nextWaypoint)
@@ -3398,7 +3397,7 @@ function modules.UniversalCommands()
 
 					local function moveTo(part)
 						if useTeleport then
-							self.Modules.core:Pathfind(part, nil, false, {
+							self.Modules.core:Pathfind(speaker.Character, part, nil, false, {
 								OnRan = function(model, nextWaypoint)
 									task.wait()
 									model.PrimaryPart.CFrame = CFrame.new(
@@ -3410,7 +3409,7 @@ function modules.UniversalCommands()
 								end,
 							}, nil, true)
 						else
-							self.Modules.core:Pathfind(part)
+							self.Modules.core:Pathfind(speaker.Character, part)
 						end
 					end
 
@@ -6595,6 +6594,37 @@ function modules.UniversalCommands()
 				end
 				return true, sound
 			end
+			local function makeBulletHole(parent, texture, pos, size, volume, sounds, pitches, visibleTime, fadeTime, normal)
+				local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
+				
+				projectileHandler:VisualizeHitEffect("Normal", parent, pos, normal and normal or Vector3.new(5, 0, 5), Enum.Material.Plastic, {
+					MeleeHitEffectEnabled = true,
+					MeleeHitSoundIDs = sounds,
+					MeleeHitSoundPitchMin = pitches[1] or 1,
+					MeleeHitSoundPitchMax = pitches[2] or 1,
+					MeleeHitSoundVolume = volume or .5,
+					CustomMeleeHitEffect = true,
+
+					MarkerEffectEnabled = true,
+					MarkerEffectSize = size or 30,
+					MarkerEffectTexture = {texture},
+					MarkerEffectVisibleTime = visibleTime,
+					MarkerEffectFadeTime = fadeTime,
+
+					MarkerPartColor = true,
+
+					ChargeAlterTable = {},
+				}, {
+					ChargeLevel = 1,
+					HitEffectFolder = {
+						Custom = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("HitEffect"),
+						HitEffect = parent,
+					}
+				}, true)
+			end
+			local function summonNPC(image, spawnLoc, sounds, pitches, volume)
+				
+			end
 			local kill = function(char)
 				local hum = self.fetchHum(char)
 				local hrp = self.fetchHrp(char)
@@ -6686,8 +6716,8 @@ function modules.UniversalCommands()
 			})
 			
 			self:AddCommand({
-				Name = "SummonSatan",
-				Description = "Summons Satan in the map (SCARY)",
+				Name = "TheCursedScript",
+				Description = "Puts a curse in the map (SCARY)",
 
 				Aliases = {},
 				Arguments = {"CanKill"},
@@ -6697,24 +6727,263 @@ function modules.UniversalCommands()
 					local canKill = self.getBool(args[1])
 
 					-- 変数 --
+					
+					local function freezeSpeaker()
+						local speakerHrp = self.fetchHrp(speaker.Character)
+						
+						if speakerHrp then
+							self.spawn(function()
+								speakerHrp.Anchored = true
+								task.wait(10)
+								speakerHrp.Anchored = false
+							end)
+						end
+					end
+					local function couldKill(boolean, player)
+						if boolean then
+							if player ~= speaker then
+								kill(player.Character)
+							end
+						end
+					end
+					local function spawnNPC(image, pos, target, size, sounds, soundProps, canKill)
+						local speakerHrp = self.fetchHrp(speaker.Character)
+						
+						local fakeChar = Instance.new("Model", workspace.Terrain)
+						local fakePrimary = Instance.new("Part", fakeChar)
+						fakePrimary.Name = "HumanoidRootPart"
+						fakePrimary.Transparency = 1
+						fakePrimary.Anchored = true
+						fakePrimary.CanCollide = false
+						fakeChar.PrimaryPart = fakePrimary
+						
+						local fakePart = Instance.new("Part", workspace.Terrain)
+						fakePart.Name = "__PATHFIND_POINT__"
+						fakePart.Transparency = 1
+						fakePart.CanCollide = false
+						fakePart.Anchored = true
+						
+						if target:IsA("BasePart") then
+							fakePart.CFrame = target.CFrame
+						else
+							fakePart.CFrame = target
+						end
+						
+						fakePrimary.CFrame = pos
+						
+						local function moveTo(part)
+							self.Modules.core:Pathfind(fakeChar, part, nil, false, {
+								OnRan = function(model, nextWaypoint)
+									if fakePart and part then
+										if target and target:IsA("BasePart") then
+											fakePart.CFrame = target.CFrame
+										end
+									end
+									task.wait()
+									if model.PrimaryPart then
+										model.PrimaryPart.CFrame = CFrame.new(
+											nextWaypoint.Position.X,
+											nextWaypoint.Position.Y,
+											nextWaypoint.Position.Z
+										)
+
+										makeBulletHole(speakerHrp, image, model.PrimaryPart.Position + Vector3.new(0, size/2, 0), size, soundProps.Volume, sounds, soundProps.Pitches, .5, 2)
+									end
+									
+								end,
+								OnReached = function()
+									if target and target.Parent:FindFirstChildWhichIsA("Humanoid") then
+										couldKill(canKill, target.Parent)
+									end
+									
+									fakePart:Destroy()
+									fakeChar:Destroy()
+								end,
+							}, nil, true)
+						end
+						
+						moveTo(fakePart)
+					end
+					
 					local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
 					
 					local scaryAudios = {
-						{Id = 9113980680, Volume = 10, Pitch = .5},
-						{Id = 9113980319, Volume = 10, Pitch = .5},
-						{Id = 9113980507, Volume = 10, Pitch = .5},
-						{Id = 124131023712641, Volume = 10, Pitch = .5},
-						{Id = 78692849637332, Volume = 10, Pitch = .5},
-						{Id = 8573647497, Volume = 10, Pitch = .5},
-						{Id = 18929141493, Volume = 10, Pitch = .5},
-						{Id = 6916012342, Volume = 10, Pitch = .5},
-						{Id = 7298287490, Volume = 10, Pitch = .5},
-						{Id = 7816195044, Volume = 10, Pitch = .5},
+						{Id = 8378983497, Volume = 5, Pitch = .5},
+						{Id = 7816195044, Volume = 5, Pitch = .5},
+						{Id = 9043347012, Volume = 5, Pitch = .5},
+						{Id = 9043347462, Volume = 5, Pitch = .5},
+						{Id = 9043347151, Volume = 5, Pitch = .5},
+						{Id = 9043347008, Volume = 5, Pitch = .5},
+						{Id = 92242411256144, Volume = 5, Pitch = .5},
+					}
+					local events = {
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+										
+										local image = 131471658404427
+										local size = 30
+
+										local soundVolume = 10
+										local pitches = {.5, .8}
+										local sounds = {
+											7236490488,
+											5710016194,
+											85271883712040,
+										}
+										
+										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 10, 0))
+
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+											couldKill(canKill, player)
+
+											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+										end
+									end
+								end
+							end
+						},
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+										
+										local image = 82405013773798
+										local size = 20
+										
+										local soundVolume = 10
+										local pitches = {.95, 1}
+										local sounds = {
+											98997940975082,
+										}
+										
+										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
+										
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+											couldKill(canKill, player)
+											
+											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+										end
+									end
+								end
+							end
+						},
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+
+										local image = 73421842386039
+										local size = 20
+
+										local soundVolume = 10
+										local pitches = {.95, 1}
+										local sounds = {
+											198606040,
+										}
+
+										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
+
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+
+											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+										end
+									end
+								end
+							end
+						},
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+
+										local image = 77090959143567
+										local size = 20
+
+										local soundVolume = 10
+										local pitches = {.95, 1}
+										local sounds = {
+											9087778555,
+										}
+
+										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
+
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+
+											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+										end
+									end
+								end
+							end
+						},
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+
+										local image = 134020445314804
+										local size = 20
+
+										local soundVolume = 10
+										local pitches = {.95, 1}
+										local sounds = {
+											9087778555,
+										}
+
+										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
+
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+
+											spawnNPC(image, hrp.CFrame * CFrame.new(50, 0, 50), hrp, size, sounds, {
+												Pitches = pitches,
+												Volume = soundVolume,
+											}, canKill)
+										end
+									end
+								end
+							end
+						},
 					}
 
 					-- 関数 --
 					self.spawn(function()
-						playAudio(9046435309, 5, .8, nil, true, false)
+						playAudio(9046435309, 2, .5, nil, true, false)
 						
 						self.spawn(function()
 							while task.wait() do
@@ -6730,63 +6999,15 @@ function modules.UniversalCommands()
 							while task.wait() do
 								task.wait(math.random(15, 20))
 								
-								self.spawn(function()
-									local users = self.getPlayer(speaker, "random")
-									for index, player in next, users do
-										if player.Character then
-											local hrp = self.fetchHrp(player.Character)
-											local speakerHrp = self.fetchHrp(speaker.Character)
-											
-											if hrp then
-												if speakerHrp then
-													self.spawn(function()
-														speakerHrp.Anchored = true
-														task.wait(10)
-														speakerHrp.Anchored = false
-													end)
-												end
-												if canKill then
-													if player ~= speaker then
-														kill(player.Character)
-													end
-												end
-												
-												projectileHandler:VisualizeHitEffect("Normal", speakerHrp, (hrp.Position + Vector3.new(0,0,15)), Vector3.new(5, 0, 5), Enum.Material.Plastic, {
-													MeleeHitEffectEnabled = true,
-													MeleeHitSoundIDs = {
-														7236490488,
-														5710016194,
-														85271883712040,
-													},
-													MeleeHitSoundPitchMin = .5,
-													MeleeHitSoundPitchMax = .8,
-													MeleeHitSoundVolume = 10,
-													CustomMeleeHitEffect = true,
-
-													MarkerEffectEnabled = true,
-													MarkerEffectSize = 30,
-													MarkerEffectTexture = {105190503785408},
-													MarkerEffectVisibleTime = 5,
-													MarkerEffectFadeTime = 5,
-
-													MarkerPartColor = true,
-
-													ChargeAlterTable = {},
-												}, {
-													ChargeLevel = 1,
-													HitEffectFolder = {
-														Custom = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("HitEffect"),
-														HitEffect = modules.AudioHandler,
-													}
-												}, true)
-											end
-										end
-
-									end
-								end)
+								local chosenEvent = events[math.random(1, #events)]
 								
+								if chosenEvent then
+									self.spawn(function()
+										chosenEvent.Func()
+									end, true)
+								end
 							end
-						end)
+						end, true)
 					end)
 					
 					
