@@ -6597,7 +6597,7 @@ function modules.UniversalCommands()
 			local function makeBulletHole(parent, texture, pos, size, volume, sounds, pitches, visibleTime, fadeTime, normal)
 				local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
 				
-				projectileHandler:VisualizeHitEffect("Normal", parent, pos, normal and normal or Vector3.new(5, 0, 5), Enum.Material.Plastic, {
+				projectileHandler:VisualizeHitEffect("Normal", parent, pos, normal and normal or Vector3.new(0, 0, 5), Enum.Material.Plastic, {
 					MeleeHitEffectEnabled = true,
 					MeleeHitSoundIDs = sounds,
 					MeleeHitSoundPitchMin = pitches[1] or 1,
@@ -6621,9 +6621,6 @@ function modules.UniversalCommands()
 						HitEffect = parent,
 					}
 				}, true)
-			end
-			local function summonNPC(image, spawnLoc, sounds, pitches, volume)
-				
 			end
 			local kill = function(char)
 				local hum = self.fetchHum(char)
@@ -6741,7 +6738,7 @@ function modules.UniversalCommands()
 					end
 					local function couldKill(boolean, player)
 						if boolean then
-							if player ~= speaker then
+							if player ~= self.LocalPlayer then
 								kill(player.Character)
 							end
 						end
@@ -6763,12 +6760,16 @@ function modules.UniversalCommands()
 						fakePart.CanCollide = false
 						fakePart.Anchored = true
 						
+						local tcframe = nil
 						if target:IsA("BasePart") then
-							fakePart.CFrame = target.CFrame else
+							fakePart.CFrame = target.CFrame
+							tcframe = target.CFrame
+						else
+							tcframe = target
 							fakePart.CFrame = target
 						end
 						
-						fakePrimary.CFrame = pos
+						fakeChar:SetPrimaryPartCFrame(pos)
 						
 						local function moveTo(part)
 							self.Modules.core:Pathfind(fakeChar, part, nil, false, {
@@ -6785,8 +6786,19 @@ function modules.UniversalCommands()
 											nextWaypoint.Position.Y,
 											nextWaypoint.Position.Z
 										)
-
-										makeBulletHole(speakerHrp, image, model.PrimaryPart.Position + Vector3.new(0, size/2, 0), size, soundProps.Volume, sounds, soundProps.Pitches, .5, 2)
+										
+										makeBulletHole(
+											speakerHrp,
+											image,
+											model.PrimaryPart.Position + Vector3.new(0, size/2, 0),
+											size,
+											soundProps.Volume,
+											sounds,
+											soundProps.Pitches,
+											.5,
+											2,
+											nextWaypoint.Position
+										)
 									end
 									
 								end,
@@ -6844,7 +6856,18 @@ function modules.UniversalCommands()
 											freezeSpeaker()
 											couldKill(canKill, player)
 
-											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+											makeBulletHole(
+												speakerHrp,
+												image,
+												pos,
+												size,
+												soundVolume,
+												sounds,
+												pitches,
+												visibleTime,
+												fadeTime,
+												hrp.CFrame.LookVector
+											)
 										end
 									end
 								end
@@ -6876,7 +6899,18 @@ function modules.UniversalCommands()
 											freezeSpeaker()
 											couldKill(canKill, player)
 											
-											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+											makeBulletHole(
+												speakerHrp,
+												image,
+												pos,
+												size,
+												soundVolume,
+												sounds,
+												pitches,
+												visibleTime,
+												fadeTime,
+												hrp.CFrame.LookVector
+											)
 										end
 									end
 								end
@@ -6907,7 +6941,60 @@ function modules.UniversalCommands()
 										if hrp then
 											freezeSpeaker()
 
-											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+											makeBulletHole(
+												speakerHrp,
+												image,
+												pos,
+												size,
+												soundVolume,
+												sounds,
+												pitches,
+												visibleTime,
+												fadeTime,
+												hrp.CFrame.LookVector
+											)
+										end
+									end
+								end
+							end
+						},
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+
+										local image = 92607060646628
+										local size = 20
+
+										local soundVolume = 10
+										local pitches = {.95, 1}
+										local sounds = {
+											78081237559117,
+										}
+
+										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
+
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+
+											makeBulletHole(
+												speakerHrp,
+												image,
+												pos,
+												size,
+												soundVolume,
+												sounds,
+												pitches,
+												visibleTime,
+												fadeTime,
+												hrp.CFrame.LookVector
+											)
 										end
 									end
 								end
@@ -6938,7 +7025,18 @@ function modules.UniversalCommands()
 										if hrp then
 											freezeSpeaker()
 
-											makeBulletHole(speakerHrp, image, pos, size, soundVolume, sounds, pitches, visibleTime, fadeTime)
+											makeBulletHole(
+												speakerHrp,
+												image,
+												pos,
+												size,
+												soundVolume,
+												sounds,
+												pitches,
+												visibleTime,
+												fadeTime,
+												hrp.CFrame.LookVector
+											)
 										end
 									end
 								end
@@ -6961,7 +7059,7 @@ function modules.UniversalCommands()
 											9087778555,
 										}
 
-										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
+										local pos = hrp.CFrame * CFrame.new(0, 0, -50)
 
 										local visibleTime = 5
 										local fadeTime = 5
@@ -6969,7 +7067,41 @@ function modules.UniversalCommands()
 										if hrp then
 											freezeSpeaker()
 
-											spawnNPC(image, hrp.CFrame * CFrame.new(50, 0, 50), hrp, size, sounds, {
+											spawnNPC(image, pos, hrp, size, sounds, {
+												Pitches = pitches,
+												Volume = soundVolume,
+											}, canKill)
+										end
+									end
+								end
+							end
+						},
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+
+										local image = 106338210676840
+										local size = 20
+
+										local soundVolume = 10
+										local pitches = {.8, 1}
+										local sounds = {
+											577360152,
+										}
+
+										local pos = hrp.CFrame * CFrame.new(0, 0, -50)
+
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+
+											spawnNPC(image, pos, hrp, size, sounds, {
 												Pitches = pitches,
 												Volume = soundVolume,
 											}, canKill)
@@ -6982,7 +7114,7 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					self.spawn(function()
-						playAudio(9046435309, 2, .5, nil, true, false)
+						playAudio(9046435309, 3.5, .6, nil, true, false)
 						
 						self.spawn(function()
 							while task.wait() do
