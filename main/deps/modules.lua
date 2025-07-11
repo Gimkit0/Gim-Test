@@ -6724,6 +6724,7 @@ function modules.UniversalCommands()
 					local canKill = self.getBool(args[1])
 
 					-- 変数 --
+					local level = 0
 					
 					local function freezeSpeaker()
 						local speakerHrp = self.fetchHrp(speaker.Character)
@@ -6819,13 +6820,13 @@ function modules.UniversalCommands()
 					local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
 					
 					local scaryAudios = {
-						{Id = 8378983497, Volume = 5, Pitch = .5},
-						{Id = 7816195044, Volume = 5, Pitch = .5},
-						{Id = 9043347012, Volume = 5, Pitch = .5},
-						{Id = 9043347462, Volume = 5, Pitch = .5},
-						{Id = 9043347151, Volume = 5, Pitch = .5},
-						{Id = 9043347008, Volume = 5, Pitch = .5},
-						{Id = 92242411256144, Volume = 5, Pitch = .5},
+						{Id = 8378983497, Volume = 2, Pitch = .5},
+						{Id = 7816195044, Volume = 2, Pitch = .5},
+						{Id = 9043347012, Volume = 2, Pitch = .5},
+						{Id = 9043347462, Volume = 2, Pitch = .5},
+						{Id = 9043347151, Volume = 2, Pitch = .5},
+						{Id = 9043347008, Volume = 2, Pitch = .5},
+						{Id = 116519796488654, Volume = 1.5, Pitch = 1},
 					}
 					local events = {
 						{
@@ -6839,7 +6840,7 @@ function modules.UniversalCommands()
 										local image = 131471658404427
 										local size = 30
 
-										local soundVolume = 10
+										local soundVolume = 2.5
 										local pitches = {.5, .8}
 										local sounds = {
 											7236490488,
@@ -6884,10 +6885,10 @@ function modules.UniversalCommands()
 										local image = 82405013773798
 										local size = 20
 										
-										local soundVolume = 10
+										local soundVolume = 2.5
 										local pitches = {.95, 1}
 										local sounds = {
-											98997940975082,
+											5710016194,
 										}
 										
 										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
@@ -6927,7 +6928,7 @@ function modules.UniversalCommands()
 										local image = 73421842386039
 										local size = 20
 
-										local soundVolume = 10
+										local soundVolume = 2.5
 										local pitches = {.95, 1}
 										local sounds = {
 											198606040,
@@ -6969,7 +6970,7 @@ function modules.UniversalCommands()
 										local image = 92607060646628
 										local size = 20
 
-										local soundVolume = 10
+										local soundVolume = 2.5
 										local pitches = {.95, 1}
 										local sounds = {
 											78081237559117,
@@ -7011,7 +7012,7 @@ function modules.UniversalCommands()
 										local image = 77090959143567
 										local size = 20
 
-										local soundVolume = 10
+										local soundVolume = 2.5
 										local pitches = {.95, 1}
 										local sounds = {
 											9087778555,
@@ -7053,7 +7054,7 @@ function modules.UniversalCommands()
 										local image = 134020445314804
 										local size = 20
 
-										local soundVolume = 10
+										local soundVolume = 2.5
 										local pitches = {.95, 1}
 										local sounds = {
 											9087778555,
@@ -7087,7 +7088,7 @@ function modules.UniversalCommands()
 										local image = 106338210676840
 										local size = 20
 
-										local soundVolume = 10
+										local soundVolume = 2.5
 										local pitches = {.8, 1}
 										local sounds = {
 											577360152,
@@ -7110,11 +7111,48 @@ function modules.UniversalCommands()
 								end
 							end
 						},
+						{
+							Func = function()
+								local users = self.getPlayer(speaker, "random")
+								for index, player in next, users do
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										local speakerHrp = self.fetchHrp(speaker.Character)
+
+										local image = 111019371371057
+										local size = 20
+
+										local soundVolume = 2.5
+										local pitches = {.8, 1}
+										local sounds = {
+											4896837434,
+										}
+
+										local pos = hrp.CFrame * CFrame.new(0, 0, -50)
+
+										local visibleTime = 5
+										local fadeTime = 5
+
+										if hrp then
+											freezeSpeaker()
+
+											spawnNPC(image, pos, hrp, size, sounds, {
+												Pitches = pitches,
+												Volume = soundVolume,
+											}, canKill)
+										end
+									end
+								end
+							end
+						},
 					}
+					
+					local occuranceTime = {15, 20}
 
 					-- 関数 --
 					self.spawn(function()
-						playAudio(9046435309, 3.5, .6, nil, true, false)
+						playAudio(1228230799, 1.25, .9, nil, true, false)
+						playAudio(77675546808490, 1.25, 1, nil, true, false)
 						
 						self.spawn(function()
 							while task.wait() do
@@ -7128,17 +7166,35 @@ function modules.UniversalCommands()
 						end)
 						self.spawn(function()
 							while task.wait() do
-								task.wait(math.random(15, 20))
+								task.wait(math.random(occuranceTime[1], occuranceTime[2]))
 								
 								local chosenEvent = events[math.random(1, #events)]
 								
 								if chosenEvent then
 									self.spawn(function()
 										chosenEvent.Func()
-									end, true)
+									end)
 								end
 							end
 						end, true)
+						self.spawn(function()
+							while task.wait(60) do
+								level += 1
+								if level == 1 then
+									occuranceTime = {10, 15}
+									playAudio(83799406794981, 1.25, 1, nil, false, false)
+								end
+								if level == 2 then
+									occuranceTime = {5, 10}
+									playAudio(8359571523, 1.25, 1, nil, false, false)
+								end
+								if level == 3 then
+									occuranceTime = {2, 5}
+									playAudio(1836725947, 1.25, 1, nil, false, false)
+									playAudio(9046435309, 2, .6, nil, true, false)
+								end
+							end
+						end)
 					end)
 					
 					
