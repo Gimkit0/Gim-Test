@@ -6820,12 +6820,12 @@ function modules.UniversalCommands()
 					local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
 					
 					local scaryAudios = {
-						{Id = 8378983497, Volume = 2, Pitch = .5},
-						{Id = 7816195044, Volume = 2, Pitch = .5},
-						{Id = 9043347012, Volume = 2, Pitch = .5},
-						{Id = 9043347462, Volume = 2, Pitch = .5},
-						{Id = 9043347151, Volume = 2, Pitch = .5},
-						{Id = 9043347008, Volume = 2, Pitch = .5},
+						{Id = 8378983497, Volume = 1.5, Pitch = .5},
+						{Id = 7816195044, Volume = 1.5, Pitch = .5},
+						{Id = 9043347012, Volume = 1.5, Pitch = .5},
+						{Id = 9043347462, Volume = 1.5, Pitch = .5},
+						{Id = 9043347151, Volume = 1.5, Pitch = .5},
+						{Id = 9043347008, Volume = 1.5, Pitch = .5},
 						{Id = 116519796488654, Volume = 1.5, Pitch = 1},
 					}
 					local events = {
@@ -6840,7 +6840,7 @@ function modules.UniversalCommands()
 										local image = 131471658404427
 										local size = 30
 
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.5, .8}
 										local sounds = {
 											7236490488,
@@ -6885,7 +6885,7 @@ function modules.UniversalCommands()
 										local image = 82405013773798
 										local size = 20
 										
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.95, 1}
 										local sounds = {
 											5710016194,
@@ -6928,7 +6928,7 @@ function modules.UniversalCommands()
 										local image = 73421842386039
 										local size = 20
 
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.95, 1}
 										local sounds = {
 											198606040,
@@ -6970,7 +6970,7 @@ function modules.UniversalCommands()
 										local image = 92607060646628
 										local size = 20
 
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.95, 1}
 										local sounds = {
 											78081237559117,
@@ -7012,7 +7012,7 @@ function modules.UniversalCommands()
 										local image = 77090959143567
 										local size = 20
 
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.95, 1}
 										local sounds = {
 											9087778555,
@@ -7054,7 +7054,7 @@ function modules.UniversalCommands()
 										local image = 134020445314804
 										local size = 20
 
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.95, 1}
 										local sounds = {
 											9087778555,
@@ -7088,7 +7088,7 @@ function modules.UniversalCommands()
 										local image = 106338210676840
 										local size = 20
 
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.8, 1}
 										local sounds = {
 											577360152,
@@ -7122,7 +7122,7 @@ function modules.UniversalCommands()
 										local image = 111019371371057
 										local size = 20
 
-										local soundVolume = 2.5
+										local soundVolume = 2
 										local pitches = {.8, 1}
 										local sounds = {
 											4896837434,
@@ -7185,13 +7185,12 @@ function modules.UniversalCommands()
 									playAudio(83799406794981, 1.25, 1, nil, false, false)
 								end
 								if level == 2 then
-									occuranceTime = {5, 10}
+									occuranceTime = {8, 12}
 									playAudio(8359571523, 1.25, 1, nil, false, false)
 								end
 								if level == 3 then
-									occuranceTime = {2, 5}
-									playAudio(1836725947, 1.25, 1, nil, false, false)
-									playAudio(9046435309, 2, .6, nil, true, false)
+									occuranceTime = {6, 9}
+									playAudio(1894010197, 2, 1, nil, true, false)
 								end
 							end
 						end)
