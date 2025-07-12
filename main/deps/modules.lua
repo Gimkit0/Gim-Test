@@ -3472,6 +3472,75 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "Commands",
+			Description = "Shows you a list of commands",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				local window = self.Toshokan:Window({
+					TITLE = "Remnants Commands",
+				})
+
+				local commandsPage = window:Page({
+					TITLE = `Commands [{#self.Commands}]`,
+					DESCRIPTION = "Shows you a list of commands",
+					ICON = 2790550615,
+				})
+
+				for index, command in pairs(self.Commands) do
+					local cmdArgsStr = ""
+					local cmdAliases = ""
+					
+					local cmdArgs = command.Arguments
+					
+					for index, val in ipairs(cmdArgs) do
+						for index, val in ipairs(cmdArgs) do
+							cmdArgsStr = " | "
+						end
+						for index, val in ipairs(cmdArgs) do
+							if val then
+								if index == #cmdArgs then
+									cmdArgsStr = cmdArgsStr.."[ "..val.." ]"
+								elseif index ~= #cmdArgs then
+									cmdArgsStr = cmdArgsStr.."[ "..val.." ]".." "
+								end
+							end
+						end
+					end
+					
+					if command.Aliases then
+						for index, val in ipairs(command.Aliases) do
+							cmdAliases = ", "
+						end
+						for index, val in ipairs(command.Aliases) do
+							if val then
+								if index == #command.Aliases then
+									cmdAliases = cmdAliases..val
+								elseif index ~= #command.Aliases then
+									cmdAliases = cmdAliases..val..",".." "
+								end
+							end
+						end
+					end
+					
+					commandsPage:Button({
+						NAME = command.Name..cmdAliases..`<font color='#{self.Theme.SHADED_TEXT:ToHex()}'>`..cmdArgsStr..`</font>`,
+						DESCRIPTION = command.Description,
+						
+						CALLBACK = function() end,
+					})
+				end
+			end,
+		})
 
 		self:AddCommand({
 			Name = "View",
@@ -4115,6 +4184,9 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
+				if not theme then
+					return
+				end
 				self.changeTheme(theme)
 			end,
 		})
@@ -6129,8 +6201,6 @@ function modules.UniversalCommands()
 						obj.LeftSurface = "SmoothNoOutlines"
 						obj.RightSurface = "SmoothNoOutlines"
 						obj.TopSurface = "SmoothNoOutlines"
-					elseif obj:IsA("Decal") then
-						obj.Transparency = 1
 					elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
 						self.spawn(function()
 							obj.Lifetime = NumberRange.new(0)
@@ -6142,7 +6212,6 @@ function modules.UniversalCommands()
 							or obj:IsA('Sparkles')
 							or obj:IsA('Smoke')
 							or obj:IsA('Fire')
-							or obj:IsA('Beam')
 						then
 							task.wait(1/30)
 							obj:Destroy()
@@ -6150,7 +6219,7 @@ function modules.UniversalCommands()
 					end)
 					
 					if slowLoad then
-						task.wait(1/30)
+						task.wait()
 					end
 				end)
 				self.safeChildAdded(self.Services.Lighting, function(inst)
@@ -9777,6 +9846,18 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
+		
+		--[[
+		loadDetection("Car System", function()
+			local detect = self.Services.ReplicatedStorage:FindFirstChild("DeleteCar")
+			if detect then
+				return true
+			end
+		end, function()
+			
+		end)
+		]]
+		
 	end
 
 	return module
