@@ -413,6 +413,14 @@ function CommandBar.new(config, customGlobalName)
 		end
 	end
 	self.changeTheme = function(themeName)
+		for name, theme in pairs(self.Config.UI.THEMES) do
+			if type(name) == "string" then
+				if name:lower() == themeName:lower() then
+					themeName = name
+				end
+			end
+		end
+		
 		self.Theme = self.Config.UI.THEMES[themeName]
 		
 		self.spawn(function()
