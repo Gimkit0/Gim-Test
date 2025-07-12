@@ -28,6 +28,7 @@ function CommandBar.new(config, customGlobalName)
 	local toshokanLib
 	
 	local globalName = customGlobalName or "サーバー管理者コンソール"
+	local deleteGlobalTicks = 0
 	
 	self.deletedGlobal = false
 	
@@ -36,10 +37,14 @@ function CommandBar.new(config, customGlobalName)
 		_G = getgenv()
 	end
 	
-	if _G[globalName] then
-		_G[globalName]:Destroy()
-		self.deletedGlobal = true
-	end
+	repeat
+		deleteGlobalTicks += 1
+		if _G[globalName] then
+			self.deletedGlobal = true
+			_G[globalName]:Destroy()
+		end
+		task.wait()
+	until deleteGlobalTicks >= 3
 	
 	if not game:IsLoaded() then
 		local parent = game:GetService("RunService"):IsStudio()
@@ -78,6 +83,7 @@ function CommandBar.new(config, customGlobalName)
 				9298624201, 126194330110954, 15599178512, 139234302013925,
 				73771248610396, 6788434697, 6837338671, 17277889388, 8455137364,
 				92420395367059, 133792836642389, 80984557377373, 18649596490,
+				8765955188, 76362898301770, 183364845, 7920018625,
 			},
 		},
 		
@@ -1794,6 +1800,7 @@ function CommandBar:Destroy()
 		conn:Disconnect()
 	end
 	self.Connections = nil
+	_G[self.globalName] = nil
 end
 
 function CommandBar:_checkForUpdates()
