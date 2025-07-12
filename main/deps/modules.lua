@@ -3477,7 +3477,7 @@ function modules.UniversalCommands()
 			Name = "Commands",
 			Description = "Shows you a list of commands",
 
-			Aliases = {},
+			Aliases = {"CMDs"},
 			Arguments = {},
 
 			Function = function(speaker, args)
