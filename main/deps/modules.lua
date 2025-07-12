@@ -5448,11 +5448,14 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				self.Services.Lighting.FogEnd = 100000
-				self.Services.Lighting.FogStart = 0
-				self.Services.Lighting.ClockTime = 14
-				self.Services.Lighting.Brightness = 2
-				self.Services.Lighting.GlobalShadows = false
+				self.startLoop("FULLBRIGHT", 0, function()
+					self.Services.Lighting.FogEnd = 100000
+					self.Services.Lighting.FogStart = 100000
+					self.Services.Lighting.ClockTime = 14
+					self.Services.Lighting.Brightness = 2
+					self.Services.Lighting.GlobalShadows = false
+					self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+				end)
 			end,
 		})
 
@@ -5732,6 +5735,27 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "NoClickDetectorLimit",
+			Description = "Disables range limit on click detectors",
+
+			Aliases = {"NoCDL"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.safeChildAdded(workspace, function(clickDetector)
+					if clickDetector:IsA("ClickDetector") then
+						clickDetector["MaxActivationDistance"] = math.huge
+					end
+				end)
+			end,
+		})
 
 		self:AddCommand({
 			Name = "TeleportTool",
@@ -5891,6 +5915,284 @@ function modules.UniversalCommands()
 							end
 							task.wait(.5)
 							self.Modules.core:TeleportToLocation(npcRootPart.CFrame)
+						end
+					end
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "HandleKill",
+			Description = "Gives you a NPC Controller tool",
+
+			Aliases = {"HKill"},
+			Arguments = {"Player", "Range"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local user = args[1]
+				local range = self.getNum(args[2])
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, user)
+				
+				local tool = speaker.Character:FindFirstChildWhichIsA("Tool")
+				local handle = tool and tool:FindFirstChild("Handle")
+
+				-- 関数 --
+				if not firetouchinterest then
+					self:Notify(self.Config.SYSTEM.NAME, `Your exploit doesn't support "firetouchinterest"`, "ERROR", nil, 5)
+					return
+				end
+				
+				if not range then
+					return
+				end
+				
+				while task.wait() do
+					if (not handle) or (not tool) then
+						break
+					end
+					
+					for index, player in next, users do
+						if player ~= speaker and player.Character then
+							local hum = self.fetchHum(player.Character)
+							local root = hum and self.fetchHrp(player.Character)
+
+							if root and hum.Health > 0 and hum:GetState() ~= Enum.HumanoidStateType.Dead and speaker:DistanceFromCharacter(root.Position) <= range then
+								firetouchinterest(handle, root, 1)
+								firetouchinterest(handle, root, 0)
+							end
+						end
+					end
+				end
+				
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "LoopOof",
+			Description = "Constantly plays the oofing sound on players (SERVERSIDED)",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, "all")
+
+				-- 関数 --
+				self.startLoop("OOFING", 0, function()
+					for index, player in next, users do
+						if player.Character and player.Character:FindFirstChild("Head") then
+							for _, sound in pairs(player.Character.Head:GetChildren()) do
+								if sound:IsA'Sound' then
+									sound.Playing = true
+								end
+							end
+						end
+					end
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "UnloopOof",
+			Description = "Stops looping oof",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.stopLoop("OOFING")
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "SigmaSpy",
+			Description = "Gives you Sigma Spy Gui to spy on remotes",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/depthso/Sigma-Spy/refs/heads/main/Main.lua"))()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "SimpleSpy",
+			Description = "Gives you Simple Spy Gui to spy on remotes",
+
+			Aliases = {"SimpleSpyV3"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/simpleSpyV3.lua"))()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "AudioLogger",
+			Description = "Gives you a audio logger gui that spys on audios",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/audioLogger.lua"))()
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "FOV",
+			Description = "Sets your Field of View to [Amount]",
+
+			Aliases = {"FieldOfView"},
+			Arguments = {"Amount"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local amount = self.getNum(args[1])
+
+				-- 変数 --
+
+				-- 関数 --
+				
+				self.Camera.FieldOfView = amount or 70
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "PerformanceMode",
+			Description = "Sets your performance to higher (IF YOUR EXPLOIT OR PC IS TRASH, YOU MIGHT WANNA DO SLOWLOAD)",
+
+			Aliases = {"AntiLag", "BoostFPS", "LowGraphics"},
+			Arguments = {"SlowLoad"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local slowLoad = self.getBool(args[1])
+
+				-- 変数 --
+
+				-- 関数 --
+				local terrain = workspace:FindFirstChildOfClass('Terrain')
+				
+				if terrain then
+					terrain.WaterWaveSize = 0
+					terrain.WaterWaveSpeed = 0
+					terrain.WaterReflectance = 0
+					terrain.WaterTransparency = .5
+				end
+				
+				self.Services.Lighting.GlobalShadows = false
+				self.Services.Lighting.FogEnd = 9e9
+				self.Services.Lighting.FogStart = 9e9
+				
+				if not self.Services.RunService:IsStudio() then
+					settings().Rendering.QualityLevel = 2
+				end
+				
+				self.safeChildAdded(workspace, function(obj)
+					if obj:IsA("BasePart") then
+						obj.Material = "Plastic"
+						obj.Reflectance = 0
+						obj.BackSurface = "SmoothNoOutlines"
+						obj.BottomSurface = "SmoothNoOutlines"
+						obj.FrontSurface = "SmoothNoOutlines"
+						obj.LeftSurface = "SmoothNoOutlines"
+						obj.RightSurface = "SmoothNoOutlines"
+						obj.TopSurface = "SmoothNoOutlines"
+					elseif obj:IsA("Decal") then
+						obj.Transparency = 1
+					elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") then
+						self.spawn(function()
+							obj.Lifetime = NumberRange.new(0)
+						end)
+					end
+					
+					self.spawn(function()
+						if obj:IsA('ForceField')
+							or obj:IsA('Sparkles')
+							or obj:IsA('Smoke')
+							or obj:IsA('Fire')
+							or obj:IsA('Beam')
+						then
+							task.wait(1/30)
+							obj:Destroy()
+						end
+					end)
+					
+					if slowLoad then
+						task.wait(1/30)
+					end
+				end)
+				self.safeChildAdded(self.Services.Lighting, function(inst)
+					if inst:IsA("PostEffect") then
+						inst.Enabled = false
+					end
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "ExpandHitbox",
+			Description = "Expands player's hitbox to [Size] (DEFAULT 1)",
+
+			Aliases = {"Hitbox"},
+			Arguments = {"Size"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local size = self.getNum(args[1])
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, "all")
+
+				-- 関数 --
+				if not size then
+					size = 1
+				end
+				
+				self.startLoop("HITBOX_EXPAND", .5, function()
+					for index, player in next, users do
+						if player.Character and player ~= speaker then
+							local hrp = self.fetchHrp(player.Character)
+							local newSize = Vector3.new(size, size, size)
+							
+							if hrp then
+								if size == 1 then
+									hrp.Size = Vector3.new(2, 1, 1)
+								else
+									hrp.Size = newSize
+								end
+							end
 						end
 					end
 				end)
