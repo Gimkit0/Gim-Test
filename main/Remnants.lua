@@ -183,8 +183,6 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(115, 255, 0),
 					ERROR = Color3.fromRGB(255, 0, 0),
 					INFO = Color3.fromRGB(5, 138, 255),
-					
-					ACRYLIC = true,
 				},
 				Light = {
 					THEME_COLOR = Color3.fromRGB(30, 131, 255),
@@ -230,8 +228,6 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(116, 227, 154),
 					ERROR = Color3.fromRGB(255, 0, 0),
 					INFO = Color3.fromRGB(5, 138, 255),
-					
-					ACRYLIC = true,
 				},
 				Mocha = {
 					THEME_COLOR = Color3.fromRGB(231, 130, 132), -- Rosewater
@@ -277,8 +273,6 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(166, 218, 149), -- Green
 					ERROR = Color3.fromRGB(243, 139, 168), -- Red
 					INFO = Color3.fromRGB(137, 180, 250), -- Blue
-					
-					ACRYLIC = true,
 				},
 				Frappe = {
 					THEME_COLOR = Color3.fromRGB(198, 160, 246), -- Lavender
@@ -324,8 +318,6 @@ function CommandBar.new(config, customGlobalName)
 					SUCCESS = Color3.fromRGB(166, 209, 137), -- Green
 					ERROR = Color3.fromRGB(237, 135, 150), -- Red
 					INFO = Color3.fromRGB(140, 170, 238), -- Blue
-					
-					ACRYLIC = true,
 				},
 			},
 		},
