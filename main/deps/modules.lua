@@ -9241,13 +9241,14 @@ function modules.UniversalCommands()
 			
 			self:AddCommand({
 				Name = "Lag",
-				Description = "Starts lagging the server",
+				Description = "Starts lagging the server (SOME GAMES KILL YOUR CHARACTER RECOMMENEDED BYPASS MODE IF THAT HAPPENS)",
 
 				Aliases = {},
-				Arguments = {},
+				Arguments = {"BypassMode"},
 
 				Function = function(speaker, args)
 					-- 引数 --
+					local bypassMode = self.getBool(args[1])
 
 					-- 変数 --
 					local thread = 1
@@ -9262,7 +9263,7 @@ function modules.UniversalCommands()
 					local tickCount = 0
 
 					local accesoryList = {}
-					for index = 1, #accessoryIds/6 do
+					for index = 1, #accessoryIds/5 do
 						accesoryList[index] = {
 							AssetId = accessoryIds[index].Id,
 							AccessoryType = accessoryIds[index].AccessoryType
@@ -9282,7 +9283,16 @@ function modules.UniversalCommands()
 									if hrp then
 										hrp.Anchored = true
 									end
-									speaker.Character:Destroy()
+									
+									if not bypassMode then
+										speaker.Character:Destroy()
+									else
+										for _, accessory in ipairs(speaker.Character:GetChildren()) do
+											if accessory:IsA("Accessory") then
+												accessory:Destroy()
+											end
+										end
+									end
 								end
 
 								for i = 1, thread do
@@ -9319,6 +9329,14 @@ function modules.UniversalCommands()
 										ProportionScale = 0,
 										LeftLeg = 0
 									})
+								end
+								
+								if bypassMode and speaker.Character then
+									for _, accessory in ipairs(speaker.Character:GetChildren()) do
+										if accessory:IsA("Accessory") then
+											accessory:Destroy()
+										end
+									end
 								end
 							end
 
