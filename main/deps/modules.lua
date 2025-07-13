@@ -9251,6 +9251,7 @@ function modules.UniversalCommands()
 
 					-- 変数 --
 					local thread = 1
+					local tickEnd = 35
 
 					local accessoryIds
 					if self.Services.RunService:IsStudio() then
@@ -9270,20 +9271,58 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 
-					self.startLoop("LAG", .5, function()
-						if speaker.Character then
-							local hrp = self.fetchHrp(speaker.Character)
-							if hrp then
-								hrp.Anchored = true
-							end
-							speaker.Character:Destroy()
-						end
+					self.spawn(function()
+						self.Services.RunService.Heartbeat:Connect(function()
+							tickCount += 1
+							if tickCount >= tickEnd then
+								tickCount = 0
 
-						for i = 1, thread do
-							transform({
-								Accessories = accesoryList,
-							})
-						end
+								if speaker.Character then
+									local hrp = self.fetchHrp(speaker.Character)
+									if hrp then
+										hrp.Anchored = true
+									end
+									speaker.Character:Destroy()
+								end
+
+								for i = 1, thread do
+									applyOutfit:FireServer({
+										WalkAnimation = 0,
+										RunAnimation = 0,
+										RightLegColor = BrickColor.random().Color,
+										MoodAnimation = 0,
+										LeftLegColor = BrickColor.random().Color,
+										JumpAnimation = 0,
+										RightLeg = 0,
+										BodyTypeScale = 0,
+										ClimbAnimation = 0,
+										LeftArmColor = BrickColor.random().Color,
+										SwimAnimation = 0,
+										Pants = 0,
+										RightArmColor = BrickColor.random().Color,
+										Accessories = accesoryList,
+										WidthScale = 1,
+										FallAnimation = 0,
+										RightArm = 0,
+										DepthScale = 1,
+										Head = 16580493236,
+										GraphicTShirt = 0,
+										Face = 0,
+										Shirt = 0,
+										Torso = 16580491126,
+										HeadColor = BrickColor.random().Color,
+										TorsoColor = BrickColor.random().Color,
+										IdleAnimation = 0,
+										LeftArm = 0,
+										HeadScale = 1,
+										HeightScale = 1,
+										ProportionScale = 0,
+										LeftLeg = 0
+									})
+								end
+							end
+
+						end)
 					end)
 				end,
 			})
