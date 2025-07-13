@@ -5225,7 +5225,7 @@ function modules.UniversalCommands()
 			Description = "Stops you from dancing/jerking off",
 
 			Aliases = {"Unmasterbathe", "UnjerkOff"},
-			Arguments = {"Speed"},
+			Arguments = {},
 
 			Function = function(speaker, args)
 				-- 引数 --
@@ -6267,6 +6267,51 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "AntiFling",
+			Description = "Disables your collision with other players to prevent flinging",
+
+			Aliases = {"PreventFlinging"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				
+				self.startLoop("ANTI_FLING", 1, function()
+					for _, player in pairs(self.Services.Players:GetPlayers()) do
+						if player ~= speaker and player.Character then
+							for _, obj in pairs(player.Character:GetDescendants()) do
+								if obj:IsA("BasePart") then
+									obj.CanCollide = false
+								end
+							end
+						end
+					end
+				end)
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "UnantiFling",
+			Description = "Disables anti fling",
+
+			Aliases = {"PreventFlinging"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				self.stopLoop("ANTI_FLING")
+			end,
+		})
 
 		self:AddCommand({
 			Name = "BToolsDetection",
@@ -6855,6 +6900,7 @@ function modules.UniversalCommands()
 			local equippedTool = nil
 			local deathSoundConn = nil
 			local audioDisruptConn = nil
+			local projectileHandler = nil
 
 			local differentVersion = false
 			local notified = false
@@ -6966,7 +7012,9 @@ function modules.UniversalCommands()
 				return true, sound
 			end
 			local function makeBulletHole(parent, texture, pos, size, volume, sounds, pitches, visibleTime, fadeTime, normal)
-				local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
+				if not projectileHandler then
+					projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
+				end
 				
 				projectileHandler:VisualizeHitEffect("Normal", parent, pos, normal and normal or Vector3.new(0, 0, 5), Enum.Material.Plastic, {
 					MeleeHitEffectEnabled = true,
@@ -8732,6 +8780,171 @@ function modules.UniversalCommands()
 			local applyEvent = remotes:WaitForChild("CatalogOnApplyToRealHumanoid")
 			local applyOutfit = remotes:WaitForChild("CatalogOnApplyOutfit")
 			
+			local function transform(outfitInfo)
+				outfitInfo = self.validateConfig({
+					Animations = {
+						Idle = 0,
+						Walk = 0,
+						Climb = 0,
+						Run = 0,
+						Jump = 0,
+						Mood = 0,
+						Fall = 0,
+						Swim = 0,
+					},
+					Clothing = {
+						Shirt = 0,
+						Pants = 0,
+						TShirt = 0,
+					},
+					Body = {
+						Face = 0,
+						LeftArm = {
+							Color = BrickColor.White().Color,
+							Mesh = 0,
+						},
+						RightArm = {
+							Color = BrickColor.White().Color,
+							Mesh = 0,
+						},
+						LeftLeg = {
+							Color = BrickColor.White().Color,
+							Mesh = 0,
+						},
+						RightLeg = {
+							Color = BrickColor.White().Color,
+							Mesh = 0,
+						},
+						Torso = {
+							Color = BrickColor.White().Color,
+							Mesh = 0,
+						},
+						Head = {
+							Color = BrickColor.White().Color,
+							Mesh = 0,
+						},
+						Scale = {
+							BodyType = 0,
+							Width = 1,
+							Depth = 1,
+							Proportion = 0,
+							Head = 1,
+							Height = 1,
+						}
+					},
+					Accessories = {
+						{
+							AssetId = 0,
+							AccessoryType = Enum.AccessoryType.Hat,
+						},
+					},
+				}, outfitInfo or {})
+				
+				applyOutfit:FireServer({
+					WalkAnimation = outfitInfo.Animations.Walk,
+					RunAnimation = outfitInfo.Animations.Run,
+					RightLegColor = outfitInfo.Body.RightLeg.Color,
+					MoodAnimation = outfitInfo.Animations.Mood,
+					LeftLegColor = outfitInfo.Body.LeftLeg.Color,
+					JumpAnimation = outfitInfo.Animations.Jump,
+					RightLeg = outfitInfo.Body.RightLeg.Mesh,
+					BodyTypeScale = outfitInfo.Body.Scale.BodyType,
+					ClimbAnimation = outfitInfo.Animations.Climb,
+					LeftArmColor = outfitInfo.Body.LeftArm.Color,
+					SwimAnimation = outfitInfo.Animations.Swim,
+					Pants = outfitInfo.Clothing.Pants,
+					RightArmColor = outfitInfo.Body.RightArm.Color,
+					Accessories = outfitInfo.Accessories,
+					WidthScale = outfitInfo.Body.Scale.Width,
+					FallAnimation = outfitInfo.Animations.Fall,
+					RightArm = outfitInfo.Body.RightArm.Mesh,
+					DepthScale = outfitInfo.Body.Scale.Depth,
+					Head = outfitInfo.Body.Head.Mesh,
+					GraphicTShirt = outfitInfo.Clothing.TShirt,
+					Face = outfitInfo.Body.Face,
+					Shirt = outfitInfo.Clothing.Shirt,
+					Torso = outfitInfo.Body.Torso.Mesh,
+					HeadColor = outfitInfo.Body.Head.Color,
+					TorsoColor = outfitInfo.Body.Torso.Color,
+					IdleAnimation = outfitInfo.Animations.Idle,
+					LeftArm = outfitInfo.Body.LeftArm.Mesh,
+					HeadScale = outfitInfo.Body.Scale.Head,
+					HeightScale = outfitInfo.Body.Scale.Height,
+					ProportionScale = outfitInfo.Body.Scale.Proportion,
+					LeftLeg = outfitInfo.Body.LeftLeg.Mesh
+				})
+			end
+			
+			local function character(char)
+				if not char then
+					return
+				end
+
+				local hum
+				local humDesc
+				if char:IsA("Model") then
+					hum = self.fetchHum(char)
+					if not hum then
+						return
+					end
+				else
+					humDesc = char
+				end
+
+				for index = 1, 3 do
+					local desc = humDesc and humDesc or hum:GetAppliedDescription()
+					local applied = {
+						Accessories = {},
+					}
+
+					local propertiesToApply = {
+						"Face", "Pants", "Shirt", "GraphicTShirt",
+						"Head", "Torso", "LeftArm", "RightArm", "LeftLeg", "RightLeg",
+						"ClimbAnimation", "FallAnimation", "IdleAnimation", "JumpAnimation",
+						"RunAnimation", "SwimAnimation", "WalkAnimation"
+					}
+
+					for _, prop in ipairs(propertiesToApply) do
+						local assetId = desc[prop]
+						if assetId and tonumber(assetId) then
+							applied[prop] = assetId
+						end
+					end
+
+					local accessories = desc:GetAccessories(true)
+					for index, accessory in ipairs(accessories) do
+						applied.Accessories[index] = accessory
+					end
+
+					applyOutfit:FireServer(applied)
+
+					task.wait(.1)
+
+					local bodyColors = {
+						HeadColor = desc.HeadColor,
+						LeftArmColor = desc.LeftArmColor,
+						RightArmColor = desc.RightArmColor,
+						LeftLegColor = desc.LeftLegColor,
+						RightLegColor = desc.RightLegColor,
+						TorsoColor = desc.TorsoColor,
+					}
+					local bodyScales = {
+						HeightScale = desc.HeightScale,
+						DepthScale = desc.DepthScale,
+						WidthScale = desc.WidthScale,
+						HeadScale = desc.HeadScale,
+						ProportionScale = desc.ProportionScale,
+						BodyTypeScale = desc.BodyTypeScale,
+					}
+					applyEvent:FireServer({
+						BodyScale = bodyScales
+					})
+					applyEvent:FireServer({
+						BodyColor = bodyColors
+					})
+				end
+			end
+			
 			self:AddCommand({
 				Name = "Naked",
 				Description = "Makes you naked",
@@ -8768,28 +8981,18 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local tickCount = 0
 					local hue = 0
 
 					-- 関数 --
-					if rainbowConn then
-						rainbowConn:Disconnect()
-						rainbowConn = nil
-					end
 					
-					rainbowConn = self.Services.RunService.Heartbeat:Connect(function()
-						tickCount += 1
-						if tickCount >= 3 then
-							tickCount = 0
-							
-							local color = Color3.fromHSV(hue, 1, 1)
-							
-							applyEvent:FireServer({
-								BodyColor = color
-							})
-							
-							hue = (hue + 0.01) % 1
-						end
+					self.startLoop("RAINBOWIFY", .1, function()
+						local color = Color3.fromHSV(hue, 1, 1)
+
+						applyEvent:FireServer({
+							BodyColor = color
+						})
+
+						hue = (hue + 0.01) % 1
 					end)
 				end,
 			})
@@ -8807,10 +9010,7 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					if rainbowConn then
-						rainbowConn:Disconnect()
-						rainbowConn = nil
-					end
+					self.stopLoop("RAINBOWIFY")
 				end,
 			})
 			
@@ -8825,29 +9025,18 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-					local tickCount = 0
 
 					-- 関数 --
-					if glitchConn then
-						glitchConn:Disconnect()
-						glitchConn = nil
-					end
-					
-					glitchConn = self.Services.RunService.Heartbeat:Connect(function()
-						tickCount += 1
-						if tickCount >= 2 then
-							tickCount = 0
-							
-							applyEvent:FireServer({
-								BodyScale = {
-									BodyTypeScale = math.random(0, 2),
-									HeadScale = math.random(0, 2),
-									HeightScale = math.random(0, 2),
-									WidthScale = math.random(0, 2),
-									ProportionScale = math.random(0, 2)
-								}
-							})
-						end
+					self.startLoop("GLITCHIFY", .1, function()
+						applyEvent:FireServer({
+							BodyScale = {
+								BodyTypeScale = math.random(0, 2),
+								HeadScale = math.random(0, 2),
+								HeightScale = math.random(0, 2),
+								WidthScale = math.random(0, 2),
+								ProportionScale = math.random(0, 2)
+							}
+						})
 					end)
 				end,
 			})
@@ -8865,10 +9054,7 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					if glitchConn then
-						glitchConn:Disconnect()
-						glitchConn = nil
-					end
+					self.stopLoop("GLITCHIFY")
 				end,
 			})
 			
@@ -8885,43 +9071,22 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					applyOutfit:FireServer({
-						WalkAnimation = 0,
-						RunAnimation = 0,
-						RightLegColor = BrickColor.Yellow().Color,
-						MoodAnimation = 0,
-						LeftLegColor = BrickColor.Yellow().Color,
-						JumpAnimation = 0,
-						RightLeg = 0,
-						BodyTypeScale = 0,
-						ClimbAnimation = 0,
-						LeftArmColor = BrickColor.Yellow().Color,
-						SwimAnimation = 0,
-						Pants = 16250801316,
-						RightArmColor = BrickColor.Yellow().Color,
+					transform({
+						Clothing = {
+							Shirt = 7157559030,
+							Pants = 16250801316,
+						},
 						Accessories = {
 							{
 								AssetId = 24112667,
 								AccessoryType = Enum.AccessoryType.Hat
 							},
 						},
-						WidthScale = 1,
-						FallAnimation = 0,
-						RightArm = 0,
-						DepthScale = 1,
-						Head = 0,
-						GraphicTShirt = 0,
-						Face = 0,
-						Shirt = 7157559030,
-						Torso = 0,
-						HeadColor = BrickColor.Yellow().Color,
-						TorsoColor = BrickColor.Yellow().Color,
-						IdleAnimation = 0,
-						LeftArm = 0,
-						HeadScale = 1,
-						HeightScale = 1,
-						ProportionScale = 0,
-						LeftLeg = 0
+						Body = {
+							Head = {
+								Mesh = 15093053680,
+							},
+						},
 					})
 				end,
 			})
@@ -8939,7 +9104,7 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					applyOutfit:FireServer({
+					transform({
 						Accessories = {
 							{
 								AssetId = 24112667,
@@ -8972,68 +9137,56 @@ function modules.UniversalCommands()
 				Function = function(speaker, args)
 					local user = args[1]
 					local users = self.getPlayer(speaker, user)
+					
+					local foundPlayer = false
 
 					for _, player in users do
-						if not player.Character then
-							return
+						foundPlayer = true
+						character(player.Character)
+					end
+					if not foundPlayer then
+						local userId
+						if tonumber(user) then
+							userId = tonumber(user)
+						else
+							local success, result = pcall(function()
+								return self.Services.Players:GetUserIdFromNameAsync(user)
+							end)
+							if success then
+								userId = result
+							end
 						end
 
-						local hum = self.fetchHum(player.Character)
-						if not hum then
-							return
+						if userId then
+							local successDesc, desc = pcall(function()
+								return self.Services.Players:GetHumanoidDescriptionFromUserId(userId)
+							end)
+
+							if successDesc and desc then
+								character(desc)
+							end
 						end
-						
-						for index = 1, 3 do
-							local desc = hum:GetAppliedDescription()
-							local applied = {
-								Accessories = {},
-							}
+					end
+				end
+			})
+			
+			self:AddCommand({
+				Name = "Uncharacter",
+				Description = "Changes back to your avatar",
 
-							local propertiesToApply = {
-								"Face", "Pants", "Shirt", "GraphicTShirt",
-								"Head", "Torso", "LeftArm", "RightArm", "LeftLeg", "RightLeg",
-								"ClimbAnimation", "FallAnimation", "IdleAnimation", "JumpAnimation",
-								"RunAnimation", "SwimAnimation", "WalkAnimation"
-							}
+				Aliases = {"Unchar"},
+				Arguments = {},
 
-							for _, prop in ipairs(propertiesToApply) do
-								local assetId = desc[prop]
-								if assetId and tonumber(assetId) then
-									applied[prop] = assetId
-								end
-							end
+				Function = function(speaker, args)
+					local userId = speaker.UserId
 
-							local accessories = desc:GetAccessories(true)
-							for index, accessory in ipairs(accessories) do
-								applied.Accessories[index] = accessory
-							end
+					if userId then
+						local successDesc, desc = pcall(function()
+							return self.Services.Players:GetHumanoidDescriptionFromUserId(userId)
+						end)
 
-							applyOutfit:FireServer(applied)
-
-							task.wait(.1)
-
-							local bodyColors = {
-								HeadColor = desc.HeadColor,
-								LeftArmColor = desc.LeftArmColor,
-								RightArmColor = desc.RightArmColor,
-								LeftLegColor = desc.LeftLegColor,
-								RightLegColor = desc.RightLegColor,
-								TorsoColor = desc.TorsoColor,
-							}
-							local bodyScales = {
-								HeightScale = desc.HeightScale,
-								DepthScale = desc.DepthScale,
-								WidthScale = desc.WidthScale,
-								HeadScale = desc.HeadScale,
-								ProportionScale = desc.ProportionScale,
-								BodyTypeScale = desc.BodyTypeScale,
-							}
-							applyEvent:FireServer({
-								BodyScale = bodyScales
-							})
-							applyEvent:FireServer({
-								BodyColor = bodyColors
-							})
+						if successDesc and desc then
+							character(desc)
 						end
 					end
 				end
@@ -9051,15 +9204,12 @@ function modules.UniversalCommands()
 
 					-- 変数 --
 					local thread = 1
-					local tickEnd = 35
 					
 					local accessoryIds
 					if self.Services.RunService:IsStudio() then
 						accessoryIds = require(script.Accessories) else
 						accessoryIds = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/accessories.lua"))()
 					end
-					
-					local tickCount = 0
 
 					local accesoryList = {}
 					for index, value in ipairs(accessoryIds) do
@@ -9071,58 +9221,20 @@ function modules.UniversalCommands()
 					
 					-- 関数 --
 					
-					self.spawn(function()
-						self.Services.RunService.Heartbeat:Connect(function()
-							tickCount += 1
-							if tickCount >= tickEnd then
-								tickCount = 0
-								
-								if speaker.Character then
-									local hrp = self.fetchHrp(speaker.Character)
-									if hrp then
-										hrp.Anchored = true
-									end
-									speaker.Character:Destroy()
-								end
-								
-								for i = 1, thread do
-									applyOutfit:FireServer({
-										WalkAnimation = 0,
-										RunAnimation = 0,
-										RightLegColor = BrickColor.random().Color,
-										MoodAnimation = 0,
-										LeftLegColor = BrickColor.random().Color,
-										JumpAnimation = 0,
-										RightLeg = 0,
-										BodyTypeScale = 0,
-										ClimbAnimation = 0,
-										LeftArmColor = BrickColor.random().Color,
-										SwimAnimation = 0,
-										Pants = 0,
-										RightArmColor = BrickColor.random().Color,
-										Accessories = accesoryList,
-										WidthScale = 1,
-										FallAnimation = 0,
-										RightArm = 0,
-										DepthScale = 1,
-										Head = 16580493236,
-										GraphicTShirt = 0,
-										Face = 0,
-										Shirt = 0,
-										Torso = 16580491126,
-										HeadColor = BrickColor.random().Color,
-										TorsoColor = BrickColor.random().Color,
-										IdleAnimation = 0,
-										LeftArm = 0,
-										HeadScale = 1,
-										HeightScale = 1,
-										ProportionScale = 0,
-										LeftLeg = 0
-									})
-								end
+					self.startLoop("CRASH", .5, function()
+						if speaker.Character then
+							local hrp = self.fetchHrp(speaker.Character)
+							if hrp then
+								hrp.Anchored = true
 							end
-							
-						end)
+							speaker.Character:Destroy()
+						end
+
+						for i = 1, thread do
+							transform({
+								Accessories = accesoryList,
+							})
+						end
 					end)
 				end,
 			})
@@ -9139,7 +9251,6 @@ function modules.UniversalCommands()
 
 					-- 変数 --
 					local thread = 1
-					local tickEnd = 35
 
 					local accessoryIds
 					if self.Services.RunService:IsStudio() then
@@ -9159,58 +9270,20 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 
-					self.spawn(function()
-						self.Services.RunService.Heartbeat:Connect(function()
-							tickCount += 1
-							if tickCount >= tickEnd then
-								tickCount = 0
-
-								if speaker.Character then
-									local hrp = self.fetchHrp(speaker.Character)
-									if hrp then
-										hrp.Anchored = true
-									end
-									speaker.Character:Destroy()
-								end
-
-								for i = 1, thread do
-									applyOutfit:FireServer({
-										WalkAnimation = 0,
-										RunAnimation = 0,
-										RightLegColor = BrickColor.random().Color,
-										MoodAnimation = 0,
-										LeftLegColor = BrickColor.random().Color,
-										JumpAnimation = 0,
-										RightLeg = 0,
-										BodyTypeScale = 0,
-										ClimbAnimation = 0,
-										LeftArmColor = BrickColor.random().Color,
-										SwimAnimation = 0,
-										Pants = 0,
-										RightArmColor = BrickColor.random().Color,
-										Accessories = accesoryList,
-										WidthScale = 1,
-										FallAnimation = 0,
-										RightArm = 0,
-										DepthScale = 1,
-										Head = 16580493236,
-										GraphicTShirt = 0,
-										Face = 0,
-										Shirt = 0,
-										Torso = 16580491126,
-										HeadColor = BrickColor.random().Color,
-										TorsoColor = BrickColor.random().Color,
-										IdleAnimation = 0,
-										LeftArm = 0,
-										HeadScale = 1,
-										HeightScale = 1,
-										ProportionScale = 0,
-										LeftLeg = 0
-									})
-								end
+					self.startLoop("LAG", .5, function()
+						if speaker.Character then
+							local hrp = self.fetchHrp(speaker.Character)
+							if hrp then
+								hrp.Anchored = true
 							end
+							speaker.Character:Destroy()
+						end
 
-						end)
+						for i = 1, thread do
+							transform({
+								Accessories = accesoryList,
+							})
+						end
 					end)
 				end,
 			})
