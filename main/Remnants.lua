@@ -642,11 +642,23 @@ function CommandBar.new(config, customGlobalName)
 		return broken
 	end
 	self.validateConfig = function(default, newConfig)
-		for i, v in pairs(default) do
-			if newConfig[i] == nil then
-				newConfig[i] = v
+		if not newConfig then
+			newConfig = {}
+		end
+
+		for key, defaultValue in pairs(default) do
+			local newValue = newConfig[key]
+
+			if type(defaultValue) == "table" then
+				if type(newValue) ~= "table" then
+					newValue = {}
+				end
+				newConfig[key] = self.validateConfig(defaultValue, newValue)
+			elseif newValue == nil then
+				newConfig[key] = defaultValue
 			end
 		end
+
 		return newConfig
 	end
 	self.validateType = function(data, vtype)
