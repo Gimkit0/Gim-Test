@@ -3465,6 +3465,10 @@ function modules.UniversalCommands()
 
 
 					-- 関数 --
+					if speaker.Character then
+						speaker.Character:Destroy()
+					end
+					
 					for index = 1, 25 do
 						self.spawn(function()
 							while task.wait() do
