@@ -9193,6 +9193,39 @@ function modules.UniversalCommands()
 			})
 			
 			self:AddCommand({
+				Name = "Invisible",
+				Description = "Makes your character invisible",
+
+				Aliases = {"Unchar"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					transform({
+						Body = {
+							Head = {
+								Mesh = 134082579,
+							},
+							Torso = {
+								Mesh = 15312911732,
+							},
+							LeftArm = {
+								Mesh = 14532583469,
+							},
+							RightArm = {
+								Mesh = 14532583477,
+							},
+							LeftLeg = {
+								Mesh = 14532583483,
+							},
+							RightLeg = {
+								Mesh = 14532583517,
+							},
+						}
+					})
+				end
+			})
+			
+			self:AddCommand({
 				Name = "Crash",
 				Description = "Starts crashing the server",
 
