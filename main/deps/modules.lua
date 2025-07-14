@@ -3424,6 +3424,57 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
+		
+		--// Military RP \\--
+		loadSupportedGame(6022383883, function()
+			local configs = self.Services.ReplicatedStorage:WaitForChild("Configuration")
+			local coreSystems = configs:WaitForChild("Core Systems")
+			local gameplayMechs = configs:WaitForChild("Gameplay Mechanics")
+			local dataStore = coreSystems:WaitForChild("Datastore")
+			
+			self:AddCommand({
+				Name = "InfiniteMoney",
+				Description = "Gives you infinite money and gems",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+
+					-- 関数 --
+					dataStore.GiveCurrency:FireServer({ Type = "Money", Amount = 9e9 })
+					dataStore.GiveCurrency:FireServer({ Type = "Diamond", Amount = 9e9 })
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "Lag",
+				Description = "Lags the server badly",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+
+					-- 関数 --
+					for index = 1, 25 do
+						self.spawn(function()
+							while task.wait() do
+								gameplayMechs.EquipAccessory:FireServer() 
+							end
+						end)
+					end
+				end,
+			})
+		end)
 
 		--------------------------------------------------------------------
 		--[[							END								]]--
