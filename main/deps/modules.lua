@@ -7295,6 +7295,14 @@ function modules.UniversalCommands()
 									
 									killNearbyPlayers(model.PrimaryPart.Position)
 								end,
+								OnError = function()
+									fakeChar:Destroy()
+									fakePart:Destroy()
+								end,
+								OnReached = function()
+									fakeChar:Destroy()
+									fakePart:Destroy()
+								end,
 							}, nil, true)
 						end
 						
