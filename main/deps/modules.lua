@@ -7249,6 +7249,21 @@ function modules.UniversalCommands()
 						fakeChar:SetPrimaryPartCFrame(pos)
 						
 						local function moveTo(part)
+							local function killNearbyPlayers(centerPos: Vector3)
+								for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+									local char = player.Character
+									if char then
+										local hum = self.fetchHum(char)
+										local hrp = self.fetchHrp(char)
+										if hum and hrp and hum.Health > 0 then
+											if (hrp.Position - centerPos).Magnitude <= 8 then
+												couldKill(canKill, player)
+											end
+										end
+									end
+								end
+							end
+							
 							self.Modules.core:Pathfind(fakeChar, part, nil, false, {
 								OnRan = function(model, nextWaypoint)
 									if fakePart and part then
@@ -7278,14 +7293,7 @@ function modules.UniversalCommands()
 										)
 									end
 									
-								end,
-								OnReached = function()
-									if target and target.Parent:FindFirstChildWhichIsA("Humanoid") then
-										couldKill(canKill, target.Parent)
-									end
-									
-									fakePart:Destroy()
-									fakeChar:Destroy()
+									killNearbyPlayers(model.PrimaryPart.Position)
 								end,
 							}, nil, true)
 						end
