@@ -8819,16 +8819,18 @@ function modules.UniversalCommands()
 					local users = self.getPlayer(speaker, "all")
 
 					-- 関数 --
-					for i = 1, 250000 do
-						for index, player in next, users do
-							self.spawn(function()
-								if player.Character then
-									local hrp = self.fetchHrp(player.Character)
-									if hrp then
-										remotes.spawnDummy:FireServer(hrp.Position)
+					while task.wait(.1) do
+						for i = 1, 100 do
+							for index, player in next, users do
+								self.spawn(function()
+									if player.Character then
+										local hrp = self.fetchHrp(player.Character)
+										if hrp then
+											remotes.spawnDummy:FireServer(hrp.Position)
+										end
 									end
-								end
-							end)
+								end)
+							end
 						end
 					end
 				end,
