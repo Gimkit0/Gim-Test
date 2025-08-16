@@ -1892,20 +1892,22 @@ function modules.Core()
 		if self.Storage.valid_data.sounds[assetId] then
 			return false, "Sound is already valid"
 		end
-		
+
 		local success, result = pcall(function()
 			return self.Client.Services.MarketplaceService:GetProductInfo(assetId)
 		end)
 
 		if not success then
-			return true, "Error retrieving asset info: " .. tostring(result)
+			return false, "Error retrieving asset info: " .. tostring(result)
 		end
 		if result.AssetTypeId == 0 or (not result.IsPublicDomain) then
 			return true, "Invalid asset type (possibly banned)"
 		end
-		
-		self.Storage.valid_data.sounds[assetId] = true
-		
+
+		if success then
+			self.Storage.valid_data.sounds[assetId] = true
+		end
+
 		return false, result
 	end
 
