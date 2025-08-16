@@ -9862,7 +9862,32 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					for index, player in next, users do
-						damage(player.Character, -math.huge)
+						self.startLoop(`GOD_PLAYER_{player.UserId}`, .35, function()
+							damage(player.Character, -math.huge)
+						end)
+					end
+				end,
+			})
+			self:AddCommand({
+				Name = "Ungod",
+				Description = "Stops giving the player god mode",
+
+				Aliases = {},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						self.stopLoop(`GOD_PLAYER_{player.UserId}`)
+						self.spawn(function()
+							damage(player.Character, math.huge)
+						end)
 					end
 				end,
 			})
