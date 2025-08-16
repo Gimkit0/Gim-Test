@@ -9362,6 +9362,8 @@ function modules.UniversalCommands()
 						events.Hit:FireServer(pos, hit, extraVector, material, config, accessId)
 						events.LauncherHit:FireServer(pos, hit, extraVector, accessId)
 					elseif getACSVersion() == "1.2.8 R15" then
+						config.ExplosionDamagesTerrain = config.ExPressure == 5000000 and true or false
+						config.TerrainDamageRadius = config.ExpRadius
 						events.Hit2:FireServer({CFrame = CFrame.new(0,0,0)}, CFrame.new(pos), material, config, accessId)
 					elseif getACSVersion() == "2.0.1" then
 						if events:FindFirstChild("HitEffect") and events:FindFirstChild("Hit") then
