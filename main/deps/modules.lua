@@ -1220,7 +1220,7 @@ function modules.Core()
 
 				animations = {},
 			},
-			
+
 			valid_data = {
 				sounds = {},
 			},
@@ -1858,7 +1858,7 @@ function modules.Core()
 
 	function Core:PlayFakeSound(musicId, volume, pitch, parent)
 		local sound = nil
-		
+
 		if not parent then
 			parent = game.SoundService
 		end
@@ -1873,7 +1873,7 @@ function modules.Core()
 			repeat
 				task.wait()
 			until fakeSound.TimeLength ~= 0
-			
+
 			sound = fakeSound
 
 			fakeSound:Play()
@@ -1882,9 +1882,9 @@ function modules.Core()
 				fakeSound:Destroy()
 			end)
 		end)
-		
+
 		repeat task.wait() until sound
-		
+
 		return sound
 	end
 
@@ -2686,7 +2686,7 @@ function modules.UniversalCommands()
 
 	function module.new(self)
 		local oldRequire = require
-		
+
 		local sethidden
 		local gethidden
 		local queueteleport
@@ -2732,7 +2732,7 @@ function modules.UniversalCommands()
 
 			esp_instances = {},
 		}
-		
+
 		local supportedGames = {}
 
 		if not self.Services.RunService:IsStudio() then
@@ -2777,29 +2777,29 @@ function modules.UniversalCommands()
 				self:Notify(self.Config.SYSTEM.NAME, `Game detected: <b>{gameName}</b> new commands loaded or modified`, "INFO", nil, 5)
 			end)
 		end
-		
+
 		local function getData(url)
 			if type(url) ~= "string" then
 				return
 			end
-			
+
 			local successInfo, result = pcall(function()
 				local response = self.Services.HttpService:GetAsync(url)
 				local data = self.Services.HttpService:JSONDecode(response)
-				
+
 				return data
 			end)
-			
+
 			if successInfo then
 				return result
 			else
 				return false
 			end
 		end
-		
+
 		local function addSupportedTable(placeId)
 			local data = nil
-			
+
 			local failAttempts = 0
 			local function getGameMetadata(placeId)
 				local success, info = pcall(function()
@@ -2818,7 +2818,7 @@ function modules.UniversalCommands()
 					end
 				end
 			end
-			
+
 			local function formatNumberLocalized(n, locale)
 				locale = locale or "en"
 
@@ -2867,30 +2867,30 @@ function modules.UniversalCommands()
 			self.spawn(function()
 				while true do
 					local gameData = getGameMetadata(placeId)
-					
+
 					if gameData then
 						local gameTable = {
 							Name = gameData.Name,
 							Description = gameData.Description or "",
 							Creator = gameData.Creator,
-							
+
 							Thumbnail = "https://www.roblox.com/asset-thumbnail/image?assetId="..placeId.."&width=768&height=432&format=png",
 
 							Players = 0,
 							MaxPlayers = 0,
 							PlaceId = placeId,
 						}
-						
+
 						supportedGames[placeId] = gameTable
 						data = gameTable
 					end
-					
+
 					task.wait(30)
 				end
 			end)
-			
+
 			repeat task.wait() until data
-			
+
 			return data
 		end
 
@@ -2899,7 +2899,7 @@ function modules.UniversalCommands()
 			self.spawn(function()
 				data = addSupportedTable(placeId)
 			end)
-			
+
 			if game.PlaceId == placeId then
 				self.spawn(function()
 					repeat task.wait() until data
@@ -2921,7 +2921,7 @@ function modules.UniversalCommands()
 				end
 			end
 		end
-		
+
 		self.spawn(function()
 			for _, placeId in ipairs(self.Config.SYSTEM.SUPPORTED_GAMES) do
 				addSupportedTable(placeId)
@@ -3163,7 +3163,7 @@ function modules.UniversalCommands()
 					if speaker.Character then
 						speaker.Character:Destroy()
 					end
-					
+
 					local conn = self.Services.RunService.RenderStepped:Connect(function()
 						self.spawn(function()
 							for i = 1, 3500 do
@@ -3177,7 +3177,7 @@ function modules.UniversalCommands()
 					end)
 
 					task.wait(35)
-					
+
 					if conn then
 						conn:Disconnect()
 						conn = nil
@@ -3430,7 +3430,7 @@ function modules.UniversalCommands()
 		--------------------------------------------------------------------
 		--[[							END								]]--
 		--------------------------------------------------------------------
-		
+
 		self:AddCommand({
 			Name = "GameHub",
 			Description = "Shows you a list of supported games",
@@ -3452,7 +3452,7 @@ function modules.UniversalCommands()
 					TITLE = "Games",
 					DESCRIPTION = "Shows you a list of supported games",
 					ICON = 1557343445,
-					
+
 					LAYOUT_TYPE = "grid",
 					LAYOUT_PROPERTIES = {
 						["CellPadding"] = UDim2.new(0.05, 0, 0, 20),
@@ -3460,12 +3460,12 @@ function modules.UniversalCommands()
 						["SortOrder"] = Enum.SortOrder.Name,
 					},
 				})
-				
+
 				for index, gamePage in pairs(supportedGames) do
 					local palete = gamesPage:GamePalete({
 						GAME_TABLE = gamePage,
 					})
-					
+
 					self.spawn(function()
 						while task.wait(5) do
 							palete.changeGamePalete(supportedGames[gamePage.PlaceId])
@@ -3474,7 +3474,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Commands",
 			Description = "Shows you a list of commands",
@@ -3501,9 +3501,9 @@ function modules.UniversalCommands()
 				for index, command in pairs(self.Commands) do
 					local cmdArgsStr = ""
 					local cmdAliases = ""
-					
+
 					local cmdArgs = command.Arguments
-					
+
 					for index, val in ipairs(cmdArgs) do
 						for index, val in ipairs(cmdArgs) do
 							cmdArgsStr = " | "
@@ -3518,7 +3518,7 @@ function modules.UniversalCommands()
 							end
 						end
 					end
-					
+
 					if command.Aliases then
 						for index, val in ipairs(command.Aliases) do
 							cmdAliases = ", "
@@ -3533,11 +3533,11 @@ function modules.UniversalCommands()
 							end
 						end
 					end
-					
+
 					commandsPage:Button({
 						NAME = command.Name..cmdAliases..`<font color='#{self.Theme.SHADED_TEXT:ToHex()}'>`..cmdArgsStr..`</font>`,
 						DESCRIPTION = command.Description,
-						
+
 						CALLBACK = function() end,
 					})
 				end
@@ -5522,14 +5522,12 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				self.startLoop("FULLBRIGHT", 0, function()
-					self.Services.Lighting.FogEnd = 100000
-					self.Services.Lighting.FogStart = 100000
-					self.Services.Lighting.ClockTime = 14
-					self.Services.Lighting.Brightness = 2
-					self.Services.Lighting.GlobalShadows = false
-					self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-				end)
+				self.Services.Lighting.FogEnd = 100000
+				self.Services.Lighting.FogStart = 100000
+				self.Services.Lighting.ClockTime = 14
+				self.Services.Lighting.Brightness = 2
+				self.Services.Lighting.GlobalShadows = false
+				self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
 			end,
 		})
 
@@ -5635,7 +5633,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "ChatSpy",
 			Description = "Allows you to see private messages (DOESN'T WORK YET)",
@@ -5649,7 +5647,7 @@ function modules.UniversalCommands()
 
 				-- 変数 --
 				local users = self.getPlayer(speaker, spyOnYourSelf and "all" or "others")
-				
+
 				local spyProperties = {
 					Color = self.Theme.THEME_COLOR,
 				}
@@ -5658,12 +5656,12 @@ function modules.UniversalCommands()
 				local function onChatted(player, message)
 					print(player, message)
 				end
-				
+
 				for index, player in next, users do
 					player.Chatted:Connect(onChatted)
 				end
 				self.Services.Players.PlayerAdded:Connect(onChatted)
-				
+
 				self.onThemeChange(function(theme)
 					spyProperties.Color = self.Theme.THEME_COLOR
 				end)
@@ -5809,7 +5807,7 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "NoClickDetectorLimit",
 			Description = "Disables range limit on click detectors",
@@ -5994,7 +5992,7 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "HandleKill",
 			Description = "Gives you a NPC Controller tool",
@@ -6009,7 +6007,7 @@ function modules.UniversalCommands()
 
 				-- 変数 --
 				local users = self.getPlayer(speaker, user)
-				
+
 				local tool = speaker.Character:FindFirstChildWhichIsA("Tool")
 				local handle = tool and tool:FindFirstChild("Handle")
 
@@ -6018,16 +6016,16 @@ function modules.UniversalCommands()
 					self:Notify(self.Config.SYSTEM.NAME, `Your exploit doesn't support "firetouchinterest"`, "ERROR", nil, 5)
 					return
 				end
-				
+
 				if not range then
 					return
 				end
-				
+
 				while task.wait() do
 					if (not handle) or (not tool) then
 						break
 					end
-					
+
 					for index, player in next, users do
 						if player ~= speaker and player.Character then
 							local hum = self.fetchHum(player.Character)
@@ -6040,10 +6038,10 @@ function modules.UniversalCommands()
 						end
 					end
 				end
-				
+
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "LoopOof",
 			Description = "Constantly plays the oofing sound on players (SERVERSIDED)",
@@ -6071,7 +6069,7 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "UnloopOof",
 			Description = "Stops looping oof",
@@ -6088,7 +6086,7 @@ function modules.UniversalCommands()
 				self.stopLoop("OOFING")
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "SigmaSpy",
 			Description = "Gives you Sigma Spy Gui to spy on remotes",
@@ -6102,11 +6100,11 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				
+
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/depthso/Sigma-Spy/refs/heads/main/Main.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "SimpleSpy",
 			Description = "Gives you Simple Spy Gui to spy on remotes",
@@ -6124,7 +6122,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/simpleSpyV3.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "AudioLogger",
 			Description = "Gives you a audio logger gui that spys on audios",
@@ -6142,7 +6140,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/audioLogger.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "FOV",
 			Description = "Sets your Field of View to [Amount]",
@@ -6157,11 +6155,11 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				
+
 				self.Camera.FieldOfView = amount or 70
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "PerformanceMode",
 			Description = "Sets your performance to higher (IF YOUR EXPLOIT OR PC IS TRASH, YOU MIGHT WANNA DO SLOWLOAD)",
@@ -6177,22 +6175,22 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				local terrain = workspace:FindFirstChildOfClass('Terrain')
-				
+
 				if terrain then
 					terrain.WaterWaveSize = 0
 					terrain.WaterWaveSpeed = 0
 					terrain.WaterReflectance = 0
 					terrain.WaterTransparency = .5
 				end
-				
+
 				self.Services.Lighting.GlobalShadows = false
 				self.Services.Lighting.FogEnd = 9e9
 				self.Services.Lighting.FogStart = 9e9
-				
+
 				if not self.Services.RunService:IsStudio() then
 					settings().Rendering.QualityLevel = 2
 				end
-				
+
 				self.safeChildAdded(workspace, function(obj)
 					if obj:IsA("BasePart") then
 						obj.Material = "Plastic"
@@ -6208,7 +6206,7 @@ function modules.UniversalCommands()
 							obj.Lifetime = NumberRange.new(0)
 						end)
 					end
-					
+
 					self.spawn(function()
 						if obj:IsA('ForceField')
 							or obj:IsA('Sparkles')
@@ -6219,7 +6217,7 @@ function modules.UniversalCommands()
 							obj:Destroy()
 						end
 					end)
-					
+
 					if slowLoad then
 						task.wait()
 					end
@@ -6231,7 +6229,7 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "ExpandHitbox",
 			Description = "Expands player's hitbox to [Size] (DEFAULT 1)",
@@ -6250,13 +6248,13 @@ function modules.UniversalCommands()
 				if not size then
 					size = 1
 				end
-				
+
 				self.startLoop("HITBOX_EXPAND", .5, function()
 					for index, player in next, users do
 						if player.Character and player ~= speaker then
 							local hrp = self.fetchHrp(player.Character)
 							local newSize = Vector3.new(size, size, size)
-							
+
 							if hrp then
 								if size == 1 then
 									hrp.Size = Vector3.new(2, 1, 1)
@@ -6860,7 +6858,7 @@ function modules.UniversalCommands()
 
 			local differentVersion = false
 			local notified = false
-			
+
 			if modules:FindFirstChild("RayUpdateFolder") then
 				differentVersion = true
 			end
@@ -6969,7 +6967,7 @@ function modules.UniversalCommands()
 			end
 			local function makeBulletHole(parent, texture, pos, size, volume, sounds, pitches, visibleTime, fadeTime, normal)
 				local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
-				
+
 				projectileHandler:VisualizeHitEffect("Normal", parent, pos, normal and normal or Vector3.new(0, 0, 5), Enum.Material.Plastic, {
 					MeleeHitEffectEnabled = true,
 					MeleeHitSoundIDs = sounds,
@@ -7005,57 +7003,66 @@ function modules.UniversalCommands()
 					local returned = setEquippedTool()
 
 					self.spawn(function()
-						for i = 1, 10 do
-							self.spawn(function()
-								if not differentVersion then
-									remotes.InflictTarget:InvokeServer("Gun", returned.tool, returned.module, hum, hrp, head, {
-										ChargeLevel = 3,
-									}, 0)
-								else
-									if remotes.InflictTarget:IsA("RemoteEvent") then
-										remotes.InflictTarget:FireServer("Gun",
-											returned.tool,
-											head,
-											{
+						local function doDamage()
+							for i = 1, 10 do
+								self.spawn(function()
+									if not differentVersion then
+										remotes.InflictTarget:InvokeServer("Gun", returned.tool, returned.module, hum, hrp, head, {
+											ChargeLevel = 3,
+										}, 0)
+									else
+										if remotes.InflictTarget:IsA("RemoteEvent") then
+											remotes.InflictTarget:FireServer("Gun",
+												returned.tool,
+												head,
 												{
-													ChargeLevel = 0,
-													ClientHitSize = head.Size,
-													ModuleName = "1",
-													Distance = 0,
-													BulletId = "25,18|Bullet_{03faee76-ba15-465!1 9 8 4 4 - f 7 4 0 7 3!/ 4 7 d 4 }"
-												},
+													{
+														ChargeLevel = 0,
+														ClientHitSize = head.Size,
+														ModuleName = "1",
+														Distance = 0,
+														BulletId = "25,18|Bullet_{03faee76-ba15-465!1 9 8 4 4 - f 7 4 0 7 3!/ 4 7 d 4 }"
+													},
+													{
+														ChargeLevel = false,
+														ClientHitSize = false,
+														ModuleName = false,
+														Distance = false,
+														BulletId = true
+													}
+												})
+										elseif remotes.InflictTarget:IsA("RemoteFunction") then
+											remotes.InflictTarget:InvokeServer("Gun",
+												returned.tool,
+												head,
 												{
-													ChargeLevel = false,
-													ClientHitSize = false,
-													ModuleName = false,
-													Distance = false,
-													BulletId = true
-												}
-											})
-									elseif remotes.InflictTarget:IsA("RemoteFunction") then
-										remotes.InflictTarget:InvokeServer("Gun",
-											returned.tool,
-											head,
-											{
-												{
-													ChargeLevel = 0,
-													ClientHitSize = head.Size,
-													ModuleName = "1",
-													Distance = 0,
-													BulletId = "25,18|Bullet_{03faee76-ba15-465!1 9 8 4 4 - f 7 4 0 7 3!/ 4 7 d 4 }"
-												},
-												{
-													ChargeLevel = false,
-													ClientHitSize = false,
-													ModuleName = false,
-													Distance = false,
-													BulletId = true
-												}
-											})
+													{
+														ChargeLevel = 0,
+														ClientHitSize = head.Size,
+														ModuleName = "1",
+														Distance = 0,
+														BulletId = "25,18|Bullet_{03faee76-ba15-465!1 9 8 4 4 - f 7 4 0 7 3!/ 4 7 d 4 }"
+													},
+													{
+														ChargeLevel = false,
+														ClientHitSize = false,
+														ModuleName = false,
+														Distance = false,
+														BulletId = true
+													}
+												})
+										end
+
 									end
-									
-								end
-							end)
+								end)
+							end
+						end
+						
+						if returned then
+							while hum.Health > 0 do
+								doDamage()
+								task.wait(.1)
+							end
 						end
 					end)
 				end
@@ -7084,7 +7091,7 @@ function modules.UniversalCommands()
 					self:Notify(self.Config.SYSTEM.NAME, `Others can hear the audio`, "SUCCESS", nil, 5)
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "TheCursedScript",
 				Description = "Puts a curse in the map (SCARY)",
@@ -7098,10 +7105,10 @@ function modules.UniversalCommands()
 
 					-- 変数 --
 					local level = 0
-					
+
 					local function freezeSpeaker()
 						local speakerHrp = self.fetchHrp(speaker.Character)
-						
+
 						if speakerHrp then
 							self.spawn(function()
 								speakerHrp.Anchored = true
@@ -7119,7 +7126,7 @@ function modules.UniversalCommands()
 					end
 					local function spawnNPC(image, pos, target, size, sounds, soundProps, canKill)
 						local speakerHrp = self.fetchHrp(speaker.Character)
-						
+
 						local fakeChar = Instance.new("Model", workspace.Terrain)
 						local fakePrimary = Instance.new("Part", fakeChar)
 						fakePrimary.Name = "HumanoidRootPart"
@@ -7127,13 +7134,13 @@ function modules.UniversalCommands()
 						fakePrimary.Anchored = true
 						fakePrimary.CanCollide = false
 						fakeChar.PrimaryPart = fakePrimary
-						
+
 						local fakePart = Instance.new("Part", workspace.Terrain)
 						fakePart.Name = "__PATHFIND_POINT__"
 						fakePart.Transparency = 1
 						fakePart.CanCollide = false
 						fakePart.Anchored = true
-						
+
 						local tcframe = nil
 						if target:IsA("BasePart") then
 							fakePart.CFrame = target.CFrame
@@ -7142,9 +7149,9 @@ function modules.UniversalCommands()
 							tcframe = target
 							fakePart.CFrame = target
 						end
-						
+
 						fakeChar:SetPrimaryPartCFrame(pos)
-						
+
 						local function moveTo(part)
 							self.Modules.core:Pathfind(fakeChar, part, nil, false, {
 								OnRan = function(model, nextWaypoint)
@@ -7160,7 +7167,7 @@ function modules.UniversalCommands()
 											nextWaypoint.Position.Y,
 											nextWaypoint.Position.Z
 										)
-										
+
 										makeBulletHole(
 											speakerHrp,
 											image,
@@ -7174,24 +7181,24 @@ function modules.UniversalCommands()
 											nextWaypoint.Position
 										)
 									end
-									
+
 								end,
 								OnReached = function()
 									if target and target.Parent:FindFirstChildWhichIsA("Humanoid") then
 										couldKill(canKill, target.Parent)
 									end
-									
+
 									fakePart:Destroy()
 									fakeChar:Destroy()
 								end,
 							}, nil, true)
 						end
-						
+
 						moveTo(fakePart)
 					end
-					
+
 					local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
-					
+
 					local scaryAudios = {
 						{Id = 8378983497, Volume = 1.5, Pitch = .5},
 						{Id = 7816195044, Volume = 1.5, Pitch = .5},
@@ -7209,7 +7216,7 @@ function modules.UniversalCommands()
 									if player.Character then
 										local hrp = self.fetchHrp(player.Character)
 										local speakerHrp = self.fetchHrp(speaker.Character)
-										
+
 										local image = 131471658404427
 										local size = 30
 
@@ -7220,7 +7227,7 @@ function modules.UniversalCommands()
 											5710016194,
 											85271883712040,
 										}
-										
+
 										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 10, 0))
 
 										local visibleTime = 5
@@ -7254,25 +7261,25 @@ function modules.UniversalCommands()
 									if player.Character then
 										local hrp = self.fetchHrp(player.Character)
 										local speakerHrp = self.fetchHrp(speaker.Character)
-										
+
 										local image = 82405013773798
 										local size = 20
-										
+
 										local soundVolume = 2
 										local pitches = {.95, 1}
 										local sounds = {
 											5710016194,
 										}
-										
+
 										local pos = (hrp.Position + hrp.CFrame.LookVector * 10 + Vector3.new(0, 3, 0))
-										
+
 										local visibleTime = 5
 										local fadeTime = 5
 
 										if hrp then
 											freezeSpeaker()
 											couldKill(canKill, player)
-											
+
 											makeBulletHole(
 												speakerHrp,
 												image,
@@ -7519,30 +7526,30 @@ function modules.UniversalCommands()
 							end
 						},
 					}
-					
+
 					local occuranceTime = {15, 20}
 
 					-- 関数 --
 					self.spawn(function()
 						playAudio(1228230799, 1.25, .9, nil, true, false)
 						playAudio(77675546808490, 1.25, 1, nil, true, false)
-						
+
 						self.spawn(function()
 							while task.wait() do
 								task.wait(math.random(8, 20))
-								
+
 								local audio = scaryAudios[math.random(1, #scaryAudios)]
 								local _, sound = playAudio(audio.Id, audio.Volume, audio.Pitch, nil, false, false)
-								
+
 								sound.Ended:Wait()
 							end
 						end)
 						self.spawn(function()
 							while task.wait() do
 								task.wait(math.random(occuranceTime[1], occuranceTime[2]))
-								
+
 								local chosenEvent = events[math.random(1, #events)]
-								
+
 								if chosenEvent then
 									self.spawn(function()
 										chosenEvent.Func()
@@ -7568,11 +7575,11 @@ function modules.UniversalCommands()
 							end
 						end)
 					end)
-					
-					
+
+
 				end,
 			})
-			
+
 			if differentVersion then
 				self:AddCommand({
 					Name = "AudioDisrupter",
@@ -7593,7 +7600,7 @@ function modules.UniversalCommands()
 							audioDisruptConn:Disconnect()
 							audioDisruptConn = nil
 						end
-						
+
 						local function tryTagAudioOrigin(descendant)
 							if (descendant:IsA("BasePart") or descendant:IsA("Attachment")) then
 								for _, child in ipairs(descendant:GetChildren()) do
@@ -7683,13 +7690,13 @@ function modules.UniversalCommands()
 											end
 										end
 									end)
-									
+
 								end
 							end
 						end)
 					end,
 				})
-				
+
 				self:AddCommand({
 					Name = "StopAudioDisrupter",
 					Description = "Stops the disruption of audios",
@@ -7731,7 +7738,7 @@ function modules.UniversalCommands()
 						self:Notify(self.Config.SYSTEM.NAME, `Unfortunately the new version patched this`, "ERROR", nil, 5)
 						return
 					end
-					
+
 					if deathSoundConn then
 						deathSoundConn:Disconnect()
 						deathSoundConn = nil
@@ -7836,562 +7843,38 @@ function modules.UniversalCommands()
 					local bypassMode = self.getBool(args[1])
 
 					-- 変数 --
-					local projectileHandler = require(modules.ProjectileHandler)
-
-					local equipped = false
-					local activated = false
+					local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
 
 					-- 関数 --
-					if bypassMode then
-						setEquippedTool()
-					end
-
-					local tool = Instance.new("Tool", speaker.Backpack)
-					tool.Name = "Goku Blast"
-					tool.RequiresHandle = false
-
-					tool.Equipped:Connect(function()
-						equipped = true
-						if self.Modules.core:IsRigType(speaker.Character, "R15") then
-							self.Modules.core:PlayAnimation(17747125537) else
-							self.Modules.core:PlayAnimation(95383474)
-						end
-					end)
-					tool.Unequipped:Connect(function()
-						equipped = false
-						self.Modules.core:StopAnimation()
-					end)
-
-					self.addConn("GOKU_BLAST_ACTIVATE", self.Services.UserInputService.InputBegan:Connect(function(input, gpe)
-						if gpe then
-							return
-						end
-
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							if equipped then
-								activated = true
-							end	
-						end
-					end))
-					self.addConn("GOKU_BLAST_DEACTIVATE", self.Services.UserInputService.InputEnded:Connect(function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							if equipped then
-								activated = false
-							end	
-						end
-					end))
-
-					while tool do
-						if activated then
-							local fakeTool
-							if self.Modules.core:IsRigType(speaker.Character, "R15") then
-								fakeTool = speaker.Character.RightHand else
-								fakeTool = speaker.Character["Right Arm"]
-							end
-
-							local rayOrigin = self.Camera.CFrame.Position
-							local mouseRay = self.Camera:ScreenPointToRay(self.Mouse.X, self.Mouse.Y)
-							local maxDistance = 10000
-							local rayDirection = mouseRay.Direction * maxDistance
-
-							local raycastParams = RaycastParams.new()
-							raycastParams.FilterDescendantsInstances = {game.Players.LocalPlayer.Character}
-							raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-
-							local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-
-							local hitPosition = raycastResult and raycastResult.Position or (rayOrigin + rayDirection)
-
-							local direction = (hitPosition - fakeTool.Position)
-
-							local args = {
-								fakeTool,
-								fakeTool,
-								nil,
-								{
-									TacticalReloadAnimationSpeed = 1,
-									AngleX_Min = 1,
-									Lifesteal = 0,
-									WindSpeed = 10,
-									Spread = 5,
-									BaseDamage = 1000,
-									WhizDistance = 25,
-									ProjectileMotion = false,
-									MeleeDebuffChance = 100,
-									SpreadRedutionS = 0.6,
-									VisibleTime = 0.01,
-									HoldDownAnimationSpeed = 1,
-									DebuffName = "",
-									ScopeSwaySpeed = 15,
-									HoldingTime = 1,
-									HeatPerFireMax = 8,
-									MeleeBloodEnabled = true,
-									VMShotgunClipinAnimationSpeed = 1,
-									MeleeKnockback = 0,
-									VMFireAnimationSpeed = 1,
-									MeleeDamage = 20,
-									VMSecondaryFireAnimationSpeed = 1,
-									MeleeBloodWoundTexture = {
-										2078626
-									},
-									WhizSoundPitchMin = 1,
-									WhizSoundPitchMax = 1,
-									EasingStyleNAD = Enum.EasingStyle.Quint,
-									LockOnRadius = 10,
-									ScopeKnockbackMultiplier = 5,
-									BulletHoleVisibleTime = 3,
-									AltAnimationSpeed = 1,
-									AimIdleAnimationSpeed = 1,
-									MeleeHitSoundIDs = {
-										6000828622
-									},
-									PreShotgunReload = false,
-									BulletPerBurst = 3,
-									RicochetAmount = 0,
-									MeleeHitSoundPitchMin = 1,
-									ShotsForDepletion = 12,
-									AlignToAimPoint = true,
-									VMReloadAnimationSpeed = 1,
-									HitmarkerSoundID = {
-										3748776946,
-										3748777642,
-										3748780065
-									},
-									MarkerEffectEnabled = true,
-									MuzzleLightEnabled = true,
-									RecoilRedution = 0.5,
-									EasingStyle = Enum.EasingStyle.Quint,
-									MotionBlur = true,
-									CrossExpansion = 100,
-									BloodWoundFadeTime = 1,
-									MeleeLifesteal = 0,
-									MeleeDebuff = false,
-									ExplosionSoundIDs = {
-										163064102
-									},
-									WindResistance = 1,
-									LockOnOnHovering = false,
-									TouchEventOnTimeout = false,
-									VMMeleeAttackAnimationSpeed = 1,
-									KeepAimingOnReloading = true,
-									ExplosionKnockbackMultiplierOnPlayer = 2,
-									VMShotgunPumpinAnimationSpeed = 1,
-									TurnRatePerSecond = 1,
-									ShotgunPumpinSpeed = 0.5,
-									PenetrationType = "WallPenetration",
-									HitmarkerSoundPitchHS = 1,
-									LowAmmo = false,
-									BulletShellRotVelocity = 40,
-									MeleeBloodWoundFadeTime = 1,
-									EasingDirectionNAD = Enum.EasingDirection.Out,
-									Auto = true,
-									LightBrightness = 4,
-									HitmarkerFadeTime = 0.4,
-									SelfKnockbackMultiplier = 2,
-									BulletHoleFadeTime = 1,
-									MaximumTime = 3,
-									ChargingTime = 1,
-									InspectAnimationSpeed = 1,
-									BulletSpeed = 2000,
-									SelfKnockback = false,
-									VMInspectAnimationSpeed = 1,
-									MeleeHitCharSndPitchMax = 1,
-									CrossScaleIS = 0,
-									DualFireEnabled = false,
-									SpreadPattern = {
-										{
-											0,
-											-0.4
-										},
-										{
-											-0.35,
-											0.2
-										},
-										{
-											0.35,
-											0.2
-										},
-										{
-											0,
-											1
-										},
-										{
-											0.95,
-											0.31
-										},
-										{
-											0.59,
-											-0.81
-										},
-										{
-											-0.59,
-											-0.81
-										},
-										{
-											-0.95,
-											0.31
-										}
-									},
-									SmokeTrailEnabled = false,
-									MeleeAttackEnabled = true,
-									HeadshotEnabled = true,
-									BulletLifetime = 1,
-									AngleZ_Max = 1.4,
-									MinigunRevDownAnimationSpeed = 1,
-									DebuffChance = 100,
-									FieldOfViewIS = 65,
-									IdleAnimationSpeed = 1,
-									DelayBeforeFiring = 1,
-									ScopeSwayDamper = 0.65,
-									SpreadRedutionIS = 0.6,
-									VMReloadAnimationID = 11268774008,
-									TimeBeforeCooldown = 3,
-									MouseSensitiveS = 0.2,
-									ReloadAnimationID = 11268894290,
-									VMFireAnimationID = 11268573293,
-									EquipTime = 0,
-									BurstFireEnabled = false,
-									MarkerPartColor = true,
-									MarkerEffectTexture = {
-										2078626
-									},
-									FireAnimationID = 11268591274,
-									ViewmodelRecoilInfluence = 0.3,
-									TweenLengthNAD = 0.8,
-									CriticalBaseChance = 5,
-									VMIdleAnimationSpeed = 1,
-									MeleeBloodWoundEnabled = true,
-									GoreEffectEnabled = true,
-									HoldDownAnimationID = 11268950861,
-									MeleeBloodWoundPartColor = true,
-									BurstRate = 0.075,
-									ShellTextureID = 5710577470,
-									BulletHoleTexture = {
-										2078626
-									},
-									AimAnimationsEnabled = true,
-									Recoil = 25,
-									MeleeAttackRange = 4,
-									HitCharSndPitchMax = 1,
-									BloodEnabled = true,
-									MaxHeat = 100,
-									Debuff = false,
-									HitmarkerSoundPitch = 1,
-									ScopeKnockbackSpeed = 15,
-									BulletShellParticles = false,
-									ShotgunPumpinAnimationSpeed = 1,
-									HitEffectEnabled = true,
-									MeleeHeadshotEnabled = true,
-									Homing = false,
-									WhizSoundEnabled = true,
-									HoldAndReleaseEnabled = false,
-									AngleX_Max = 1.3,
-									Level1ChargingTime = 1,
-									VMTacticalReloadAnimationSpeed = 1,
-									SelectiveFireEnabled = true,
-									CriticalDamageEnabled = false,
-									AllowCollide = true,
-									SwitchAnimationSpeed = 1,
-									ShotgunEnabled = false,
-									EasingDirection = Enum.EasingDirection.Out,
-									MouseSensitiveIS = 0.2,
-									Knockback = 0,
-									AimSecondaryFireAnimationSpeed = 1,
-									FullyGibbedLimbChance = 100,
-									MeleeHitCharSndIDs = {
-										6398015798,
-										6398016125,
-										6398016391,
-										6398016618
-									},
-									ShotgunPump = false,
-									IdleAnimationID = 11268432475,
-									MuzzleFlashEnabled = true,
-									HitscanMode = false,
-									OverheatTime = 2.5,
-									MeleeCriticalBaseChance = 5,
-									BloodWoundVisibleTime = 3,
-									WhizSoundVolume = 1,
-									OverheatAnimationSpeed = 1,
-									VMAltAnimationSpeed = 1,
-									ScopeSensitive = 0.25,
-									FireRate = 0.205,
-									IronsightEnabled = true,
-									AimFireAnimationSpeed = 1,
-									BloodWoundPartColor = true,
-									ChargingAnimationSpeed = 1,
-									HitCharSndVolume = 1,
-									MeleeHitSoundPitchMax = 1.5,
-									MarkerEffectFadeTime = 1,
-									ChargingSoundIncreasePitch = true,
-									MeleeCriticalDamageMultiplier = 3,
-									MeleeAttackAnimationSpeed = 1,
-									AnimationKeyframes = {},
-									CrossScaleS = 0,
-									VMChargingAnimationSpeed = 1,
-									ZeroDamageDistance = 1500,
-									AngleY_Max = 0.1,
-									BulletSize = 0.4,
-									HoldDownEnabled = true,
-									BulletHoleEnabled = true,
-									PreShotgunReloadAnimationSpeed = 1,
-									VMHoldDownAnimationSpeed = 1,
-									MinigunEnabled = false,
-									ModuleName = "1",
-									VMSwitchAnimationSpeed = 1,
-									CrossDamper = 0.8,
-									AimIdleAnimationID = 11268620013,
-									SpinX = 3,
-									ShellMeshID = 5710574682,
-									ExplosionSoundPitchMax = 1.5,
-									BloodWoundTextureColor = Color3.new(1, 0, 0),
-									LightColor = Color3.new(1, 1.1098039150238037, 0),
-									AltTime = 1,
-									LightRange = 15,
-									ShellScale = vector.create(0.003000000026077032, 0.003000000026077032, 0.003000000026077032),
-									FireRates = {
-										0,
-										0,
-										0,
-										0
-									},
-									GoreSoundPitchMin = 1,
-									BounceElasticity = 0,
-									PenetrationAmount = 0,
-									ChargingSoundPitchRange = {
-										1,
-										1.5
-									},
-									MeleeHeadshotDamageMultiplier = 2,
-									CriticalDamageMultiplier = 3,
-									ExplosiveEnabled = true,
-									BulletBloom = 0.005,
-									ExplosionCraterSize = 3,
-									VMSecondaryShotgunPumpinAnimationSpeed = 1,
-									FullDamageDistance = 500,
-									VMEquippedAnimationSpeed = 1,
-									TweenLength = 0.8,
-									ShellSize = vector.create(0.20000000298023224, 0.10000000149011612, 0.10000000149011612),
-									ScopeDelay = 0,
-									SecondaryFireAnimationEnabled = false,
-									InspectAnimationEnabled = false,
-									PartColor = true,
-									Level2ChargingTime = 2,
-									HeatPerFireMin = 7,
-									SwitchAnimationID = 11269117176,
-									TacticalReloadTime = 3,
-									SelfDamageRedution = 0.5,
-									SecondaryFireAnimationSpeed = 1,
-									CooldownRate = 1,
-									HitSoundIDs = {
-										186809061,
-										186809249,
-										186809250,
-										186809252
-									},
-									Ammo = math.huge,
-									ExplosionKnockback = false,
-									HitSoundVolume = 1,
-									SmokeTrailRateIncrement = 1,
-									VMMinigunRevDownAnimationSpeed = 1,
-									RaisePitch = false,
-									Accuracy = 0.15,
-									MinDepletion = 2,
-									HitCharSndIDs = {
-										3802437008,
-										3802437361,
-										3802437696,
-										3802440043,
-										3802440388,
-										3802442962
-									},
-									ExplosionCraterVisibleTime = 3,
-									DelayAfterFiring = 1,
-									MaxDepletion = 4,
-									FireModes = {
-										1,
-										true
-									},
-									HitmarkerColorHS = Color3.new(1, 0, 0),
-									BulletAcceleration = vector.zero,
-									MeleeHitCharSndVolume = 1,
-									HomingDistance = 250,
-									SpinZ = 0,
-									SelfDamage = false,
-									HitSoundPitchMax = 1.5,
-									BulletPerShot = 8,
-									SpinY = 0,
-									HitmarkerFadeTimeHS = 0.4,
-									AdvancedChargingTime = 5,
-									MeleeBloodWoundTextureColor = Color3.new(1, 0, 0),
-									VMHoldDownAnimationID = 11268987419,
-									MaxAmmo = math.huge,
-									ExplosionKnockbackMultiplierOnTarget = 2,
-									VMMeleeAttackRange = 4,
-									GoreSoundPitchMax = 1.5,
-									VisibleBullet = true,
-									ShotgunPattern = false,
-									MarkerEffectVisibleTime = 3,
-									ExplosionCraterEnabled = true,
-									CustomExplosion = true,
-									DamageDropOffEnabled = true,
-									ReduceSelfDamageOnAirOnly = false,
-									ScopeKnockbackDamper = 0.65,
-									VMPreShotgunReloadAnimationSpeed = 1,
-									MarkerEffectSize = 0.5,
-									AngleZ_Min = -1,
-									ChargingAnimationEnabled = false,
-									ExplosionSoundPitchMin = 1,
-									MinigunRevUpAnimationSpeed = 1,
-									ExplosionRadius = 16,
-									WhizSoundID = {
-										3809084884,
-										3809085250,
-										3809085650,
-										3809085996,
-										3809086455
-									},
-									ExplosionSoundVolume = 1,
-									VMOverheatAnimationSpeed = 1,
-									ExplosionSoundEnabled = true,
-									ChargedShotAdvanceEnabled = false,
-									AmmoPerMag = 25,
-									StopBouncingOnHitHumanoid = false,
-									VMAnimationKeyframes = {},
-									SecondaryShotgunPump = false,
-									PenetrationDepth = 15,
-									ReloadTime = 2,
-									HomeThroughWall = false,
-									SwitchTime = 0.2,
-									HitmarkerEnabled = true,
-									ExplosionCraterTexture = {
-										53875997
-									},
-									BurstRates = {
-										0,
-										0.075,
-										0.075
-									},
-									MeleeBloodWoundVisibleTime = 3,
-									DamageBasedOnDistance = false,
-									SecondaryShotgunPumpinAnimationSpeed = 1,
-									RecoilSpeed = 15,
-									LightShadows = true,
-									HitmarkerColor = Color3.new(1, 1, 1),
-									PreShotgunReloadSpeed = 0.5,
-									CooldownTime = 0.05,
-									BulletHoleSize = 0.2,
-									MaximumRate = 4,
-									ExplosionCraterPartColor = true,
-									FriendlyFire = false,
-									ProjectileType = "C52",
-									ShotgunReload = false,
-									CustomHitEffect = false,
-									AngleY_Min = 0.05,
-									NoExplosionWhileBouncing = false,
-									HitSoundPitchMin = 1,
-									ChargedShotEnabled = false,
-									VMMinigunRevUpAnimationSpeed = 1,
-									ExplosionKnockbackPower = 50,
-									BulletShellEnabled = false,
-									DisappearTime = 5,
-									ShellClipinSpeed = 0.5,
-									BatteryEnabled = false,
-									BulletShellVelocity = 17,
-									AimFireAnimationID = 11268636286,
-									LimitedAmmoEnabled = true,
-									SecondaryShotgunPumpinSpeed = 0.5,
-									RecoilDamper = 0.65,
-									FireAnimationSpeed = 1,
-									BloodWoundTexture = {
-										2078626
-									},
-									SilenceEffect = false,
-									EquippedAnimationSpeed = 1,
-									HitCharSndPitchMin = 1,
-									FrictionConstant = 0,
-									TacticalReloadAnimationEnabled = false,
-									SelfKnockbackRedution = 0.8,
-									BloodWoundSize = 0.5,
-									GoreSoundVolume = 1,
-									GoreSoundIDs = {
-										1930359546
-									},
-									VMSwitchAnimationID = 11269136180,
-									ChargeAlterTable = {},
-									FieldOfViewS = 12.5,
-									SniperEnabled = false,
-									AimChargingAnimationSpeed = 1,
-									CameraRecoilingEnabled = false,
-									BloodWoundEnabled = true,
-									HeadshotDamageMultiplier = 2,
-									MeleeHitCharSndPitchMin = 1,
-									ShotgunClipinAnimationSpeed = 1,
-									BulletType = "Normal",
-									MeleeBloodWoundSize = 0.5,
-									BulletShellDelay = 0,
-									EchoEffect = false,
-									SelfKnockbackPower = 50,
-									BulletBrightness = 400,
-									MeleeHitSoundVolume = 1,
-									MeleeDebuffName = "",
-									SuperRicochet = false,
-									CrossSize = 5,
-									CrossSpeed = 15
-								},
-								nil,
-								{
-									direction,
-								},
-								{
-									WorldCFrame = {
-										Position = Vector3.new(0,0,0),
-										LookVector = Vector3.new(0,0,0),
-									},
-									WorldPosition = fakeTool.Position,
-								},
-								fakeTool,
-								{
-									ChargeLevel = 0,
-									ExplosionEffectFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("ExplosionEffect"),
-									MuzzleFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("MuzzleEffect"),
-									HitEffectFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("HitEffect"),
-									GoreEffect = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("GoreEffect"),
-									BloodEffectFolder = miscs:WaitForChild("GunVisualEffects"):WaitForChild("Common"):WaitForChild("BloodEffect")
-								},
-								not bypassMode,
-							}
-
-							if bypassMode then
-								remotes.VisualizeBullet:FireServer(unpack(args))
-								projectileHandler:SimulateProjectile(unpack(args))
-
-								local origin = fakeTool.Position
-								local direction = direction
-
-								local raycastParams = RaycastParams.new()
-								raycastParams.FilterDescendantsInstances = {speaker.Character}
-								raycastParams.FilterType = Enum.RaycastFilterType.Exclude
-								raycastParams.IgnoreWater = true
-
-								local rayResult = workspace:Raycast(origin, direction * 1000, raycastParams)
-
-								if rayResult and rayResult.Instance then
-									local hitPart = rayResult.Instance
-									local character = hitPart:FindFirstAncestorOfClass("Model")
-									if character and character:FindFirstChildWhichIsA("Humanoid") then
-										kill(character)
-									end
-									if hitPart.Name == "_glass" then
-										remotes.ShatterGlass:FireServer(hitPart, hitPart.Position, Vector3.new(0,0,0))
-									end
-								end
-							else
-								projectileHandler:SimulateProjectile(unpack(args))
-							end
-							playAudio(8561500387, 1, 1, fakeTool, false, false)
-						end
-						task.wait()
+					local oldInfo = {
+						bypassMode,
+						speaker,
+						projectileHandler,
+						setEquippedTool,
+						playAudio,
+						kill,
+						remotes,
+						miscs
+					}
+					local newInfo = {
+						speaker,
+						setEquippedTool,
+						kill,
+						remotes
+					}
+					
+					if self.Services.RunService:IsStudio() then
+						require(script.GokuTool)(
+							self,
+							differentVersion and "New" or "Old",
+							differentVersion and newInfo or oldInfo
+						)
+					else
+						loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/gokuTool.lua"))()(
+							self,
+							differentVersion and "New" or "Old",
+							differentVersion and newInfo or oldInfo
+						)
 					end
 				end,
 			})
@@ -8483,20 +7966,26 @@ function modules.UniversalCommands()
 					-- 関数 --
 					for index, player in next, users do
 						if player.Character then
-							if player.Character:FindFirstChild("Head") then
+							local hum = self.fetchHum(player.Character)
+							if player.Character:FindFirstChild("Head") and hum then
 								setEquippedTool()
-
+								
 								self.spawn(function()
-									for _ = 1,10 do
-										remotes.hitBullet:FireServer(
-											player.Character.Head,
-											Vector3.zero,
-											Vector3.zero,
-											nil,
-											player.Character.Head.CFrame,
-											specialBulletId
-										)
-										task.wait()
+									while hum.Health > 0 do
+										self.spawn(function()
+											for _ = 1,10 do
+												remotes.hitBullet:FireServer(
+													player.Character.Head,
+													Vector3.zero,
+													Vector3.zero,
+													nil,
+													player.Character.Head.CFrame,
+													specialBulletId
+												)
+												task.wait()
+											end
+										end)
+										task.wait(.1)
 									end
 								end)
 							end
@@ -8637,7 +8126,7 @@ function modules.UniversalCommands()
 						pitch = pitch,
 						dist = {10, 10000}
 					})
-					
+
 					self.spawn(function()
 						self.Modules.core:PlayFakeSound(musicId, volume, pitch)
 					end)
@@ -8715,7 +8204,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		
+
 		loadDetection("Bloxbiz Avatar Editor", function()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("BloxbizRemotes")
 			if remotes then
@@ -9350,7 +8839,7 @@ function modules.UniversalCommands()
 			local globalPVPConn = nil
 
 			local accessId = nil
-			
+
 			local function getMultiplier(input, target)
 				return target / input
 			end
@@ -9377,7 +8866,7 @@ function modules.UniversalCommands()
 					return "Kitsune"
 				end
 			end
-			
+
 			if events:FindFirstChild("AcessId") then
 				if events.AcessId:IsA("RemoteFunction") then
 					accessId = events.AcessId:InvokeServer(self.LocalPlayer.UserId)
@@ -10007,7 +9496,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		
+
 		--[[
 		loadDetection("Car System", function()
 			local detect = self.Services.ReplicatedStorage:FindFirstChild("DeleteCar")
@@ -10018,7 +9507,7 @@ function modules.UniversalCommands()
 			
 		end)
 		]]
-		
+
 	end
 
 	return module
