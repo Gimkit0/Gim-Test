@@ -70,7 +70,7 @@ function CommandBar.new(config, customGlobalName)
 		SYSTEM = {
 			NAME = "Server's Admin",
 			SAVE_FILE_NAME = `{globalName}.rem`,
-			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))().new()]],
+			RELOAD_LOADSTRING  = [[loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/Remnants.lua"))()]],
 			
 			VERSION = 1.02,
 			VERSION_CHECKER_LINK = "https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/CurrentVersion.lua",
@@ -1869,7 +1869,7 @@ function CommandBar:_checkForUpdates()
 			newVersion.ON_NEW_VERSION()			
 		end)
 		self.Config.SYSTEM.CAN_AUTOMATICALLY_UPDATE = true
-		loadstring(self.Config.SYSTEM.RELOAD_LOADSTRING)().new(self.Config)
+		loadstring(`return {self.Config.SYSTEM.RELOAD_LOADSTRING}`)().new(self.Config)
 	end
 end
 
