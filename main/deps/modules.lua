@@ -1710,13 +1710,14 @@ function modules.Core()
 			local animator = hum:FindFirstChild("Animator") or Instance.new("Animator", hum)
 			local animation = animator:LoadAnimation(anim)
 
+			animation:Play()
+			
 			if type(properties) == "table" then
 				for i, v in pairs(properties) do
 					animation[i] = v
 				end
 			end
-
-			animation:Play()
+			
 			animation.Stopped:Connect(function()
 				animation:Destroy()
 			end)
@@ -1726,6 +1727,7 @@ function modules.Core()
 			else
 				table.insert(self.Storage.instances.animations, {inst = anim, anim = animation})
 			end
+			return animation
 		else
 			anim:Destroy()
 		end
@@ -2707,6 +2709,12 @@ function modules.UniversalCommands()
 
 		local universalConnections = {
 			bangDied = nil,
+			
+			headSitDied = nil,
+			
+			backpackDied = nil,
+			
+			standDied = nil,
 
 			invisFix = nil,
 			invisDied = nil,
@@ -4866,6 +4874,150 @@ function modules.UniversalCommands()
 								local hrp = self.fetchHrp(player.Character)
 								if hrp then
 									speakerHrp.CFrame = hrp.CFrame * self.Config.COMMANDS.BANG_OFFSET
+									speakerHrp.Velocity = Vector3.new(0, 0, 0)
+								end
+							end)
+						end)
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Headsit",
+			Description = "Makes you sit on [Player]s head",
+
+			Aliases = {},
+			Arguments = {"Player"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local user = args[1]
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, user)
+				
+				local speakerHrp = self.fetchHrp(speaker.Character)
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				self.Modules.parser:RunCommand(speaker, "unheadsit")
+
+				task.wait()
+
+				universalConnections.headSitDied = hum.Died:Connect(function()
+					self.Modules.parser:RunCommand(speaker, "unheadsit")
+				end)
+
+				for index, player in next, users do
+					if player.Character then
+						self.startLoop("HEADSITTING", 0, function()
+							self.spawn(function()
+								local hrp = self.fetchHrp(player.Character)
+								if hrp then
+									if hum then
+										hum.Sit = true
+									end
+									speakerHrp.CFrame = hrp.CFrame * self.Config.COMMANDS.HEADSIT_OFFSET
+									speakerHrp.Velocity = Vector3.new(0, 0, 0)
+								end
+							end)
+						end)
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Backpack",
+			Description = "Makes you sit on [Player]s back",
+
+			Aliases = {},
+			Arguments = {"Player"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local user = args[1]
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, user)
+
+				local speakerHrp = self.fetchHrp(speaker.Character)
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				self.Modules.parser:RunCommand(speaker, "unbackpack")
+
+				task.wait()
+
+				universalConnections.backpackDied = hum.Died:Connect(function()
+					self.Modules.parser:RunCommand(speaker, "unbackpack")
+				end)
+
+				for index, player in next, users do
+					if player.Character then
+						self.startLoop("BACKPACKING", 0, function()
+							self.spawn(function()
+								local hrp = self.fetchHrp(player.Character)
+								if hrp then
+									if hum then
+										hum.Sit = true
+									end
+									speakerHrp.CFrame = hrp.CFrame * self.Config.COMMANDS.BACKPACK_OFFSET
+									speakerHrp.Velocity = Vector3.new(0, 0, 0)
+								end
+							end)
+						end)
+					end
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Stand",
+			Description = "Makes you become the stand of [Player]",
+
+			Aliases = {},
+			Arguments = {"Player"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local user = args[1]
+
+				-- 変数 --
+				local users = self.getPlayer(speaker, user)
+				
+				local anim = 13823324057
+
+				local speakerHrp = self.fetchHrp(speaker.Character)
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				self.Modules.parser:RunCommand(speaker, "unstand")
+				
+				if self.Modules.core:IsRigType(speaker.Character, "R6") then
+					self:Notify(self.Config.SYSTEM.NAME, `Doesn't support R6 yet`, "ERROR", nil, 5)
+					return
+				end
+
+				task.wait()
+
+				universalConnections.standDied = hum.Died:Connect(function()
+					self.Modules.parser:RunCommand(speaker, "unstand")
+				end)
+
+				for index, player in next, users do
+					if player.Character then
+						self.Modules.core:PlayAnimation(anim, {
+							TimePosition = 4,
+						})
+						self.Modules.core:SetAnimationSpeed(0)
+						self.startLoop("STANDING", 0, function()
+							self.spawn(function()
+								local hrp = self.fetchHrp(player.Character)
+								if hrp then
+									speakerHrp.CFrame = hrp.CFrame * self.Config.COMMANDS.STAND_OFFSET
+									speakerHrp.Velocity = Vector3.new(0, 0, 0)
 								end
 							end)
 						end)
@@ -4893,6 +5045,83 @@ function modules.UniversalCommands()
 
 					universalConnections.bangDied:Disconnect()
 					universalConnections.bangDied = nil
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unheadsit",
+			Description = "Stops making you sit on the targets head",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				if universalConnections.headSitDied then
+					self.stopLoop("HEADSITTING")
+					
+					if hum then
+						hum.Sit = false
+					end
+
+					universalConnections.headSitDied:Disconnect()
+					universalConnections.headSitDied = nil
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unbackpack",
+			Description = "Stops making you sit on the targets back",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+				local hum = self.fetchHum(speaker.Character)
+
+				-- 関数 --
+				if universalConnections.backpackDied then
+					self.stopLoop("BACKPACKING")
+
+					if hum then
+						hum.Sit = false
+					end
+
+					universalConnections.backpackDied:Disconnect()
+					universalConnections.backpackDied = nil
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unstand",
+			Description = "Stops making you a stand",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				if universalConnections.standDied then
+					self.stopLoop("STANDING")
+					self.Modules.core:StopAnimation()
+
+					universalConnections.standDied:Disconnect()
+					universalConnections.standDied = nil
 				end
 			end,
 		})
@@ -5357,6 +5586,7 @@ function modules.UniversalCommands()
 				-- 引数 --
 				local transparency = self.getNum(args[1])
 				local npcs = self.getBool(args[2])
+				--local useHighlights = self.getBool(args[3])
 
 				-- 変数 --
 
@@ -5385,10 +5615,17 @@ function modules.UniversalCommands()
 					if (not target) or (target and self.Services.Players:GetPlayerFromCharacter(target) and target.Name == speaker.Name) then
 						return
 					end
-					local oldEsp = target:FindFirstChild(self.espName)
-					if oldEsp then
+					
+					local espParent = self.Services.RunService:IsStudio() and speaker.PlayerGui or game:GetService("CoreGui")
+					local espHolder = espParent:FindFirstChild(`{isPlayer and target.UserId or "UNKNOWN"} ESP_FOLDER`)
+					
+					if espHolder then
 						return
+					elseif isPlayer then
+						espHolder = Instance.new("Folder", espParent)
+						espHolder.Name = `{isPlayer and target.UserId or "UNKNOWN"} ESP_FOLDER`
 					end
+					
 					local highlightColor = Color3.fromRGB(255, 0, 0)
 					if isPlayer and self.Services.Players:GetPlayerFromCharacter(target) then
 						local player = self.Services.Players:GetPlayerFromCharacter(target)
@@ -5398,13 +5635,14 @@ function modules.UniversalCommands()
 					end
 
 					local hrp = self.fetchHrp(target)
-
+					
 					local highlight = Instance.new("Highlight")
 					highlight.FillColor = highlightColor
 					highlight.FillTransparency = transparency
 					highlight.OutlineColor = highlightColor
-					highlight.Parent = target
-					highlight.Name = self.espName
+					highlight.Adornee = target
+					highlight.Parent = isPlayer and espHolder or target
+					highlight.Name = "HIGHLIGHT"
 
 					local billboard = Instance.new("BillboardGui")
 					billboard.Adornee = hrp
@@ -5453,7 +5691,7 @@ function modules.UniversalCommands()
 						end
 					end)
 
-					table.insert(instances.esp_instances, highlight)
+					table.insert(instances.esp_instances, espHolder)
 				end
 
 				self.addConn("ESP_PLAYER_ADDED", self.safePlayerAdded(function(player)
@@ -5522,12 +5760,12 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				self.Services.Lighting.FogEnd = 100000
-				self.Services.Lighting.FogStart = 100000
+				self.Services.Lighting.FogEnd = 9e9
+				self.Services.Lighting.FogStart = 9e9
 				self.Services.Lighting.ClockTime = 14
 				self.Services.Lighting.Brightness = 2
 				self.Services.Lighting.GlobalShadows = false
-				self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+				self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 150)
 			end,
 		})
 
@@ -5636,7 +5874,7 @@ function modules.UniversalCommands()
 
 		self:AddCommand({
 			Name = "ChatSpy",
-			Description = "Allows you to see private messages (DOESN'T WORK YET)",
+			Description = "Allows you to see private messages (For Legacy Chat, the chats are in the console)",
 
 			Aliases = {"CSpy"},
 			Arguments = {"SpyOnYourself"},
@@ -5646,21 +5884,57 @@ function modules.UniversalCommands()
 				local spyOnYourSelf = self.getBool(args[1])
 
 				-- 変数 --
-				local users = self.getPlayer(speaker, spyOnYourSelf and "all" or "others")
-
 				local spyProperties = {
 					Color = self.Theme.THEME_COLOR,
 				}
 
 				-- 関数 --
-				local function onChatted(player, message)
-					print(player, message)
+				local function onChatted(sender, message)
+					if not spyOnYourSelf then
+						if sender.UserId == speaker.UserId then
+							return
+						end
+					end
+					
+					if self.Services.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+						local systemChannel = self.Services.TextChatService:FindFirstChild("TextChannels"):FindFirstChild("RBXSystem")
+						if systemChannel then
+							systemChannel:DisplaySystemMessage(string.format(
+								`<b><font color='#{spyProperties.Color:ToHex()}'>[REMNANTS CHAT SPY]</font></b> %s: %s`,
+								sender.Name,
+								message
+								)
+							)
+						end
+					else
+						print(string.format("[REMNANTS CHAT SPY] %s: %s", sender.Name, message))
+					end
 				end
+				
+				if self.Services.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+					self.Services.TextChatService.OnIncomingMessage = function(textChatMessage)
+						if textChatMessage.TextSource and textChatMessage.Status == Enum.TextChatMessageStatus.Success then
+							if textChatMessage.TextChannel and textChatMessage.TextChannel.Name == "RBXWhisper" then
+								local sender = textChatMessage.TextSource
+								local message = textChatMessage.Text
 
-				for index, player in next, users do
-					player.Chatted:Connect(onChatted)
+								onChatted(sender, message)
+							end
+						end
+					end
+				else
+					for _, player in pairs(self.Services.Players:GetPlayers()) do
+						player.Chatted:Connect(function(message)
+							onChatted(player, message)
+						end)
+					end
+
+					self.Services.Players.PlayerAdded:Connect(function(player)
+						player.Chatted:Connect(function(message)
+							onChatted(player, message)
+						end)
+					end)
 				end
-				self.Services.Players.PlayerAdded:Connect(onChatted)
 
 				self.onThemeChange(function(theme)
 					spyProperties.Color = self.Theme.THEME_COLOR
@@ -5706,8 +5980,6 @@ function modules.UniversalCommands()
 				if not decelRate then
 					decelRate = 3
 				end
-
-
 
 				accelRate /= 5
 				decelRate /= 2
@@ -5787,7 +6059,7 @@ function modules.UniversalCommands()
 			Name = "NoHoldDuration",
 			Description = "Disables Hold Duration for Proximity Prompts",
 
-			Aliases = {},
+			Aliases = {"NoHD"},
 			Arguments = {},
 
 			Function = function(speaker, args)
@@ -5796,13 +6068,13 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				for _, proximityPrompt in pairs(workspace:GetDescendants()) do
+				self.safeChildAdded(workspace, function(proximityPrompt)
 					if proximityPrompt:IsA("ProximityPrompt") then
 						proximityPrompt["HoldDuration"] = 0
 					end
-				end
+				end)
 
-				game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+				self.Services.ProximityPromptService.PromptButtonHoldBegan:Connect(function(prompt)
 					prompt["HoldDuration"] = 0
 				end)
 			end,
@@ -5860,10 +6132,12 @@ function modules.UniversalCommands()
 			Description = "Gives you a light tool",
 
 			Aliases = {},
-			Arguments = {},
+			Arguments = {"Brightness", "Range"},
 
 			Function = function(speaker, args)
 				-- 引数 --
+				local brightness = self.getNum(args[1])
+				local range = self.getNum(args[2])
 
 				-- 変数 --
 
@@ -5879,11 +6153,64 @@ function modules.UniversalCommands()
 				handle.CanTouch = false
 				handle.CanQuery = false
 
-				local light = Instance.new("SpotLight", handle)
-				light.Brightness = 5
-				light.Range = 60
+				local light = Instance.new("PointLight", handle)
+				light.Brightness = brightness or 5
+				light.Range = range or 60
 				light.Color = Color3.fromRGB(255, 255, 255)
-				light.Face = Enum.NormalId.Front
+				light.Shadows = false
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Light",
+			Description = "Makes you emit light",
+
+			Aliases = {"EmitLight"},
+			Arguments = {"Brightness", "Range"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local brightness = self.getNum(args[1])
+				local range = self.getNum(args[2])
+
+				-- 変数 --
+
+				-- 関数 --
+				local hrp = self.fetchHrp(speaker.Character)
+				
+				if hrp then
+					local light = Instance.new("PointLight", hrp)
+					light.Brightness = brightness or 5
+					light.Range = range or 60
+					light.Color = Color3.fromRGB(255, 255, 255)
+					light.Shadows = false
+					light.Name = "_REMNANTS_LIGHT_SOURCE_"
+				end
+			end,
+		})
+		
+		self:AddCommand({
+			Name = "Unlight",
+			Description = "Stops making you emit light",
+
+			Aliases = {"StopLight"},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local brightness = self.getNum(args[1])
+				local range = self.getNum(args[2])
+
+				-- 変数 --
+
+				-- 関数 --
+				local hrp = self.fetchHrp(speaker.Character)
+
+				if hrp then
+					if hrp:FindFirstChild("_REMNANTS_LIGHT_SOURCE_") then
+						hrp["_REMNANTS_LIGHT_SOURCE_"]:Destroy()
+					end
+				end
 			end,
 		})
 
@@ -5995,7 +6322,7 @@ function modules.UniversalCommands()
 
 		self:AddCommand({
 			Name = "HandleKill",
-			Description = "Gives you a NPC Controller tool",
+			Description = "Makes the equipped weapon attack the [Player] at [Range] (CLASSIC ROBLOX SWORD IS RECOMMENDED)",
 
 			Aliases = {"HKill"},
 			Arguments = {"Player", "Range"},
@@ -6122,10 +6449,28 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/simpleSpyV3.lua"))()
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "Rem",
+			Description = "Loads a very powerful logger",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				
+				loadstring(game:HttpGet("https://e-vil.com/anbu/rem.lua"))()
+			end,
+		})
 
 		self:AddCommand({
 			Name = "AudioLogger",
-			Description = "Gives you a audio logger gui that spys on audios",
+			Description = "Gives you a audio logger gui that spys on audios (MADE BY INFINITE YIELD)",
 
 			Aliases = {},
 			Arguments = {},
@@ -6172,9 +6517,9 @@ function modules.UniversalCommands()
 				local slowLoad = self.getBool(args[1])
 
 				-- 変数 --
+				local terrain = workspace:FindFirstChildOfClass('Terrain')
 
 				-- 関数 --
-				local terrain = workspace:FindFirstChildOfClass('Terrain')
 
 				if terrain then
 					terrain.WaterWaveSize = 0
@@ -6235,11 +6580,12 @@ function modules.UniversalCommands()
 			Description = "Expands player's hitbox to [Size] (DEFAULT 1)",
 
 			Aliases = {"Hitbox"},
-			Arguments = {"Size"},
+			Arguments = {"Size", "UseHead"},
 
 			Function = function(speaker, args)
 				-- 引数 --
 				local size = self.getNum(args[1])
+				local useHead = self.getBool(args[2])
 
 				-- 変数 --
 				local users = self.getPlayer(speaker, "all")
@@ -6252,14 +6598,23 @@ function modules.UniversalCommands()
 				self.startLoop("HITBOX_EXPAND", .5, function()
 					for index, player in next, users do
 						if player.Character and player ~= speaker then
-							local hrp = self.fetchHrp(player.Character)
+							local hrp = useHead and player.Character:FindFirstChild("Head") or self.fetchHrp(player.Character)
 							local newSize = Vector3.new(size, size, size)
 
 							if hrp then
 								if size == 1 then
-									hrp.Size = Vector3.new(2, 1, 1)
+									hrp.Size = useHead and Vector3.new(1.164, 1.146, 1.163) or  Vector3.new(2, 1, 1)
+									hrp:SetAttribute("LastCollision", hrp.CanCollide)
+									
+									if hrp.CanCollide then
+										hrp.CanCollide = false
+									end
 								else
 									hrp.Size = newSize
+									
+									if hrp:GetAttribute("LastCollision") then
+										hrp.CanCollide = hrp:GetAttribute("LastCollision")
+									end
 								end
 							end
 						end
