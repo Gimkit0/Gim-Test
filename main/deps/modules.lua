@@ -2777,6 +2777,10 @@ function modules.UniversalCommands()
 
 				return newModule
 			end
+			local _G = _G
+			if (not game:GetService("RunService"):IsStudio()) and (getgenv) then
+				_G = getgenv()
+			end
 		end
 
 		local function gameDetectedNotify(gameName)
@@ -4421,6 +4425,118 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
+		
+		self:AddCommand({
+			Name = "SilentAim",
+			Description = "Gives you silent aim, [Epitaph] is the prediction of where the bullet would land (RECOMMENDED IN DA HOOD DEFAULT EPITAPH: 0.025)",
+
+			Aliases = {},
+			Arguments = {"Epitaph"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local epitaph = self.getNum(args[1]) or .025
+
+				-- 変数 --
+
+				-- 関数 --
+				
+				if not hookmetamethod then
+					self:Notify(self.Config.SYSTEM.NAME, `Sorry, your exploit doesn't support "hookmetamethod"`, "ERROR", nil, 5)
+					return
+				end
+				
+				local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ezucii/new/main/sourceeeeeeeeeeeeee.lua"))()
+				Aiming.TeamCheck(false)
+				Aiming.ShowFOV = false
+				Aiming.FOV = 50.7
+				
+				local Workspace = game:GetService("Workspace")
+				local Players = game:GetService("Players")
+				local RunService = game:GetService("RunService")
+				local UserInputService = game:GetService("UserInputService")
+
+				local LocalPlayer = Players.LocalPlayer
+				local Mouse = LocalPlayer:GetMouse()
+				local CurrentCamera = Workspace.CurrentCamera
+
+				local DaHoodSettings = {
+					SilentAim = true,
+					AimLock = false,
+					Prediction = 0.121,
+					AimLockKeybind = Enum.KeyCode.E
+				}
+
+				function Aiming.Check()
+					if not (Aiming.Enabled == true and Aiming.Selected ~= LocalPlayer and Aiming.SelectedPart ~= nil) then
+						return false
+					end
+
+					local Character = Aiming.Character(Aiming.Selected)
+					local KOd = Character:WaitForChild("BodyEffects")["K.O"].Value
+					local Grabbed = Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil
+
+					if (KOd or Grabbed) then
+						return false
+					end
+
+					return true
+				end
+
+				local __index
+				__index = hookmetamethod(game, "__index", function(t, k)
+					if (t:IsA("Mouse") and (k == "Hit" or k == "Target") and Aiming.Check()) then
+						local SelectedPart = Aiming.SelectedPart
+
+						if (DaHoodSettings.SilentAim and (k == "Hit" or k == "Target")) then
+							local Hit = SelectedPart.CFrame + (SelectedPart.Velocity * DaHoodSettings.Prediction)
+
+							return (k == "Hit" and Hit or SelectedPart)
+						end
+					end
+
+					return __index(t, k)
+				end)
+
+				local player = game.Players.LocalPlayer
+				local mouse = player:GetMouse()
+				
+				UserInputService.InputBegan:Connect(function(input, gpe)
+					if gpe then return end
+					
+					if input.KeyCode == DaHoodSettings.AimLockKeybind then
+						if Aiming.Enabled == true then
+							Aiming.Enabled = true
+						else
+							Aiming.Enabled = false
+						end
+					end
+				end)
+
+				RunService.RenderStepped:Connect(function()
+					local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+					local Value = tostring(ping)
+					local pingValue = Value:split(" ")
+					local PingNumber = pingValue[1]
+
+					DaHoodSettings.Prediction = PingNumber / 1000 + epitaph
+
+					if Aiming.Character.Humanoid.Jump == true and Aiming.Character.Humanoid.FloorMaterial == Enum.Material.Air then
+						Aiming.TargetPart = "RightFoot"
+					else
+						Aiming.Character:WaitForChild("Humanoid").StateChanged:Connect(function(new)
+							if new == Enum.HumanoidStateType.Freefall then
+								Aiming.TargetPart = "RightFoot"
+							else
+								Aiming.TargetPart = Aiming.SelectedPart
+							end
+						end)
+					end
+				end)
+				
+				self:Notify(self.Config.SYSTEM.NAME, `Press 'E' to activate the silent aim`, "INFO", nil, 5)
+			end,
+		})
 
 		self:AddCommand({
 			Name = "AntiAfk",
@@ -5744,20 +5860,24 @@ function modules.UniversalCommands()
 			Description = "Makes the map look brighter",
 
 			Aliases = {},
-			Arguments = {},
+			Arguments = {"DayTime"},
 
 			Function = function(speaker, args)
 				-- 引数 --
+				local isDayTime = self.getBool(args[1])
 
 				-- 変数 --
 
 				-- 関数 --
 				self.Services.Lighting.FogEnd = 9e9
 				self.Services.Lighting.FogStart = 9e9
-				self.Services.Lighting.ClockTime = 14
 				self.Services.Lighting.Brightness = 2
 				self.Services.Lighting.GlobalShadows = false
-				self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(150, 150, 150)
+				self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
+				
+				if isDayTime then
+					self.Services.Lighting.ClockTime = 14
+				end
 			end,
 		})
 
@@ -5821,10 +5941,11 @@ function modules.UniversalCommands()
 			Description = "See through the walls",
 
 			Aliases = {},
-			Arguments = {},
+			Arguments = {"Transparency"},
 
 			Function = function(speaker, args)
 				-- 引数 --
+				local transparency = self.getNum(args[1])
 
 				-- 変数 --
 
@@ -5834,7 +5955,7 @@ function modules.UniversalCommands()
 						and not v.Parent:FindFirstChildWhichIsA("Humanoid")
 						and not v.Parent.Parent:FindFirstChildWhichIsA("Humanoid")
 					then
-						v.LocalTransparencyModifier = .5
+						v.LocalTransparencyModifier = transparency or .5
 					end
 				end
 			end,
