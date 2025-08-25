@@ -1077,6 +1077,65 @@ function CommandBar.new(config, customGlobalName)
 
 		return found
 	end
+	self.chatted = function(incomeType, func)
+		if not incomeType then
+			return
+		end
+		if not func then
+			return
+		end
+		
+		incomeType = incomeType:lower()
+		
+		if incomeType == "onincomingmessage" then
+			self.spawn(function()
+				self.Services.TextChatService.OnIncomingMessage = function(textChatMessage)
+					if textChatMessage.TextSource and textChatMessage.Status == Enum.TextChatMessageStatus.Success then
+						local sender = textChatMessage.TextSource
+						local message = textChatMessage.Text
+
+						func(sender, message, textChatMessage)
+					end
+				end
+			end)
+			self.spawn(function()
+				for _, player in pairs(self.Services.Players:GetPlayers()) do
+					player.Chatted:Connect(function(message, receiver)
+						func(player, message, {
+							TextChannel = {
+								Name = receiver and "RBXWhisper" or "RBXGeneral"
+							}
+						})
+					end)
+				end
+
+				self.Services.Players.PlayerAdded:Connect(function(player)
+					player.Chatted:Connect(function(message, receiver)
+						func(player, message, {
+							TextChannel = {
+								Name = receiver and "RBXWhisper" or "RBXGeneral"
+							}
+						})
+					end)
+				end)
+			end)
+		else
+			self.spawn(function()
+				self.Services.TextChatService.SendingMessage:Connect(function(textChatMessage)
+					if textChatMessage.TextChannel then
+						local message = textChatMessage.Text
+
+						func(self.LocalPlayer, message)
+					end
+				end)
+			end)
+			self.spawn(function()
+				self.LocalPlayer.Chatted:Connect(function(message)
+					func(self.LocalPlayer, message)
+				end)
+			end)
+		end
+	end
 	
 	self.Config = self.validateConfig(defaultConfig, config or {})
 	
@@ -1594,7 +1653,7 @@ function CommandBar:ConstructUI()
 				and (not self.deletedGlobal)
 			then
 				self.States.teleportCheck = true
-				queueteleport(self.Config.SYSTEM.RELOAD_LOADSTRING)
+				queueteleport(`{self.Config.SYSTEM.RELOAD_LOADSTRING}.new()`)
 			end
 		end)
 		
@@ -1618,19 +1677,9 @@ function CommandBar:ConstructUI()
 			end
 		end
 		
-		if self.Services.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-			self.Services.TextChatService.SendingMessage:Connect(function(textChatMessage)
-				if textChatMessage.TextChannel then
-					local message = textChatMessage.Text
-					
-					onChatted(message)
-				end
-			end)
-		else
-			self.LocalPlayer.Chatted:Connect(function(message)
-				onChatted(message)
-			end)
-		end
+		self.chatted("SendingMessage", function(player, message)
+			onChatted(message)
+		end)
 		
 		
 		self:Notify(self.Config.SYSTEM.NAME, `Welcome to <b>{self.Config.SYSTEM.NAME}</b>! Press <b>';'</b> for command bar.`, "SUCCESS", nil, 15)
