@@ -83,7 +83,7 @@ function CommandBar.new(config, customGlobalName)
 				9298624201, 126194330110954, 15599178512, 139234302013925,
 				73771248610396, 6788434697, 6837338671, 17277889388, 8455137364,
 				92420395367059, 133792836642389, 80984557377373, 18649596490,
-				8765955188, 76362898301770, 183364845, 7920018625,
+				8765955188, 76362898301770, 183364845, 7920018625, 6884476776,
 			},
 		},
 		
@@ -131,6 +131,9 @@ function CommandBar.new(config, customGlobalName)
 			AUTOMATIC_BACKDOOR_SCAN = false,
 			
 			BANG_OFFSET = CFrame.new(0, 0, 1.1),
+			HEADSIT_OFFSET = CFrame.new(0, 2, 0),
+			BACKPACK_OFFSET = CFrame.new(0,0,1.25) * CFrame.Angles(0, -3, 0),
+			STAND_OFFSET = CFrame.new(-3,1,0),
 		},
 		
 		UI = {
@@ -356,6 +359,7 @@ function CommandBar.new(config, customGlobalName)
 		MarketplaceService = game:GetService("MarketplaceService"),
 		LocalizationService = game:GetService("LocalizationService"),
 		CollectionService = game:GetService("CollectionService"),
+		ProximityPromptService = game:GetService("ProximityPromptService"),
 	}
 	self.PreloadedModules = {
 		spring = loadedModules.Spring(),
@@ -1077,7 +1081,6 @@ function CommandBar.new(config, customGlobalName)
 	self.Config = self.validateConfig(defaultConfig, config or {})
 	
 	self.floatName = self.Modules.core:RandomString()
-	self.espName = self.Modules.core:RandomString()
 	self.globalName = globalName
 	
 	if self.Config.COMMANDS.UNIVERSAL_COMMANDS then
@@ -1593,6 +1596,41 @@ function CommandBar:ConstructUI()
 				queueteleport(self.Config.SYSTEM.RELOAD_LOADSTRING)
 			end
 		end)
+		
+		local function onChatted(msg)
+			if string.sub(msg, 1, 3) == "/e " then
+				msg = string.sub(msg, 4)
+			elseif string.sub(msg, 1, 3) == "/v " then
+				msg = string.sub(msg, 4)
+			elseif string.sub(msg, 1, 7) == "/emote " then
+				msg = string.sub(msg, 8)
+			elseif string.sub(msg, 1, 9) == "/version " then
+				msg = string.sub(msg, 10)
+			elseif string.sub(msg, 1, 8) == "/system " then
+				msg = string.sub(msg, 9)
+			elseif string.sub(msg, 1, 7) == "/clear " then
+				msg = string.sub(msg, 8)
+			end
+
+			if string.sub(msg, 1, 1) == self.Config.EXECUTION.PREFIX then
+				self.Modules.parser:Parse(self.LocalPlayer, msg, {})
+			end
+		end
+		
+		if self.Services.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+			self.Services.TextChatService.SendingMessage:Connect(function(textChatMessage)
+				if textChatMessage.TextChannel then
+					local message = textChatMessage.Text
+					
+					onChatted(message)
+				end
+			end)
+		else
+			self.LocalPlayer.Chatted:Connect(function(message)
+				onChatted(message)
+			end)
+		end
+		
 		
 		self:Notify(self.Config.SYSTEM.NAME, `Welcome to <b>{self.Config.SYSTEM.NAME}</b>! Press <b>';'</b> for command bar.`, "SUCCESS", nil, 15)
 	end
