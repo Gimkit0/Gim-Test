@@ -5615,17 +5615,10 @@ function modules.UniversalCommands()
 					if (not target) or (target and self.Services.Players:GetPlayerFromCharacter(target) and target.Name == speaker.Name) then
 						return
 					end
-					
-					local espParent = self.Services.RunService:IsStudio() and speaker.PlayerGui or game:GetService("CoreGui")
-					local espHolder = espParent:FindFirstChild(`{isPlayer and target.UserId or "UNKNOWN"} ESP_FOLDER`)
-					
-					if espHolder then
+					local oldEsp = target:FindFirstChild(self.espName)
+					if oldEsp then
 						return
-					elseif isPlayer then
-						espHolder = Instance.new("Folder", espParent)
-						espHolder.Name = `{isPlayer and target.UserId or "UNKNOWN"} ESP_FOLDER`
 					end
-					
 					local highlightColor = Color3.fromRGB(255, 0, 0)
 					if isPlayer and self.Services.Players:GetPlayerFromCharacter(target) then
 						local player = self.Services.Players:GetPlayerFromCharacter(target)
@@ -5635,14 +5628,13 @@ function modules.UniversalCommands()
 					end
 
 					local hrp = self.fetchHrp(target)
-					
+
 					local highlight = Instance.new("Highlight")
 					highlight.FillColor = highlightColor
 					highlight.FillTransparency = transparency
 					highlight.OutlineColor = highlightColor
-					highlight.Adornee = target
-					highlight.Parent = isPlayer and espHolder or target
-					highlight.Name = "HIGHLIGHT"
+					highlight.Parent = target
+					highlight.Name = self.espName
 
 					local billboard = Instance.new("BillboardGui")
 					billboard.Adornee = hrp
@@ -5691,7 +5683,7 @@ function modules.UniversalCommands()
 						end
 					end)
 
-					table.insert(instances.esp_instances, espHolder)
+					table.insert(instances.esp_instances, highlight)
 				end
 
 				self.addConn("ESP_PLAYER_ADDED", self.safePlayerAdded(function(player)
