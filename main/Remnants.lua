@@ -1081,6 +1081,7 @@ function CommandBar.new(config, customGlobalName)
 	self.Config = self.validateConfig(defaultConfig, config or {})
 	
 	self.floatName = self.Modules.core:RandomString()
+	self.espName = self.Modules.core:RandomString()
 	self.globalName = globalName
 	
 	if self.Config.COMMANDS.UNIVERSAL_COMMANDS then
