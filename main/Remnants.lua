@@ -1100,20 +1100,28 @@ function CommandBar.new(config, customGlobalName)
 			end)
 			self.spawn(function()
 				for _, player in pairs(self.Services.Players:GetPlayers()) do
-					player.Chatted:Connect(function(message, receiver)
+					player.Chatted:Connect(function(message)
+						local isPrivate = string.find(message, "/e ")
+							or string.find(message, "/w ")
+							or string.find(message, "/whisper ")
+						
 						func(player, message, {
 							TextChannel = {
-								Name = receiver and "RBXWhisper" or "RBXGeneral"
+								Name = isPrivate and "RBXWhisper" or "RBXGeneral"
 							}
 						})
 					end)
 				end
 
 				self.Services.Players.PlayerAdded:Connect(function(player)
-					player.Chatted:Connect(function(message, receiver)
+					player.Chatted:Connect(function(message)
+						local isPrivate = string.find(message, "/e ")
+							or string.find(message, "/w ")
+							or string.find(message, "/whisper ")
+						
 						func(player, message, {
 							TextChannel = {
-								Name = receiver and "RBXWhisper" or "RBXGeneral"
+								Name = isPrivate and "RBXWhisper" or "RBXGeneral"
 							}
 						})
 					end)
