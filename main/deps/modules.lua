@@ -9463,7 +9463,7 @@ function modules.UniversalCommands()
 					settingModule = config
 					
 					local returning = {
-						tool = equippedTool,
+						tool = tool,
 						module = settingModule
 					}
 
@@ -9616,6 +9616,54 @@ function modules.UniversalCommands()
 					local tool = getEquippedTool()
 					if tool then
 						tool.module.GravityFactor.Value = 0
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "InfiniteAmmo",
+				Description = "Gives your gun infinite ammo",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					local tool = getEquippedTool()
+					if tool then
+						local reloadRemote = remotes:FindFirstChild("WeaponReloadRequest")
+						if reloadRemote then
+							reloadRemote.Parent = nil
+						end
+						
+						self:Notify(self.Config.SYSTEM.NAME, `Requires you to reload once for this to work`, "INFO", nil, 5)
+						
+						tool.module.AmmoCapacity.Value = 9e9
+						tool.tool.Equipped:Connect(function()
+							if reloadRemote then
+								reloadRemote.Parent = nil
+							end
+						end)
+						tool.tool.Unequipped:Connect(function()
+							if reloadRemote then
+								reloadRemote.Parent = remotes
+							end
+						end)
+						tool.tool.Destroying:Connect(function()
+							if reloadRemote then
+								reloadRemote.Parent = remotes
+							end
+						end)
+						tool.module.AmmoCapacity:GetPropertyChangedSignal("Value"):Connect(function()
+							for index = 1, 10 do
+								tool.module.AmmoCapacity.Value = 9e9
+								task.wait()
+							end
+						end)
 					end
 				end,
 			})
