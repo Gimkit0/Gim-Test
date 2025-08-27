@@ -1087,10 +1087,12 @@ function CommandBar.new(config, customGlobalName)
 		
 		incomeType = incomeType:lower()
 		
+		local debounced = false
 		if incomeType == "onincomingmessage" then
 			self.spawn(function()
 				self.Services.TextChatService.OnIncomingMessage = function(textChatMessage)
-					if textChatMessage.TextSource and textChatMessage.Status == Enum.TextChatMessageStatus.Success then
+					debounced = true
+					if textChatMessage.TextSource then
 						local sender = textChatMessage.TextSource
 						local message = textChatMessage.Text
 
@@ -1099,26 +1101,19 @@ function CommandBar.new(config, customGlobalName)
 				end
 			end)
 			self.spawn(function()
-				for _, player in pairs(self.Services.Players:GetPlayers()) do
+				self.safePlayerAdded(function(player)
 					player.Chatted:Connect(function(message)
+						task.wait(.25)
+						
+						if debounced then
+							return
+						end
+						
 						local isPrivate = string.find(message, "/e ")
 							or string.find(message, "/w ")
 							or string.find(message, "/whisper ")
-						
-						func(player, message, {
-							TextChannel = {
-								Name = isPrivate and "RBXWhisper" or "RBXGeneral"
-							}
-						})
-					end)
-				end
+							or string.find(message, "/team ")
 
-				self.Services.Players.PlayerAdded:Connect(function(player)
-					player.Chatted:Connect(function(message)
-						local isPrivate = string.find(message, "/e ")
-							or string.find(message, "/w ")
-							or string.find(message, "/whisper ")
-						
 						func(player, message, {
 							TextChannel = {
 								Name = isPrivate and "RBXWhisper" or "RBXGeneral"
@@ -1130,6 +1125,12 @@ function CommandBar.new(config, customGlobalName)
 		else
 			self.spawn(function()
 				self.Services.TextChatService.SendingMessage:Connect(function(textChatMessage)
+					task.wait(.25)
+					
+					if debounced then
+						return
+					end
+					
 					if textChatMessage.TextChannel then
 						local message = textChatMessage.Text
 
@@ -1139,6 +1140,7 @@ function CommandBar.new(config, customGlobalName)
 			end)
 			self.spawn(function()
 				self.LocalPlayer.Chatted:Connect(function(message)
+					debounced = true
 					func(self.LocalPlayer, message)
 				end)
 			end)
