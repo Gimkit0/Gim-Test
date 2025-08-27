@@ -6010,7 +6010,12 @@ function modules.UniversalCommands()
 					end
 					
 					self.spawn(function()
-						if textChatMessage.TextChannel and textChatMessage.TextChannel.Name == "RBXWhisper" then
+						if textChatMessage.TextChannel 
+							and (
+								string.sub(textChatMessage.TextChannel.Name, 1, 10) == "RBXWhisper"
+									or string.sub(textChatMessage.TextChannel.Name, 1, 7) == "RBXTeam"
+							)
+						then
 							local systemChannel = self.Services.TextChatService:FindFirstChild("TextChannels"):FindFirstChild("RBXSystem")
 							if systemChannel then
 								systemChannel:DisplaySystemMessage(string.format(
