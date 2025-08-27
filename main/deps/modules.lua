@@ -6034,7 +6034,7 @@ function modules.UniversalCommands()
 				self.chatted("OnIncomingMessage", function(player, message, otherInfo)
 					onChatted(player, message, otherInfo)
 				end)
-
+				
 				self.onThemeChange(function(theme)
 					spyProperties.Color = self.Theme.THEME_COLOR
 				end)
@@ -7513,8 +7513,11 @@ function modules.UniversalCommands()
 						end
 						
 						if returned then
-							while hum.Health > 0 do
+							local damageTicks = 0
+							
+							while hum.Health > 0 and damageTicks < 75 do
 								doDamage()
+								damageTicks += 1
 								task.wait(.1)
 							end
 						end
@@ -9355,6 +9358,265 @@ function modules.UniversalCommands()
 
 						end)
 					end)
+				end,
+			})
+		end)
+		
+		loadDetection("Roblox Gun System", function()
+			local gunFolder = self.Services.ReplicatedStorage:FindFirstChild("WeaponsSystem")
+			if gunFolder then
+				if gunFolder:FindFirstChild("NetworkingCallbacks") then
+					return true
+				end
+			end
+			return false
+		end, function()
+			local gunFolder = self.Services.ReplicatedStorage:FindFirstChild("WeaponsSystem")
+			local remotes = gunFolder:FindFirstChild("Network")
+			
+			local equippedTool = nil
+			
+			local function setEquippedTool()
+				local settingModule = nil
+
+				local tool
+				for _, item in ipairs(self.LocalPlayer.Backpack:GetChildren()) do
+					if item:IsA("BackpackItem")
+						and item:FindFirstChild("Configuration")
+					then
+						local config = item:WaitForChild("Configuration")
+						if config:FindFirstChild("AmmoCapacity")
+							and config:FindFirstChild("GravityFactor")
+						then
+							tool = item
+						end
+						break
+					end
+				end
+				if not tool then
+					for _, item in ipairs(self.LocalPlayer.Character:GetChildren()) do
+						if item:IsA("BackpackItem")
+							and item:FindFirstChild("Configuration")
+						then
+							local config = item:FindFirstChild("Configuration")
+							if config:FindFirstChild("AmmoCapacity")
+								and config:FindFirstChild("GravityFactor")
+							then
+								tool = item
+							end
+							break
+						end
+					end
+				end
+
+				if tool then
+					local config = tool:WaitForChild("Configuration")
+					settingModule = config
+				end
+
+				if equippedTool then
+					local returning = {
+						tool = equippedTool,
+						module = settingModule
+					}
+
+					return returning
+				end
+
+				if tool then
+					equippedTool = tool
+					equippedTool.Destroying:Connect(function()
+						equippedTool = nil
+					end)
+
+					local returning = {
+						tool = tool,
+						module = settingModule
+					}
+
+					return returning
+				end
+
+				return nil
+			end
+			
+			local function getEquippedTool()
+				local tool = nil
+				local settingModule = nil
+				
+				for _, item in ipairs(self.LocalPlayer.Character:GetChildren()) do
+					if item:IsA("BackpackItem")
+						and item:FindFirstChild("Configuration")
+					then
+						local config = item:FindFirstChild("Configuration")
+						if config:FindFirstChild("AmmoCapacity")
+							and config:FindFirstChild("GravityFactor")
+						then
+							tool = item
+						end
+						break
+					end
+				end
+				
+				if tool then
+					local config = tool:WaitForChild("Configuration")
+					settingModule = config
+					
+					local returning = {
+						tool = equippedTool,
+						module = settingModule
+					}
+
+					return returning
+				end
+				return nil
+			end
+			
+			local function kill(character)
+				local hum = self.fetchHum(character)
+				local hrp = self.fetchHrp(character)
+				
+				if hum and hrp then
+					local damageTicks = 0
+					self.spawn(function()
+						while hum.Health > 0 and damageTicks < 75 do
+							local tool = setEquippedTool()
+							if not tool then
+								break
+							end
+							
+							damageTicks += 1
+							
+							for index = 1, 10 do
+								remotes.WeaponHit:FireServer(tool.tool, {
+									p = Vector3.new(0,0,0),
+									part = hrp,
+									h = hrp,
+									d = 0,
+									maxDist = 10000,
+									n = Vector3.yAxis,
+								})
+							end
+							
+							
+							task.wait(.1)
+						end
+					end)
+				end
+			end
+			
+			self:AddCommand({
+				Name = "Kill",
+				Description = "Kills the [Player]",
+
+				Aliases = {"CommitDie", "Die"},
+				Arguments = {"Player"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local user = args[1]
+
+					-- 変数 --
+					local users = self.getPlayer(speaker, user)
+
+					-- 関数 --
+					for index, player in next, users do
+						if player.Character then
+							kill(player.Character)
+						end
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "SetCooldown",
+				Description = "Sets the firerate of gun to [FireRate]",
+
+				Aliases = {"SetFireRate"},
+				Arguments = {"FireRate"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local firerate = self.getNum(args[1]) or 0
+
+					-- 変数 --
+
+					-- 関数 --
+					local tool = getEquippedTool()
+					if tool then
+						tool.module.ShotCooldown.Value = firerate
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "NoRecoil",
+				Description = "Sets the recoil of gun to no recoil",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					
+					-- 変数 --
+
+					-- 関数 --
+					local tool = getEquippedTool()
+					if tool then
+						tool.module.RecoilMin.Value = 0
+						tool.module.RecoilMax.Value = 0
+						tool.module.MaxSpread.Value = 0
+						tool.module.TotalRecoilMax.Value = 0
+						tool.module.RecoilDecay.Value = 0
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "RapidFire",
+				Description = "Makes your gun automatic",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					local tool = getEquippedTool()
+					if tool then
+						if tool.module:FindFirstChild("FireMode") then
+							tool.module.FireMode.Value = "Automatic"
+						else
+							local newValue = Instance.new("StringValue")
+							newValue.Name = "FireMode"
+							newValue.Value = "Automatic"
+							newValue.Parent = tool.module
+						end
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "InfiniteRange",
+				Description = "Sets the range of gun to infinite",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					local tool = getEquippedTool()
+					if tool then
+						tool.module.GravityFactor.Value = 0
+					end
 				end,
 			})
 		end)
