@@ -7555,6 +7555,18 @@ function modules.UniversalCommands()
 			})
 
 			self:AddCommand({
+				Name = "PianoPlayer",
+				Description = "Lets you play audios in MIDI format",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/pianoPlayer.lua"))()
+				end,
+			})
+
+			self:AddCommand({
 				Name = "TheCursedScript",
 				Description = "Puts a curse in the map (SCARY)",
 
@@ -8549,6 +8561,18 @@ function modules.UniversalCommands()
 							end
 						end
 					end
+				end,
+			})
+
+			self:AddCommand({
+				Name = "PianoPlayer",
+				Description = "Lets you play audios in MIDI format",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/pianoPlayer.lua"))()
 				end,
 			})
 
