@@ -25,16 +25,16 @@ G2L["2"] = Instance.new("LocalScript", G2L["1"]);
 G2L["2"]["Name"] = [[Client]];
 
 
--- StarterGui.PianoPlayer.Client.MIDIPlayer
-G2L["3"] = Instance.new("ModuleScript", G2L["2"]);
-G2L["3"]["Name"] = [[MIDIPlayer]];
-
-
 -- StarterGui.PianoPlayer.Client.Beep
-G2L["4"] = Instance.new("Sound", G2L["2"]);
-G2L["4"]["Volume"] = 3;
-G2L["4"]["Name"] = [[Beep]];
-G2L["4"]["SoundId"] = [[rbxassetid://100927904163801]];
+G2L["3"] = Instance.new("Sound", G2L["2"]);
+G2L["3"]["Volume"] = 3;
+G2L["3"]["Name"] = [[Beep]];
+G2L["3"]["SoundId"] = [[rbxassetid://100927904163801]];
+
+
+-- StarterGui.PianoPlayer.Client.MIDIPlayer
+G2L["4"] = Instance.new("ModuleScript", G2L["2"]);
+G2L["4"]["Name"] = [[MIDIPlayer]];
 
 
 -- StarterGui.PianoPlayer.Main
@@ -301,9 +301,9 @@ local function require(Module:ModuleScript)
     return G2L_REQUIRE(Module);
 end
 
-G2L_MODULES[G2L["3"]] = {
+G2L_MODULES[G2L["4"]] = {
 Closure = function()
-    local script = G2L["3"];local HttpService = game:GetService("HttpService")
+    local script = G2L["4"];local HttpService = game:GetService("HttpService")
 local SoundService = game:GetService("SoundService")
 
 local MIDIPlayer = {}
@@ -311,19 +311,17 @@ local baseFrequency = 440
 
 local activeBeeps = {}
 local lastBaseProps = {}
-
 local currentSession = 0
-
 local currentBaseSound = nil
-
 local isPlaying = false
 
 local function midiToPitch(midiNumber)
 	local freq = 440 * (2 ^ ((midiNumber - 69) / 12))
 	return freq / baseFrequency
 end
+
 local function updateLastProps(newSound)
-	lastBaseProps.Sound = newSound.Volume
+	lastBaseProps.Volume = newSound.Volume
 end
 
 function MIDIPlayer.PlaySong(json, baseSound, onBeepPlayed)
@@ -335,13 +333,46 @@ function MIDIPlayer.PlaySong(json, baseSound, onBeepPlayed)
 
 	MIDIPlayer.StopSong()
 
-	local data = HttpService:JSONDecode(json)
-	local track = data.tracks[1]
-	local notes = track.notes
+	local data
+	local success, err = pcall(function()
+		data = HttpService:JSONDecode(json)
+	end)
+	if not success or not data then
+		return
+	end
+	
+	local bpm = data.header.bpm or 120
+	local secondsPerBeat = 60 / bpm
+
+	local allNotes = {}
+	for _, track in ipairs(data.tracks or {}) do
+		if track.notes and #track.notes > 0 then
+			for _, note in ipairs(track.notes) do
+				table.insert(allNotes, note)
+			end
+		end
+	end
+
+	if #allNotes == 0 then
+		return
+	end
+
+	table.sort(allNotes, function(a, b)
+		return a.time < b.time
+	end)
+
+	local bpm = (data.header and data.header.bpm) or 120
+	local secondsPerBeat = ((bpm/120)*120) / bpm
+	
+	if allNotes[1] and allNotes[1].time < 10 then
+		for _, note in ipairs(allNotes) do
+			note.time = note.time * secondsPerBeat
+			note.duration = (note.duration or 0.25) * secondsPerBeat
+		end
+	end
 
 	isPlaying = true
 	currentSession += 1
-	
 	local thisSession = currentSession
 
 	task.spawn(function()
@@ -349,27 +380,31 @@ function MIDIPlayer.PlaySong(json, baseSound, onBeepPlayed)
 		currentBaseSound = baseSound
 		updateLastProps(currentBaseSound)
 
-		for _, note in ipairs(notes) do
+		for _, note in ipairs(allNotes) do
 			if not isPlaying or thisSession ~= currentSession then break end
+
 			task.spawn(function()
-				local waitTime = note.time - (os.clock() - startTime)
+				note.time = note.time * secondsPerBeat
+				note.duration = note.duration * secondsPerBeat
+				
+				local waitTime = (note.time) - (os.clock() - startTime)
 				if waitTime > 0 then task.wait(waitTime) end
 
 				if not isPlaying or thisSession ~= currentSession then return end
 
 				local beep = currentBaseSound:Clone()
 				beep.Parent = SoundService
-				beep.PlaybackSpeed = midiToPitch(note.midi) + (baseSound.PlaybackSpeed - 1)
-				beep.Volume = math.clamp(note.velocity or baseSound.Volume / 5, 0, baseSound.Volume / 5)
-				beep.Name = note.name or beep.Name
+				beep.PlaybackSpeed = midiToPitch(note.midi or 60) + ((baseSound.PlaybackSpeed or 1) - 1)
+				beep.Volume = math.clamp((baseSound.Volume / 8) + (note.velocity or 0.5) / 3, 0, 1)
+				beep.Name = note.name or ("Note_" .. tostring(note.midi or 0))
 				beep:Play()
-				
+
 				if type(onBeepPlayed) == "function" then
 					onBeepPlayed(beep)
 				end
 
 				table.insert(activeBeeps, beep)
-				game:GetService("Debris"):AddItem(beep, (beep.TimeLength or note.duration) + 0.1)
+				game:GetService("Debris"):AddItem(beep, (beep.TimeLength + ((note.duration/2) or .5)) + .1)
 			end)
 		end
 	end)
@@ -377,23 +412,23 @@ end
 
 function MIDIPlayer.StopSong()
 	if not isPlaying then return end
-	
+
 	isPlaying = false
 	currentSession += 1
-	
-	if currentBaseSound then
-		currentBaseSound:Destroy()
-		currentBaseSound = nil
-	end
 
-	for i, beep in ipairs(activeBeeps) do
+	for _, beep in ipairs(activeBeeps) do
 		if beep and beep:IsA("Sound") then
 			beep:Stop()
 			beep:Destroy()
 		end
 	end
-
 	activeBeeps = {}
+
+	if currentBaseSound then
+		currentBaseSound:Destroy()
+	end
+
+	currentBaseSound = nil
 end
 
 function MIDIPlayer.SetVolume(volume)
@@ -481,4 +516,4 @@ local script = G2L["2"];
 end;
 task.spawn(C_2);
 
-return G2L["1"], require;
+return G2L["1"];
