@@ -1746,6 +1746,18 @@ function modules.Core()
 		end
 	end
 
+	function Core:StopAllAnimations()
+		local hum = self.Client.fetchHum(self.Client.LocalPlayer.Character)
+		if hum then
+			local animator = hum:FindFirstChild("Animator")
+			if animator then
+				for i, v in pairs(animator:GetPlayingAnimationTracks()) do
+					v:Stop()
+				end
+			end
+		end
+	end
+
 	function Core:SetAnimationSpeed(speed)
 		if self.Storage.instances.animation then
 			self.Storage.instances.animation.anim:AdjustSpeed(speed)
@@ -8984,6 +8996,58 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					self.stopLoop("GLITCHIFY")
+				end,
+			})
+
+			self:AddCommand({
+				Name = "Skybox",
+				Description = "Sets the skybox to [TShirt] (DONT WORK IN R6)",
+
+				Aliases = {},
+				Arguments = {"TShirt"},
+
+				Function = function(speaker, args)
+					-- 引数 --
+					local tshirt = args[1]
+
+					-- 変数 --
+
+					-- 関数 --
+					if self.Modules.core:IsRigType(speaker.Character, "R6") then
+						self:Notify(self.Config.SYSTEM.NAME, `Doesn't work in R6`, "ERROR", nil, 5)
+						return
+					end
+					
+					transform({
+						Clothing = {
+							TShirt = tonumber(args[1]),
+						},
+						Body = {
+							Torso = {
+								Mesh = 100839513065432,
+							},
+							Head = {
+								Mesh = 15093053680,
+							},
+							LeftLeg = {
+								Mesh = 139607673,
+							},
+							RightLeg = {
+								Mesh = 139607718,
+							},
+						},
+					})
+					
+					local animationScript = speaker.Character:FindFirstChild("Animate")
+					if animationScript then
+						animationScript:Destroy()
+					end
+					self.Modules.core:StopAllAnimations()
+					
+					local anim = self.Modules.core:PlayAnimation(101852027997337, {
+						TimePosition = 2,
+					}, true)
+					anim:AdjustSpeed(0)
 				end,
 			})
 
