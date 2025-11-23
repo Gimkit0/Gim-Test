@@ -3168,6 +3168,49 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
+        loadSupportedGame(6022383883, function()
+            self:AddCommand({
+				Name = "InfiniteMoney",
+				Description = "Gives you infinite money.",
+
+				Aliases = {"InfMoney"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					self.Services.ReplicatedStorage.Configuration["Core Systems"].Datastore.GiveCurrency:FireServer({ Type = "Diamond", Amount = 9e9 })
+                    self.Services.ReplicatedStorage.Configuration["Core Systems"].Datastore.GiveCurrency:FireServer({ Type = "Money", Amount = 9e9 })
+				end,
+			})
+
+            self:AddCommand({
+				Name = "Lag",
+				Description = "Lags the server tremendously",
+
+				Aliases = {"ServerLag"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+                    local accessoryEvent = self.Services.ReplicatedStorage.Configuration["Gameplay Mechanics"].EquipAccessory
+                    local equipTicks = 0
+
+					-- 関数 --
+					while equipTicks <= 10000 do
+                        accessoryEvent:FireServer()
+                        equipTicks += 1
+                        task.wait()
+                    end
+				end,
+			})
+        end)
+
 		loadSupportedGame(1662219031, function()
 			local wearItem = self.Services.ReplicatedStorage:WaitForChild("WearItem")
 
