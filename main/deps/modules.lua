@@ -7282,9 +7282,11 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					while task.wait() do
-						if self.Mouse.Target then
-							gameRemotes.AcceptBreakBlock:InvokeServer()
-						end
+						self.spawn(function()
+							if self.Mouse.Target then
+								gameRemotes.AcceptBreakBlock:InvokeServer()
+							end
+						end)
 					end
 				end,
 			})
