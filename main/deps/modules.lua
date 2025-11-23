@@ -1711,13 +1711,13 @@ function modules.Core()
 			local animation = animator:LoadAnimation(anim)
 
 			animation:Play()
-			
+
 			if type(properties) == "table" then
 				for i, v in pairs(properties) do
 					animation[i] = v
 				end
 			end
-			
+
 			animation.Stopped:Connect(function()
 				animation:Destroy()
 			end)
@@ -2721,11 +2721,11 @@ function modules.UniversalCommands()
 
 		local universalConnections = {
 			bangDied = nil,
-			
+
 			headSitDied = nil,
-			
+
 			backpackDied = nil,
-			
+
 			standDied = nil,
 
 			invisFix = nil,
@@ -4437,7 +4437,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "SilentAim",
 			Description = "Gives you silent aim, [Epitaph] is the prediction of where the bullet would land (RECOMMENDED IN DA HOOD DEFAULT EPITAPH: 0.025)",
@@ -4452,17 +4452,17 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				
+
 				if not hookmetamethod then
 					self:Notify(self.Config.SYSTEM.NAME, `Sorry, your exploit doesn't support "hookmetamethod"`, "ERROR", nil, 5)
 					return
 				end
-				
+
 				local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ezucii/new/main/sourceeeeeeeeeeeeee.lua"))()
 				Aiming.TeamCheck(false)
 				Aiming.ShowFOV = false
 				Aiming.FOV = 50.7
-				
+
 				local Workspace = game:GetService("Workspace")
 				local Players = game:GetService("Players")
 				local RunService = game:GetService("RunService")
@@ -4512,10 +4512,10 @@ function modules.UniversalCommands()
 
 				local player = game.Players.LocalPlayer
 				local mouse = player:GetMouse()
-				
+
 				UserInputService.InputBegan:Connect(function(input, gpe)
 					if gpe then return end
-					
+
 					if input.KeyCode == DaHoodSettings.AimLockKeybind then
 						if Aiming.Enabled == true then
 							Aiming.Enabled = true
@@ -4545,7 +4545,7 @@ function modules.UniversalCommands()
 						end)
 					end
 				end)
-				
+
 				self:Notify(self.Config.SYSTEM.NAME, `Press 'E' to activate the silent aim`, "INFO", nil, 5)
 			end,
 		})
@@ -5010,7 +5010,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Headsit",
 			Description = "Makes you sit on [Player]s head",
@@ -5024,7 +5024,7 @@ function modules.UniversalCommands()
 
 				-- 変数 --
 				local users = self.getPlayer(speaker, user)
-				
+
 				local speakerHrp = self.fetchHrp(speaker.Character)
 				local hum = self.fetchHum(speaker.Character)
 
@@ -5055,7 +5055,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Backpack",
 			Description = "Makes you sit on [Player]s back",
@@ -5100,7 +5100,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Stand",
 			Description = "Makes you become the stand of [Player]",
@@ -5114,7 +5114,7 @@ function modules.UniversalCommands()
 
 				-- 変数 --
 				local users = self.getPlayer(speaker, user)
-				
+
 				local anim = 13823324057
 
 				local speakerHrp = self.fetchHrp(speaker.Character)
@@ -5122,7 +5122,7 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				self.Modules.parser:RunCommand(speaker, "unstand")
-				
+
 				if self.Modules.core:IsRigType(speaker.Character, "R6") then
 					self:Notify(self.Config.SYSTEM.NAME, `Doesn't support R6 yet`, "ERROR", nil, 5)
 					return
@@ -5176,7 +5176,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unheadsit",
 			Description = "Stops making you sit on the targets head",
@@ -5193,7 +5193,7 @@ function modules.UniversalCommands()
 				-- 関数 --
 				if universalConnections.headSitDied then
 					self.stopLoop("HEADSITTING")
-					
+
 					if hum then
 						hum.Sit = false
 					end
@@ -5203,7 +5203,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unbackpack",
 			Description = "Stops making you sit on the targets back",
@@ -5230,7 +5230,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unstand",
 			Description = "Stops making you a stand",
@@ -5886,7 +5886,7 @@ function modules.UniversalCommands()
 				self.Services.Lighting.Brightness = 2
 				self.Services.Lighting.GlobalShadows = false
 				self.Services.Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
-				
+
 				if isDayTime then
 					self.Services.Lighting.ClockTime = 14
 				end
@@ -6020,7 +6020,7 @@ function modules.UniversalCommands()
 							return
 						end
 					end
-					
+
 					self.spawn(function()
 						if textChatMessage.TextChannel 
 							and (
@@ -6047,11 +6047,11 @@ function modules.UniversalCommands()
 						end
 					end)
 				end
-				
+
 				self.chatted("OnIncomingMessage", function(player, message, otherInfo)
 					onChatted(player, message, otherInfo)
 				end)
-				
+
 				self.onThemeChange(function(theme)
 					spyProperties.Color = self.Theme.THEME_COLOR
 				end)
@@ -6276,7 +6276,7 @@ function modules.UniversalCommands()
 				light.Shadows = false
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Light",
 			Description = "Makes you emit light",
@@ -6293,7 +6293,7 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				local hrp = self.fetchHrp(speaker.Character)
-				
+
 				if hrp then
 					local light = Instance.new("PointLight", hrp)
 					light.Brightness = brightness or 5
@@ -6304,7 +6304,7 @@ function modules.UniversalCommands()
 				end
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Unlight",
 			Description = "Stops making you emit light",
@@ -6565,7 +6565,7 @@ function modules.UniversalCommands()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/simpleSpyV3.lua"))()
 			end,
 		})
-		
+
 		self:AddCommand({
 			Name = "Rem",
 			Description = "Loads a very powerful logger",
@@ -6579,7 +6579,7 @@ function modules.UniversalCommands()
 				-- 変数 --
 
 				-- 関数 --
-				
+
 				loadstring(game:HttpGet("https://e-vil.com/anbu/rem.lua"))()
 			end,
 		})
@@ -6721,13 +6721,13 @@ function modules.UniversalCommands()
 								if size == 1 then
 									hrp.Size = useHead and Vector3.new(1.164, 1.146, 1.163) or  Vector3.new(2, 1, 1)
 									hrp:SetAttribute("LastCollision", hrp.CanCollide)
-									
+
 									if hrp.CanCollide then
 										hrp.CanCollide = false
 									end
 								else
 									hrp.Size = newSize
-									
+
 									if hrp:GetAttribute("LastCollision") then
 										hrp.CanCollide = hrp:GetAttribute("LastCollision")
 									end
@@ -7220,6 +7220,142 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
+		
+		loadDetection("VoxelCraft", function()
+			local gameRemotes = self.Services.ReplicatedStorage:FindFirstChild("GameRemotes")
+			if gameRemotes then
+				local attack = gameRemotes:FindFirstChild("Attack")
+				local sortItem = gameRemotes:FindFirstChild("SortItem")
+				
+				if attack and sortItem then
+					return true
+				end
+			end
+		end, function()
+			local gameRemotes = self.Services.ReplicatedStorage:FindFirstChild("GameRemotes")
+			
+			self:AddCommand({
+				Name = "Dupe",
+				Description = "Activates duplication of items, press Z to activate (REQUIRES CHEST)",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/voxelDupe.lua"))()
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "KillAura",
+				Description = "Kills people near you",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/voxelKillAura.lua"))()
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "InstantBreak",
+				Description = "Allows you to break some things instantly",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					while task.wait() do
+						if self.Mouse.Target then
+							gameRemotes.AcceptBreakBlock:InvokeServer()
+						end
+					end
+				end,
+			})
+		end)
+		loadDetection("Minecraft Alpha", function()
+			local updatePlayer = self.Services.ReplicatedStorage:FindFirstChild("UpdatePlayer")
+			local updateWorld = self.Services.ReplicatedStorage:FindFirstChild("UpdateWorld")
+			
+			if updatePlayer and updateWorld then
+				return true
+			end
+		end, function()
+			self:AddCommand({
+				Name = "EnableFly",
+				Description = "Makes you able to fly (MINECRAFT)",
+
+				Aliases = {"CanFly"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if speaker.Character then
+						if not speaker.Character:FindFirstChild("Creative") then
+							local val = Instance.new("BoolValue", speaker.Character)
+							val.Name = "Creative"
+							val.Value = true
+						end
+						
+						self:Notify(self.Config.SYSTEM.NAME, `Double tap space to fly`, "SUCCESS", nil, 5)
+					end
+				end,
+			})
+			
+			self:AddCommand({
+				Name = "DisableDrowning",
+				Description = "Makes you unable to drown",
+
+				Aliases = {"NoDrowning"},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if speaker.PlayerScripts then
+						local scr = speaker.PlayerScripts:FindFirstChild("UnderWater")
+						local bubbleValue = speaker.PlayerScripts:FindFirstChild("bubble")
+						if scr then
+							scr.Enabled = false
+							if bubbleValue then
+								bubbleValue.Value = 10
+							end
+							scr:GetPropertyChangedSignal("Enabled"):Connect(function()
+								scr.Enabled = false
+								if bubbleValue then
+									bubbleValue.Value = 10
+								end
+							end)
+						end
+
+						self:Notify(self.Config.SYSTEM.NAME, `Cannot drown now`, "SUCCESS", nil, 5)
+					end
+				end,
+			})
+		end)
 
 		loadDetection("Reward System", function()
 			local rewardEvent
@@ -7528,10 +7664,10 @@ function modules.UniversalCommands()
 								end)
 							end
 						end
-						
+
 						if returned then
 							local damageTicks = 0
-							
+
 							while hum.Health > 0 and damageTicks < 75 do
 								doDamage()
 								damageTicks += 1
@@ -8348,7 +8484,7 @@ function modules.UniversalCommands()
 						kill,
 						remotes
 					}
-					
+
 					if self.Services.RunService:IsStudio() then
 						require(script.GokuTool)(
 							self,
@@ -8455,7 +8591,7 @@ function modules.UniversalCommands()
 							local hum = self.fetchHum(player.Character)
 							if player.Character:FindFirstChild("Head") and hum then
 								setEquippedTool()
-								
+
 								self.spawn(function()
 									while hum.Health > 0 do
 										self.spawn(function()
@@ -9017,7 +9153,7 @@ function modules.UniversalCommands()
 						self:Notify(self.Config.SYSTEM.NAME, `Doesn't work in R6`, "ERROR", nil, 5)
 						return
 					end
-					
+
 					transform({
 						Clothing = {
 							TShirt = tonumber(args[1]),
@@ -9037,13 +9173,13 @@ function modules.UniversalCommands()
 							},
 						},
 					})
-					
+
 					local animationScript = speaker.Character:FindFirstChild("Animate")
 					if animationScript then
 						animationScript:Destroy()
 					end
 					self.Modules.core:StopAllAnimations()
-					
+
 					local anim = self.Modules.core:PlayAnimation(101852027997337, {
 						TimePosition = 2,
 					}, true)
@@ -9194,12 +9330,12 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					local character = speaker.Character
-					
+
 					if self.Modules.core:IsRigType(character, "R6") then
 						self:Notify(self.Config.SYSTEM.NAME, `Doesn't work in R6`, "ERROR", nil, 5)
 						return
 					end
-					
+
 					transform({
 						Body = {
 							Head = {
@@ -9224,7 +9360,7 @@ function modules.UniversalCommands()
 					})
 				end
 			})
-			
+
 			self:AddCommand({
 				Name = "HardCrash",
 				Description = "Crashes the Roblox Player of everyone",
@@ -9288,7 +9424,7 @@ function modules.UniversalCommands()
 							Puffiness = 1,
 						})
 					end
-					
+
 					transform({
 						Accessories = accesoryList,
 						RightLeg = 130887057643589,
@@ -9454,7 +9590,7 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-		
+
 		loadDetection("Roblox Gun System", function()
 			local gunFolder = self.Services.ReplicatedStorage:FindFirstChild("WeaponsSystem")
 			if gunFolder then
@@ -9466,9 +9602,9 @@ function modules.UniversalCommands()
 		end, function()
 			local gunFolder = self.Services.ReplicatedStorage:FindFirstChild("WeaponsSystem")
 			local remotes = gunFolder:FindFirstChild("Network")
-			
+
 			local equippedTool = nil
-			
+
 			local function setEquippedTool()
 				local settingModule = nil
 
@@ -9532,11 +9668,11 @@ function modules.UniversalCommands()
 
 				return nil
 			end
-			
+
 			local function getEquippedTool()
 				local tool = nil
 				local settingModule = nil
-				
+
 				for _, item in ipairs(self.LocalPlayer.Character:GetChildren()) do
 					if item:IsA("BackpackItem")
 						and item:FindFirstChild("Configuration")
@@ -9550,11 +9686,11 @@ function modules.UniversalCommands()
 						break
 					end
 				end
-				
+
 				if tool then
 					local config = tool:WaitForChild("Configuration")
 					settingModule = config
-					
+
 					local returning = {
 						tool = tool,
 						module = settingModule
@@ -9564,11 +9700,11 @@ function modules.UniversalCommands()
 				end
 				return nil
 			end
-			
+
 			local function kill(character)
 				local hum = self.fetchHum(character)
 				local hrp = self.fetchHrp(character)
-				
+
 				if hum and hrp then
 					local damageTicks = 0
 					self.spawn(function()
@@ -9577,9 +9713,9 @@ function modules.UniversalCommands()
 							if not tool then
 								break
 							end
-							
+
 							damageTicks += 1
-							
+
 							for index = 1, 10 do
 								remotes.WeaponHit:FireServer(tool.tool, {
 									p = Vector3.new(0,0,0),
@@ -9590,14 +9726,14 @@ function modules.UniversalCommands()
 									n = Vector3.yAxis,
 								})
 							end
-							
-							
+
+
 							task.wait(.1)
 						end
 					end)
 				end
 			end
-			
+
 			self:AddCommand({
 				Name = "Kill",
 				Description = "Kills the [Player]",
@@ -9620,7 +9756,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "SetCooldown",
 				Description = "Sets the firerate of gun to [FireRate]",
@@ -9641,7 +9777,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "NoRecoil",
 				Description = "Sets the recoil of gun to no recoil",
@@ -9651,7 +9787,7 @@ function modules.UniversalCommands()
 
 				Function = function(speaker, args)
 					-- 引数 --
-					
+
 					-- 変数 --
 
 					-- 関数 --
@@ -9665,7 +9801,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "RapidFire",
 				Description = "Makes your gun automatic",
@@ -9692,7 +9828,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "InfiniteRange",
 				Description = "Sets the range of gun to infinite",
@@ -9712,7 +9848,7 @@ function modules.UniversalCommands()
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "InfiniteAmmo",
 				Description = "Gives your gun infinite ammo",
@@ -9732,9 +9868,9 @@ function modules.UniversalCommands()
 						if reloadRemote then
 							reloadRemote.Parent = nil
 						end
-						
+
 						self:Notify(self.Config.SYSTEM.NAME, `Requires you to reload once for this to work`, "INFO", nil, 5)
-						
+
 						tool.module.AmmoCapacity.Value = 9e9
 						tool.tool.Equipped:Connect(function()
 							if reloadRemote then
