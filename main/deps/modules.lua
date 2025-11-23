@@ -3202,6 +3202,10 @@ function modules.UniversalCommands()
                     local equipTicks = 0
 
 					-- 関数 --
+                    if speaker.Character then
+                        speaker.Character:Destroy()
+                    end
+
 					while equipTicks <= 10000 do
                         accessoryEvent:FireServer()
                         equipTicks += 1
