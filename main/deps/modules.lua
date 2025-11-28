@@ -7868,7 +7868,7 @@ function modules.UniversalCommands()
 						moveTo(fakePart)
 					end
 
-					local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
+					local projectileHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua"))() --require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
 
 					local scaryAudios = {
 						{Id = 8378983497, Volume = 1.5, Pitch = .5},
