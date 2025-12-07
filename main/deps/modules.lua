@@ -3168,8 +3168,8 @@ function modules.UniversalCommands()
 				end,
 			})
 		end)
-        loadSupportedGame(6022383883, function()
-            self:AddCommand({
+		loadSupportedGame(6022383883, function()
+			self:AddCommand({
 				Name = "InfiniteMoney",
 				Description = "Gives you infinite money.",
 
@@ -3183,11 +3183,11 @@ function modules.UniversalCommands()
 
 					-- 関数 --
 					self.Services.ReplicatedStorage.Configuration["Core Systems"].Datastore.GiveCurrency:FireServer({ Type = "Diamond", Amount = 9e9 })
-                    self.Services.ReplicatedStorage.Configuration["Core Systems"].Datastore.GiveCurrency:FireServer({ Type = "Money", Amount = 9e9 })
+					self.Services.ReplicatedStorage.Configuration["Core Systems"].Datastore.GiveCurrency:FireServer({ Type = "Money", Amount = 9e9 })
 				end,
 			})
 
-            self:AddCommand({
+			self:AddCommand({
 				Name = "Lag",
 				Description = "Lags the server tremendously",
 
@@ -3198,22 +3198,22 @@ function modules.UniversalCommands()
 					-- 引数 --
 
 					-- 変数 --
-                    local accessoryEvent = self.Services.ReplicatedStorage.Configuration["Gameplay Mechanics"].EquipAccessory
-                    local equipTicks = 0
+					local accessoryEvent = self.Services.ReplicatedStorage.Configuration["Gameplay Mechanics"].EquipAccessory
+					local equipTicks = 0
 
 					-- 関数 --
-                    if speaker.Character then
-                        speaker.Character:Destroy()
-                    end
+					if speaker.Character then
+						speaker.Character:Destroy()
+					end
 
 					while equipTicks <= 10000 do
-                        accessoryEvent:FireServer()
-                        equipTicks += 1
-                        task.wait()
-                    end
+						accessoryEvent:FireServer()
+						equipTicks += 1
+						task.wait()
+					end
 				end,
 			})
-        end)
+		end)
 
 		loadSupportedGame(1662219031, function()
 			local wearItem = self.Services.ReplicatedStorage:WaitForChild("WearItem")
@@ -7267,20 +7267,20 @@ function modules.UniversalCommands()
 				end)
 			end,
 		})
-		
+
 		loadDetection("VoxelCraft", function()
 			local gameRemotes = self.Services.ReplicatedStorage:FindFirstChild("GameRemotes")
 			if gameRemotes then
 				local attack = gameRemotes:FindFirstChild("Attack")
 				local sortItem = gameRemotes:FindFirstChild("SortItem")
-				
+
 				if attack and sortItem then
 					return true
 				end
 			end
 		end, function()
 			local gameRemotes = self.Services.ReplicatedStorage:FindFirstChild("GameRemotes")
-			
+
 			self:AddCommand({
 				Name = "Dupe",
 				Description = "Activates duplication of items, press Z to activate (REQUIRES CHEST)",
@@ -7297,7 +7297,7 @@ function modules.UniversalCommands()
 					loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/voxelDupe.lua"))()
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "KillAura",
 				Description = "Kills people near you",
@@ -7314,7 +7314,7 @@ function modules.UniversalCommands()
 					loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/voxelKillAura.lua"))()
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "InstantBreak",
 				Description = "Allows you to break some things instantly",
@@ -7341,7 +7341,7 @@ function modules.UniversalCommands()
 		loadDetection("Minecraft Alpha", function()
 			local updatePlayer = self.Services.ReplicatedStorage:FindFirstChild("UpdatePlayer")
 			local updateWorld = self.Services.ReplicatedStorage:FindFirstChild("UpdateWorld")
-			
+
 			if updatePlayer and updateWorld then
 				return true
 			end
@@ -7365,12 +7365,12 @@ function modules.UniversalCommands()
 							val.Name = "Creative"
 							val.Value = true
 						end
-						
+
 						self:Notify(self.Config.SYSTEM.NAME, `Double tap space to fly`, "SUCCESS", nil, 5)
 					end
 				end,
 			})
-			
+
 			self:AddCommand({
 				Name = "DisableDrowning",
 				Description = "Makes you unable to drown",
@@ -8251,66 +8251,66 @@ function modules.UniversalCommands()
 				end,
 			})
 
-			if differentVersion then
-				self:AddCommand({
-					Name = "AudioDisrupter",
-					Description = "Disrupts every audio in workspace that is inside an attachment or part (LAGS THE SERVER)",
+			self:AddCommand({
+				Name = "AudioDisrupter",
+				Description = "Disrupts every audio in workspace that is inside an attachment or part (LAGS THE SERVER)",
 
-					Aliases = {},
-					Arguments = {},
+				Aliases = {},
+				Arguments = {},
 
-					Function = function(speaker, args)
-						-- 引数 --
+				Function = function(speaker, args)
+					-- 引数 --
 
-						-- 変数 --
-						local TAG_NAME = "AudioOrigin"
+					-- 変数 --
+					local TAG_NAME = "AudioOrigin"
 
-						-- 関数 --
+					-- 関数 --
 
-						if audioDisruptConn then
-							audioDisruptConn:Disconnect()
-							audioDisruptConn = nil
-						end
+					if audioDisruptConn then
+						audioDisruptConn:Disconnect()
+						audioDisruptConn = nil
+					end
 
-						local function tryTagAudioOrigin(descendant)
-							if (descendant:IsA("BasePart") or descendant:IsA("Attachment")) then
-								for _, child in ipairs(descendant:GetChildren()) do
-									if child:IsA("Sound") then
-										self.Services.CollectionService:AddTag(descendant, TAG_NAME)
-										break
-									end
+					local function tryTagAudioOrigin(descendant)
+						if (descendant:IsA("BasePart") or descendant:IsA("Attachment")) then
+							for _, child in ipairs(descendant:GetChildren()) do
+								if child:IsA("Sound") then
+									self.Services.CollectionService:AddTag(descendant, TAG_NAME)
+									break
 								end
 							end
 						end
+					end
 
-						for _, descendant in ipairs(game:GetDescendants()) do
+					for _, descendant in ipairs(game:GetDescendants()) do
+						tryTagAudioOrigin(descendant)
+					end
+
+					game.DescendantAdded:Connect(function(descendant)
+						self.spawn(function()
 							tryTagAudioOrigin(descendant)
-						end
-
-						game.DescendantAdded:Connect(function(descendant)
-							self.spawn(function()
-								tryTagAudioOrigin(descendant)
-							end)
 						end)
+					end)
 
-						local tickCount = 0
+					local tickCount = 0
 
-						audioDisruptConn = self.Services.RunService.Heartbeat:Connect(function()
-							tickCount += 1
-							if tickCount >= 20 then
-								tickCount = 0
+					audioDisruptConn = self.Services.RunService.Heartbeat:Connect(function()
+						tickCount += 1
+						if tickCount >= 20 then
+							tickCount = 0
 
-								local tagged = self.Services.CollectionService:GetTagged(TAG_NAME)
-								for _, origin in ipairs(tagged) do
-									self.spawn(function()
-										if origin:IsA("BasePart") or origin:IsA("Attachment") then
-											for _, child in ipairs(origin:GetChildren()) do
-												if child:IsA("Sound") then
-													local users = self.getPlayer(speaker, "random")
-													for index, player in next, users do
-														if player.Character then
-															local hrp = self.fetchHrp(player.Character)
-															if hrp then
+							local tagged = self.Services.CollectionService:GetTagged(TAG_NAME)
+							for _, origin in ipairs(tagged) do
+								self.spawn(function()
+									if origin:IsA("BasePart") or origin:IsA("Attachment") then
+										for _, child in ipairs(origin:GetChildren()) do
+											if child:IsA("Sound") then
+												local users = self.getPlayer(speaker, "random")
+												for index, player in next, users do
+													if player.Character then
+														local hrp = self.fetchHrp(player.Character)
+														if hrp then
+															if differentVersion then
 																remotes.PlayAudio:FireServer({
 																	{
 																		Instance = child,
@@ -8332,7 +8332,20 @@ function modules.UniversalCommands()
 																	nil,
 																	true
 																})
+															else
+																remotes.PlayAudio:FireServer({
+																	Name = "SERVER'S_SOUND",
+																	Origin = game:GetService("SoundService"),
+																	SoundId = child.SoundId,
+																	Volume = 10,
+																	Pitch = .5,
+																	MaxDistance = 10000
+																}, {
+																	Enabled = false,
+																})
 															end
+														end
+														if differentVersion then
 															remotes.PlayAudio:FireServer({
 																{
 																	Instance = child,
@@ -8354,40 +8367,49 @@ function modules.UniversalCommands()
 																nil,
 																true
 															})
+														else
+															remotes.PlayAudio:FireServer({
+																Name = "SERVER'S_SOUND",
+																Origin = game:GetService("SoundService"),
+																SoundId = child.SoundId,
+																Volume = 10,
+																Pitch = .1,
+																MaxDistance = 10000
+															}, {
+																Enabled = false,
+															})
 														end
 													end
-
 												end
 											end
 										end
-									end)
-
-								end
+									end
+								end)
 							end
-						end)
-					end,
-				})
-
-				self:AddCommand({
-					Name = "StopAudioDisrupter",
-					Description = "Stops the disruption of audios",
-
-					Aliases = {},
-					Arguments = {},
-
-					Function = function(speaker, args)
-						-- 引数 --
-
-						-- 変数 --
-
-						-- 関数 --
-						if audioDisruptConn then
-							audioDisruptConn:Disconnect()
-							audioDisruptConn = nil
 						end
-					end,
-				})
-			end
+					end)
+				end,
+			})
+
+			self:AddCommand({
+				Name = "StopAudioDisrupter",
+				Description = "Stops the disruption of audios",
+
+				Aliases = {},
+				Arguments = {},
+
+				Function = function(speaker, args)
+					-- 引数 --
+
+					-- 変数 --
+
+					-- 関数 --
+					if audioDisruptConn then
+						audioDisruptConn:Disconnect()
+						audioDisruptConn = nil
+					end
+				end,
+			})
 
 			self:AddCommand({
 				Name = "DeathSound",
