@@ -7622,9 +7622,61 @@ function modules.UniversalCommands()
 				return true, sound
 			end
 			local function makeBulletHole(parent, texture, pos, size, volume, sounds, pitches, visibleTime, fadeTime, normal)
-				local projectileHandler = require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
+				local function MakeImpactFX(Hit, Position, Normal, ParentToPart, SoundIds, BulletHoleTexture)
+					local SurfaceCF = CFrame.new(Position, Position + Normal)
 
-				projectileHandler:VisualizeHitEffect("Normal", parent, pos, normal and normal or Vector3.new(0, 0, 5), Enum.Material.Plastic, {
+					local Attachment = Instance.new("Attachment")
+					Attachment.CFrame = SurfaceCF
+					Attachment.Parent = workspace.Terrain
+					
+					local rn = math.random(1, #SoundIds)
+					local track = SoundIds[rn]
+
+					local Sound = Instance.new("Sound")
+					Sound.SoundId = "rbxassetid://" .. track
+					Sound.Volume = 1
+					Sound.PlaybackSpeed = 1
+					Sound.Parent = Attachment
+					Sound:Play()
+
+					if Hit and ParentToPart then
+						local HoleAttach = Instance.new("Attachment")
+						HoleAttach.Parent = Hit
+						HoleAttach.WorldCFrame = SurfaceCF * CFrame.Angles(math.rad(90), math.rad(180), 0)
+
+						local A0 = Instance.new("Attachment")
+						local A1 = Instance.new("Attachment")
+						A0.Parent = Hit
+						A1.Parent = Hit
+
+						local BulletHole = Instance.new("Beam")
+						BulletHole.Texture = "rbxassetid://" .. BulletHoleTexture
+						BulletHole.TextureSpeed = 0
+						BulletHole.Width0 = size
+						BulletHole.Width1 = size
+
+						BulletHole.Attachment0 = A0
+						BulletHole.Attachment1 = A1
+
+						A0.WorldCFrame = HoleAttach.WorldCFrame * CFrame.new(size / 2, -0.01, 0) * CFrame.Angles(math.rad(90), 0, 0)
+						A1.WorldCFrame = HoleAttach.WorldCFrame * CFrame.new(-size / 2, -0.01, 0) * CFrame.Angles(math.rad(90), math.rad(180), 0)
+
+						BulletHole.Parent = workspace.Terrain
+
+						-- Remove after 5 seconds
+						task.delay(fadeTime, function()
+							A0:Destroy()
+							A1:Destroy()
+							HoleAttach:Destroy()
+							BulletHole:Destroy()
+						end)
+					end
+
+					-- Cleanup attachment after sound fades
+					game:GetService("Debris"):AddItem(Attachment, fadeTime)
+				end
+				
+				remotes.VisualizeHitEffect:FireServer("Normal", parent, pos, normal and normal or Vector3.new(0, 0, 5), Enum.Material.Plastic, {
 					MeleeHitEffectEnabled = true,
 					MeleeHitSoundIDs = sounds,
 					MeleeHitSoundPitchMin = pitches[1] or 1,
@@ -7648,6 +7700,7 @@ function modules.UniversalCommands()
 						HitEffect = parent,
 					}
 				}, true)
+				MakeImpactFX(parent, pos, normal and normal or Vector3.new(0, 0, 5), true, sounds, texture)
 			end
 			local kill = function(char)
 				local hum = self.fetchHum(char)
@@ -7868,8 +7921,6 @@ function modules.UniversalCommands()
 						moveTo(fakePart)
 					end
 
-					local projectileHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua"))() --require(modules.ProjectileHandler, "https://raw.githubusercontent.com/Gimkit0/backups/refs/heads/main/ProjectileHandler/init.lua")
-
 					local scaryAudios = {
 						{Id = 8378983497, Volume = 1.5, Pitch = .5},
 						{Id = 7816195044, Volume = 1.5, Pitch = .5},
@@ -7894,7 +7945,7 @@ function modules.UniversalCommands()
 										local soundVolume = 2
 										local pitches = {.5, .8}
 										local sounds = {
-											7236490488,
+											6567183465,
 											5710016194,
 											85271883712040,
 										}
