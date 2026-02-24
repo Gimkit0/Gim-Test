@@ -10170,7 +10170,7 @@ function modules.UniversalCommands()
 						config.TerrainDamageRadius = config.ExpRadius
 						events.Hit2:FireServer({CFrame = CFrame.new(0,0,0)}, CFrame.new(pos), material, config, accessId)
 					elseif getACSVersion() == "2.0.1" then
-						if events:FindFirstChild("HitEffect") and events:FindFirstChild("Hit") then
+						if (events:FindFirstChild("HitEffect") and events:FindFirstChild("Hit")) or (events:FindFirstChild("ExplosiveBullet")) then
 							config.ExplosiveAmmo = true
 							config.ExplosionRadius = config.ExpRadius
 							config.ExplosionType = "Default"
