@@ -1911,7 +1911,7 @@ function modules.Core()
 
 		local currentTicks = 0
 
-		local fakeSound = Instance.new("Sound", workspace)
+		local fakeSound = Instance.new("Sound", game:GetService("TestService"))
 		fakeSound.SoundId = "rbxassetid://"..assetId
 		fakeSound.Volume = 0
 		fakeSound.Name = "TESTING_SOUND"
@@ -2972,7 +2972,7 @@ function modules.UniversalCommands()
 		local aChassisSoundName = "_SERVERS_FE_BYPASSED_AUDIO_SOUND_"
 		local function aChassisSound(remote, assetId, pitch, volume, looped)
 			if remote and assetId then
-				remote:FireServer("newSound", aChassisSoundName, game:GetService("SoundService"), assetId, pitch, volume, looped)
+				remote:FireServer("newSound", aChassisSoundName, game:GetService("TestService"), assetId, pitch, volume, looped)
 				remote:FireServer("playSound", aChassisSoundName)
 			end
 		end
