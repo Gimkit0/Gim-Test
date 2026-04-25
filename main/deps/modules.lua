@@ -2967,7 +2967,7 @@ function modules.UniversalCommands()
 						onLoad()
 					end
 				end
-			end)
+			end, true)
 		end
 		local aChassisSoundName = "_SERVERS_FE_BYPASSED_AUDIO_SOUND_"
 		local function aChassisSound(remote, assetId, pitch, volume, looped)
