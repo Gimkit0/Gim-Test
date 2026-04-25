@@ -7632,7 +7632,7 @@ function modules.UniversalCommands()
 			local differentVersion = false
 			local notified = false
 
-			if modules:FindFirstChild("RayUpdateFolder") then
+			if modules and modules:FindFirstChild("RayUpdateFolder") then
 				differentVersion = true
 			end
 
