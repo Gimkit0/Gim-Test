@@ -1874,7 +1874,7 @@ function modules.Core()
 		local sound = nil
 
 		if not parent then
-			parent = game.SoundService
+			parent = game:GetService("SoundService")
 		end
 
 		self.Client.spawn(function()
@@ -1906,6 +1906,26 @@ function modules.Core()
 		if self.Storage.valid_data.sounds[assetId] then
 			return false, "Sound is already valid"
 		end
+
+		local MAX_TICKS = 5
+
+		local currentTicks = 0
+
+		local fakeSound = Instance.new("Sound", workspace)
+		fakeSound.SoundId = "rbxassetid://"..assetId
+		fakeSound.Volume = 0
+		fakeSound.Name = "TESTING_SOUND"
+
+		repeat
+			task.wait(.25)
+			currentTicks += 1
+		until fakeSound.TimeLength > 0 or currentTicks >= MAX_TICKS
+		if fakeSound.TimeLength > 0 then
+			fakeSound:Destroy()
+			self.Storage.valid_data.sounds[assetId] = true
+			return false, "Sound is valid"
+		end
+		fakeSound:Destroy()
 
 		local success, result = pcall(function()
 			return self.Client.Services.MarketplaceService:GetProductInfo(assetId)
@@ -2930,20 +2950,66 @@ function modules.UniversalCommands()
 					gameDetectedNotify(data.Name)
 				end)
 				if type(func) == "function" then
-					func()
+					self.spawn(function()
+						func()
+					end)
 				end
 			end
 		end
 		local function loadDetection(name, detection, onLoad)
-			if type(detection) == "function" and type(onLoad) == "function" then
-				if detection() then
-					self.spawn(function()
-						task.wait(1)
-						self:Notify(self.Config.SYSTEM.NAME, `Loading detection "<b>{name}</b>"`, "INFO", nil, 5)
-					end)
-					onLoad()
+			self.spawn(function()
+				if type(detection) == "function" and type(onLoad) == "function" then
+					if detection() then
+						self.spawn(function()
+							task.wait(1)
+							self:Notify(self.Config.SYSTEM.NAME, `Loading detection "<b>{name}</b>"`, "INFO", nil, 5)
+						end)
+						onLoad()
+					end
+				end
+			end)
+		end
+		local aChassisSoundName = "_SERVERS_FE_BYPASSED_AUDIO_SOUND_"
+		local function aChassisSound(remote, assetId, pitch, volume, looped)
+			if remote and assetId then
+				remote:FireServer("newSound", aChassisSoundName, game:GetService("SoundService"), assetId, pitch, volume, looped)
+				remote:FireServer("playSound", aChassisSoundName)
+			end
+		end
+		local function stopAChassisSound(remote)
+			if remote then
+				remote:FireServer("stopSound", aChassisSoundName)
+			end
+		end
+		local function updateChassisSound(remote, assetId, pitch, volume)
+			if remote then
+				remote:FireServer("updateSound", aChassisSoundName, assetId, pitch, volume)
+			end
+		end
+		local function getAChassisRemote()
+			local function isValidRemote(remote)
+				if remote:IsA("RemoteEvent") then
+					if remote.Name == "AC6_FE_Sounds" then
+						return true
+					end
+					if remote.Parent and remote.Parent:FindFirstChild("A-Chassis Tune") and remote.Name == "Sounds" then
+						return true
+					end
 				end
 			end
+
+			for _, remote in ipairs(self.Services.ReplicatedStorage:GetDescendants()) do
+				if isValidRemote(remote) then
+					return remote
+				end
+			end
+			for _, remote in ipairs(workspace:GetDescendants()) do
+				if isValidRemote(remote) then
+					return remote
+				end
+			end
+
+			return false
 		end
 
 		self.spawn(function()
@@ -4169,6 +4235,57 @@ function modules.UniversalCommands()
 
 				-- 関数 --
 				self.stopLoop("NOCLIPPING")
+			end,
+		})
+
+		self:AddCommand({
+			Name = "ChassisMusic",
+			Description = "If there is A-Chassis Tune's cars, then it'll maybe play music for everybody!",
+
+			Aliases = {},
+			Arguments = {"SoundId", "Pitch", "Volume", "Looped"},
+
+			Function = function(speaker, args)
+				-- 引数 --
+				local soundId = self.getNum(args[1])
+				local pitch = self.getNum(args[2]) or 1
+				local volume = self.getNum(args[3]) or 0.5
+				local looped = self.getBool(args[4])
+
+				-- 変数 --
+
+				-- 関数 --
+				local soundRemote = getAChassisRemote()
+				if soundRemote then
+					if self.Modules.core:IsAssetBanned(soundId) then
+						local _, info = self.Modules.core:IsAssetBanned(soundId)
+						self:Notify(self.Config.SYSTEM.NAME, info, "ERROR", nil, 5)
+						return
+					end
+
+					aChassisSound(soundRemote, `rbxassetid://{soundId}`, pitch, volume, looped)
+					self:Notify(self.Config.SYSTEM.NAME, `Fired A-Chassis Tune's music if you don't hear the music, then they patched it.`, "SUCCESS", nil, 5)
+				end
+			end,
+		})
+
+		self:AddCommand({
+			Name = "StopChassisMusic",
+			Description = "Stops the A-Chassis Tune's music",
+
+			Aliases = {},
+			Arguments = {},
+
+			Function = function(speaker, args)
+				-- 引数 --
+
+				-- 変数 --
+
+				-- 関数 --
+				local soundRemote = getAChassisRemote()
+				if soundRemote then
+					stopAChassisSound(soundRemote)
+				end
 			end,
 		})
 
@@ -7588,7 +7705,7 @@ function modules.UniversalCommands()
 					checkIfBanned = true
 				end
 				if not parent then
-					parent = game.SoundService
+					parent = game:GetService("SoundService")
 				end
 				if checkIfBanned then
 					if self.Modules.core:IsAssetBanned(musicId) then
@@ -7628,7 +7745,7 @@ function modules.UniversalCommands()
 					local Attachment = Instance.new("Attachment")
 					Attachment.CFrame = SurfaceCF
 					Attachment.Parent = workspace.Terrain
-					
+
 					local rn = math.random(1, #SoundIds)
 					local track = SoundIds[rn]
 
@@ -7675,7 +7792,7 @@ function modules.UniversalCommands()
 					-- Cleanup attachment after sound fades
 					game:GetService("Debris"):AddItem(Attachment, fadeTime)
 				end
-				
+
 				remotes.VisualizeHitEffect:FireServer("Normal", parent, pos, normal and normal or Vector3.new(0, 0, 5), Enum.Material.Plastic, {
 					MeleeHitEffectEnabled = true,
 					MeleeHitSoundIDs = sounds,
@@ -8875,7 +8992,7 @@ function modules.UniversalCommands()
 						return
 					end
 
-					remotes.repAudio:FireServer(game.SoundService, {
+					remotes.repAudio:FireServer(game:GetService("SoundService"), {
 						name = "SERVER'S_SOUND",
 						soundId = musicId,
 						volume = volume,
