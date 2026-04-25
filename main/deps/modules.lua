@@ -2989,7 +2989,7 @@ function modules.UniversalCommands()
 		local function getAChassisRemote()
 			local function isValidRemote(remote)
 				if remote:IsA("RemoteEvent") then
-					if remote.Name == "AC6_FE_Sounds" then
+					if remote.Name == "AC6_FE_Sounds" or remote.Name == "VehicleSoundsEvent" then
 						return true
 					end
 					if remote.Parent and remote.Parent:FindFirstChild("A-Chassis Tune") and remote.Name == "Sounds" then
