@@ -7617,6 +7617,9 @@ function modules.UniversalCommands()
 					return true
 				end
 			end
+			if self.Services.ReplicatedStorage:FindFirstChild("InflictTarget") and self.Services.ReplicatedStorage:FindFirstChild("PlayAudio") then
+				return true
+			end
 		end, function()
 			local remotes = self.Services.ReplicatedStorage:FindFirstChild("Remotes")
 			local modules = self.Services.ReplicatedStorage:FindFirstChild("Modules")
