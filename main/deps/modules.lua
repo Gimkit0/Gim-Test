@@ -2995,12 +2995,12 @@ function modules.UniversalCommands()
 				end
 			end
 
-			for _, remote in ipairs(self.Services.ReplicatedStorage:GetDescendants()) do
+			for _, remote in ipairs(workspace:GetDescendants()) do
 				if isValidRemote(remote) then
 					return remote
 				end
 			end
-			for _, remote in ipairs(workspace:GetDescendants()) do
+			for _, remote in ipairs(self.Services.ReplicatedStorage:GetDescendants()) do
 				if isValidRemote(remote) then
 					return remote
 				end
