@@ -2969,39 +2969,142 @@ function modules.UniversalCommands()
 				end
 			end, true)
 		end
+		local function removeRbxAssetString(input)
+			local pattern = "(rbxassetid://)"
+				local result = input:gsub(pattern, "")
+			return result
+		end
 		local aChassisSoundName = "_SERVERS_FE_BYPASSED_AUDIO_SOUND_"
-		local function aChassisSound(remote, assetId, pitch, volume, looped)
-			if remote and assetId then
-				remote:FireServer("newSound", aChassisSoundName, game:GetService("TestService"), assetId, pitch, volume, looped)
-				remote:FireServer("playSound", aChassisSoundName)
-			end
-		end
-		local function stopAChassisSound(remote)
-			if remote then
-				remote:FireServer("stopSound", aChassisSoundName)
-			end
-		end
-		local function updateChassisSound(remote, assetId, pitch, volume)
-			if remote then
-				remote:FireServer("updateSound", aChassisSoundName, assetId, pitch, volume)
-			end
-		end
-		local function getAChassisRemote()
-			local function isValidRemote(remote)
-				if remote:IsA("RemoteEvent") then
-					if remote.Name == "AC6_FE_Sounds" then
+		local hookedRemotes = {}
+		
+		local function isValidChassisRemote(remote)
+			if remote:IsA("RemoteEvent") then
+				if remote.Name == "AC6_FE_Sounds" then
+					return true
+				end
+				if remote.Name == "Sounds" and remote.Parent:FindFirstChild("A-Chassis Tune")
+					and remote.Parent:FindFirstChild("Friction")
+				then
+					return true
+				end
+				if remote.Name == "Sounds" and remote.Parent:FindFirstChild("A-Chassis Tune") then
+					local canDoIt = true
+					for _, sound in ipairs(remote.Parent:GetDescendants()) do
+						if sound:IsA("Sound") and (sound.Name == "Engine" or sound.Name == "Exhaust") then
+							canDoIt = false
+						end
+					end
+					if canDoIt then
+						return true
+					end
+				end
+				if remote.Name == "BoostSounds" and remote.Parent:FindFirstChild("A-Chassis Tune") then
+					local canDoIt = true
+					for _, sound in ipairs(remote.Parent:GetDescendants()) do
+						if sound:IsA("Sound") and (sound.Name == "Turbo" or sound.Name == "Super") then
+							canDoIt = false
+						end
+					end
+					if canDoIt then
 						return true
 					end
 				end
 			end
-
+			return false
+		end
+		local function aChassisSound(remote, assetId, pitch, volume, looped)
+			if not assetId then return end
+			if not remote then return end
+			
+			if remote.Name == "AC6_FE_Sounds" then
+				remote:FireServer("newSound", aChassisSoundName, game:GetService("TestService"), assetId, pitch, volume, looped)
+				remote:FireServer("playSound", aChassisSoundName)
+			elseif (remote.Name == "Sounds" or remote.Name == "BoostSounds") and not remote.Parent:FindFirstChild("Friction") then
+				remote:FireServer({
+					Body = {
+						Exhaust = game:GetService("TestService"),
+						Engine = game:GetService("TestService"),
+					}
+				}, "create", {
+					-- Exhaust
+					0, 0, 0,
+					-- Engine
+					removeRbxAssetString(assetId), 10000, 10000,
+					-- Idle
+					0, 0, 0,
+					-- Redline
+					0,0,0,
+					-- Grains
+					{0, 0, 0},
+					{0, 0, 0}
+				})
+				self.spawn(function()
+					if hookedRemotes[remote] then return end
+					hookedRemotes[remote] = true
+					repeat task.wait(.1)
+						remote:FireServer(nil, "update", nil, {
+							-- Exhaust
+							volume, 0,
+							-- Engine
+							volume, pitch,
+							-- Others
+							0, 0, 0, 0,
+							{0, 0, 0},
+							{0, 0, 0}
+						})
+					until remote.Parent == nil or (not remote.Parent.Parent) or (not remote.Parent.Parent.Parent)
+				end)
+				remote:FireServer(nil, "play")
+			elseif remote.Name == "Sounds" and remote.Parent:FindFirstChild("Friction") then
+				remote:FireServer("create", {
+					DriveSeat = game:GetService("TestService"),
+				}, {
+					EngineSounds = {},
+					TurboSounds = {},
+					SuperSounds = {
+						{
+							name = aChassisSoundName,
+							id = removeRbxAssetString(assetId),
+							vol = volume,
+							pitch = pitch,
+							pitchIncrease = 0,
+							rollOffMax = 10000,
+							rollOffMin = 10,
+						}
+					}
+				})
+				self.spawn(function()
+					if hookedRemotes[remote] then return end
+					hookedRemotes[remote] = true
+					
+					repeat task.wait(.1)
+						remote:FireServer("updateSuper", nil, 1, volume, pitch)
+					until remote.Parent == nil or (not remote.Parent.Parent) or (not remote.Parent.Parent.Parent)
+				end)
+				remote:FireServer("play")
+			end
+		end
+		local function stopAChassisSound(remote)
+			if not remote then return end
+			
+			remote:FireServer("stopSound", aChassisSoundName)
+			remote:FireServer("stop")
+		end
+		--[[
+		local function updateChassisSound(remote, assetId, pitch, volume)
+			if not remote then return end
+			
+			remote:FireServer("updateSound", aChassisSoundName, assetId, pitch, volume)
+		end
+		]]
+		local function getAChassisRemote()
 			for _, remote in ipairs(workspace:GetDescendants()) do
-				if isValidRemote(remote) then
+				if isValidChassisRemote(remote) then
 					return remote
 				end
 			end
 			for _, remote in ipairs(self.Services.ReplicatedStorage:GetDescendants()) do
-				if isValidRemote(remote) then
+				if isValidChassisRemote(remote) then
 					return remote
 				end
 			end
