@@ -2978,7 +2978,7 @@ function modules.UniversalCommands()
 		local hookedRemotes = {}
 		
 		local function isValidChassisRemote(remote)
-			if remote:IsA("RemoteEvent") then
+			if remote:IsA("RemoteEvent") or remote:IsA("UnreliableRemoteEvent") then
 				if remote.Name == "AC6_FE_Sounds" then
 					return true
 				end
