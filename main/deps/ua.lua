@@ -279,13 +279,11 @@ function UniversalAimbot:Start()
 				if self.Config.AIM_MODE == "Camera" or RunService:IsStudio() then
 					camera.CFrame = prediction.WorldPosition
 				elseif self.Config.AIM_MODE == "Mouse" then
-					print("Active")
 					if RunService:IsStudio() and prediction.ViewportPoint[2] then
 						mouse.Target = Vector2.new(select(2, unpack(prediction.ViewportPoint)))
 					elseif mousemoverel and typeof(mousemoverel) == "function" and prediction.ViewportPoint[2] then
-						print("Mouse Is Real")
 						local mouseLocation = UserInputService:GetMouseLocation()
-						local sensitivity = 10
+						local sensitivity = 1
 						mousemoverel((prediction.ViewportPoint[1].X - mouseLocation.X) / sensitivity, (prediction.ViewportPoint[1].Y - mouseLocation.Y) / sensitivity)
 					end
 				end
