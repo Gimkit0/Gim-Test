@@ -6,6 +6,9 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
+local ExploitGetPlayers = RunService:IsStudio() and require(script.Parent:WaitForChild("ExploitGetPlayers"))
+	or loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/egp.lua"))()
+
 local localPlayer = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local viewportSize = camera.ViewportSize
@@ -102,7 +105,9 @@ function UniversalAimbot:GetTargetsOnScreen(countNpcs: boolean)
 			if character and rootPart then
 				local screenPos, onScreen = camera:WorldToViewportPoint(rootPart.Position)
 				if onScreen then
-					table.insert(targets, player)
+					table.insert(targets, {
+						Character = ExploitGetPlayers:GetCharacterFromPlayer(player),
+					})
 				end
 			end
 		end
