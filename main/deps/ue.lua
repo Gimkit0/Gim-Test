@@ -35,8 +35,9 @@ local function safeDescendantAdded(object, callback)
 end
 
 local function safeCharacterAdded(player, callback)
-	if player.Character then
-		callback(player.Character)
+	local character = ExploitGetPlayers:GetCharacterFromPlayer(player)
+	if character then
+		callback(character)
 	end
 	return player.CharacterAdded:Connect(callback)
 end
@@ -218,7 +219,7 @@ function UniversalPlayerESP:CreateESP(player)
 			PositionChanged = task.spawn(function()
 				while true do
 					--fakePart.Position = character:GetPivot().Position
-					charInfo.Size = UDim2.new(getSize(player.Character).X, 0, getSize(player.Character).Y, 0)
+					charInfo.Size = UDim2.new(getSize(character).X, 0, getSize(character).Y, 0)
 					task.wait(10)
 				end
 			end)
