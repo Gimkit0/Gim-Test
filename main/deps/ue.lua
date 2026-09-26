@@ -24,6 +24,13 @@ local function safePlayerAdded(callback)
 	return Players.PlayerAdded:Connect(callback)
 end
 
+local function safeDescendantAdded(object, callback)
+	for _, descendant in ipairs(object:GetDescendants()) do
+		callback(descendant)
+	end
+	return object.DescendantAdded:Connect(callback)
+end
+
 local function safeCharacterAdded(player, callback)
 	if player.Character then
 		callback(player.Character)
@@ -157,7 +164,9 @@ function UniversalPlayerESP.new(options)
 end
 
 function UniversalPlayerESP:CreateESP(player)
-	--if player == localPlayer then return end
+	if not RunService:IsStudio() then
+		if player == localPlayer then return end
+	end
 	local character = player.Character
 	if not character then return end
 	
@@ -167,16 +176,10 @@ function UniversalPlayerESP:CreateESP(player)
 		self:RemoveESP(player)
 		
 		local primaryPart = getPrimaryPart(player.Character)
-		local fakePart = Instance.new("Part", CoreGui)
-		fakePart.CanCollide = false
-		fakePart.Anchored = true
-		fakePart.Transparency = 1
-		fakePart.Size = Vector3.new(1, 1, 1)
 		
 		local charInfo = createInfo()
 		charInfo.Info.DisplayName.Text = player.DisplayName
 		charInfo.Info.UserName.Text = player.Name
-		charInfo.Size = UDim2.new(getSize(player.Character).X, 0, getSize(player.Character).Y, 0)
 
 		local highlight = Instance.new("Highlight", CoreGui)
 		highlight.FillTransparency = 1
@@ -196,11 +199,11 @@ function UniversalPlayerESP:CreateESP(player)
 				end
 			end),
 			PositionChanged = task.spawn(function()
-				while task.wait(0.15) do
-					fakePart.Position = primaryPart.Position
-					charInfo.Adornee = fakePart
+				while true do
+					charInfo.Adornee = character
 					highlight.Adornee = character
 					charInfo.Size = UDim2.new(getSize(player.Character).X, 0, getSize(player.Character).Y, 0)
+					task.wait(1)
 				end
 			end)
 		}
@@ -227,6 +230,12 @@ function UniversalPlayerESP:Enable()
 	end)
 	self.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
 		self:RemoveESP(player)
+	end)
+	self.WorkspaceDescendantAdded = safeDescendantAdded(workspace, function(object)
+		local player = Players:GetPlayerFromCharacter(object.Parent)
+		if player then
+			self:CreateESP(player)
+		end
 	end)
 end
 
