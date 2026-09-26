@@ -144,7 +144,7 @@ function UniversalAimbot:GetRawPriorityLevel(model: Instance)
 	
 	local player = Players:GetPlayerFromCharacter(model)
 	if player and player == localPlayer then return math.huge end
-	if player and player:IsFriendsWithAsync(localPlayer) then return math.huge end
+	--if player and player:IsFriendsWithAsync(localPlayer) then return math.huge end
 	
 	-- Additions
 	if player then priority -= 1000 end
