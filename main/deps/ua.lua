@@ -283,7 +283,7 @@ function UniversalAimbot:Start()
 						mouse.Target = Vector2.new(select(2, unpack(prediction.ViewportPoint)))
 					elseif mousemoverel and typeof(mousemoverel) == "function" and prediction.ViewportPoint[2] then
 						local mouseLocation = UserInputService:GetMouseLocation()
-						local sensitivity = 5
+						local sensitivity = 20
 						mousemoverel((prediction.ViewportPoint[1].X - mouseLocation.X) / sensitivity, (prediction.ViewportPoint[1].Y - mouseLocation.Y) / sensitivity)
 					end
 				end
