@@ -87,6 +87,7 @@ function UniversalAimbot.new(options)
 
 		TEAM_CHECK = true,
 		FRIEND_CHECK = true,
+		DEBUG = false,
 		COUNT_NPCS = false,
 	}, options)
 	return self
@@ -271,7 +272,9 @@ function UniversalAimbot:Start()
 				UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 				UserInputService.MouseDeltaSensitivity = 0
 			end
-			
+			if self.Config.DEBUG then
+				print(target)
+			end
 			self.Connection = RunService.RenderStepped:Connect(function()
 				local prediction = self:GetPrediction(target)
 				if not prediction then self:Stop() return end
