@@ -262,13 +262,15 @@ function UniversalAimbot:Start()
 			or target:FindFirstChild("LowerTorso")
 		
 		if cameraTarget then
-			--self.LastCameraType = camera.CameraType
-			self.LastMouseBehavior = UserInputService.MouseBehavior
-			self.LastMouseSensitivity = UserInputService.MouseDeltaSensitivity
+			if self.Config.AIM_MODE == "Camera" or RunService:IsStudio() then
+				--self.LastCameraType = camera.CameraType
+				self.LastMouseBehavior = UserInputService.MouseBehavior
+				self.LastMouseSensitivity = UserInputService.MouseDeltaSensitivity
 
-			--camera.CameraType = Enum.CameraType.Custom
-			UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
-			UserInputService.MouseDeltaSensitivity = 0
+				--camera.CameraType = Enum.CameraType.Custom
+				UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+				UserInputService.MouseDeltaSensitivity = 0
+			end
 			
 			self.Connection = RunService.RenderStepped:Connect(function()
 				local prediction = self:GetPrediction(target)
@@ -277,9 +279,11 @@ function UniversalAimbot:Start()
 				if self.Config.AIM_MODE == "Camera" or RunService:IsStudio() then
 					camera.CFrame = prediction.WorldPosition
 				elseif self.Config.AIM_MODE == "Mouse" then
+					print("Active")
 					if RunService:IsStudio() and prediction.ViewportPoint[2] then
 						mouse.Target = Vector2.new(select(2, unpack(prediction.ViewportPoint)))
 					elseif mousemoverel and typeof(mousemoverel) == "function" and prediction.ViewportPoint[2] then
+						print("Mouse Is Real")
 						local mouseLocation = UserInputService:GetMouseLocation()
 						local sensitivity = 10
 						mousemoverel((prediction.ViewportPoint[1].X - mouseLocation.X) / sensitivity, (prediction.ViewportPoint[1].Y - mouseLocation.Y) / sensitivity)
