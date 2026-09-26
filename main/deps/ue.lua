@@ -176,6 +176,13 @@ function UniversalPlayerESP:CreateESP(player)
 		self:RemoveESP(player)
 		
 		local primaryPart = getPrimaryPart(player.Character)
+		local fakePart = Instance.new("Part", CoreGui)
+		fakePart.Transparency = 1
+		fakePart.Anchored = true
+		fakePart.CanCollide = false
+		fakePart.CanTouch = false
+		fakePart.CanQuery = false
+		fakePart.Size = Vector3.new(1, 1, 1)
 		
 		local charInfo = createInfo()
 		charInfo.Info.DisplayName.Text = player.DisplayName
@@ -190,6 +197,8 @@ function UniversalPlayerESP:CreateESP(player)
 			Info = charInfo,
 			Highlight = highlight,
 
+			Player = player,
+
 			TeamColorChanged = safePropertyChanged(player, "TeamColor", function()
 				if self.Config.SHOW_TEAM_COLORS then
 					charInfo.Info.DisplayName.TextColor3 = player.TeamColor.Color
@@ -200,10 +209,11 @@ function UniversalPlayerESP:CreateESP(player)
 			end),
 			PositionChanged = task.spawn(function()
 				while true do
-					charInfo.Adornee = character
+					fakePart.Position = character:GetPivot().Position
+					charInfo.Adornee = fakePart
 					highlight.Adornee = character
 					charInfo.Size = UDim2.new(getSize(player.Character).X, 0, getSize(player.Character).Y, 0)
-					task.wait(1)
+					task.wait(0.1)
 				end
 			end)
 		}
@@ -250,6 +260,9 @@ function UniversalPlayerESP:Disable()
 	end
 	for _, player in ipairs(Players:GetPlayers()) do
 		self:RemoveESP(player)
+	end
+	for _, activePlayer in pairs(self.ActivePlayers) do
+		self:RemoveESP(activePlayer.Player)
 	end
 end
 
