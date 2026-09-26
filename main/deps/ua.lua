@@ -79,7 +79,7 @@ function UniversalAimbot.new(options)
 		PREDICTION = 0.1,
 		SMOOTHNESS = 0.1,
 		
-		AIM_MODE = "Camera",
+		AIM_MODE = "Mouse",
 		
 		BULLET_SPEED = 1,
 		
@@ -201,6 +201,56 @@ function UniversalAimbot:GetClosest(teamCheck, circleRadius, countNpcs)
 	return target
 end
 
+function UniversalAimbot:GetPrediction(target)
+	if not localPlayer.Character then return end
+	if target == nil then
+		self:Stop()
+		return
+	end
+	local playerDistance = getPlayerDistance(target)
+	if not playerDistance then
+		self:Stop()
+		return
+	end
+	
+	local function getCameraTarget(target)
+		local humanoid = target:FindFirstChildOfClass("Humanoid")
+		if not humanoid then return end
+		if humanoid.Health <= 0 then return end
+		
+		return target:FindFirstChild("Head")
+			or target:FindFirstChild("Torso")
+			or target:FindFirstChild("UpperTorso")
+			or target:FindFirstChild("LowerTorso")
+	end
+	
+	local cameraTarget = getCameraTarget(target)
+	local nativeTarget = getCameraTarget(localPlayer.Character)
+	
+	if not cameraTarget then return end
+	if not nativeTarget then return end
+	
+	local basePrediction = self.Config.PREDICTION
+	local maxPrediction = 0.2
+
+	local maxDistance = 100
+	local minDistance = 5
+
+	local alpha = 1 - math.clamp(
+		(playerDistance + minDistance) * (maxDistance + minDistance),
+		0,
+		1
+	)
+
+	local prediction = basePrediction + (maxPrediction - basePrediction) * (alpha / self.Config.BULLET_SPEED)
+	local future = cameraTarget.CFrame + (cameraTarget.Velocity * prediction + self.Config.HEAD_OFFSET)
+	
+	return {
+		WorldPosition = CFrame.lookAt(camera.CFrame.Position, future.Position),
+		ViewportPoint = {camera:WorldToViewportPoint(future.Position)},
+	}
+end
+
 function UniversalAimbot:Start()
 	self:Stop()
 	
@@ -212,47 +262,27 @@ function UniversalAimbot:Start()
 			or target:FindFirstChild("LowerTorso")
 		
 		if cameraTarget then
-			self.LastCameraType = camera.CameraType
+			--self.LastCameraType = camera.CameraType
 			self.LastMouseBehavior = UserInputService.MouseBehavior
 			self.LastMouseSensitivity = UserInputService.MouseDeltaSensitivity
-			
-			camera.CameraType = Enum.CameraType.Custom
+
+			--camera.CameraType = Enum.CameraType.Custom
 			UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 			UserInputService.MouseDeltaSensitivity = 0
 			
 			self.Connection = RunService.RenderStepped:Connect(function()
-				if target == nil then
-					self:Stop()
-					return
-				end
-				local playerDistance = getPlayerDistance(target)
-				if not playerDistance then
-					self:Stop()
-					return
-				end
-
-				local basePrediction = self.Config.PREDICTION
-				local maxPrediction = 0.2
-
-				local maxDistance = 100
-				local minDistance = 5
-
-				local alpha = 1 - math.clamp(
-					(playerDistance - minDistance) / (maxDistance - minDistance),
-					0,
-					1
-				)
-
-				local prediction = basePrediction + (maxPrediction - basePrediction) * (alpha / self.Config.BULLET_SPEED)
-				local future = cameraTarget.CFrame + (cameraTarget.Velocity * prediction + self.Config.HEAD_OFFSET)
-
-				if self.Config.AIM_MODE == "Camera" then
-					if self.Config.SMOOTHNESS and self.Config.SMOOTHNESS > 0 and cameraTarget.Velocity.Magnitude > 0 then
-						tween(camera, TweenInfo.new(self.Config.SMOOTHNESS), {
-							CFrame = CFrame.lookAt(camera.CFrame.Position, future.Position)
-						})
-					else
-						camera.CFrame = CFrame.lookAt(camera.CFrame.Position, future.Position)
+				local prediction = self:GetPrediction(target)
+				if not prediction then self:Stop() return end
+				
+				if self.Config.AIM_MODE == "Camera" or RunService:IsStudio() then
+					camera.CFrame = prediction.WorldPosition
+				elseif self.Config.AIM_MODE == "Mouse" then
+					if RunService:IsStudio() and prediction.ViewportPoint[2] then
+						mouse.Target = Vector2.new(select(2, unpack(prediction.ViewportPoint)))
+					elseif mousemoverel and typeof(mousemoverel) == "function" and prediction.ViewportPoint[2] then
+						local mouseLocation = UserInputService:GetMouseLocation()
+						local sensitivity = 10
+						mousemoverel((prediction.ViewportPoint[1].X - mouseLocation.X) / sensitivity, (prediction.ViewportPoint[1].Y - mouseLocation.Y) / sensitivity)
 					end
 				end
 			end)
