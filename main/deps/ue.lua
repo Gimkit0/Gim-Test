@@ -6,6 +6,9 @@ local Players = game:GetService("Players")
 --local Teams = game:GetService("Teams")
 local CoreGui = RunService:IsStudio() and Players.LocalPlayer:WaitForChild("PlayerGui") or gethui and gethui() or game:GetService("CoreGui")
 
+local ExploitGetPlayers = RunService:IsStudio() and require(script.Parent:WaitForChild("ExploitGetPlayers"))
+	or loadstring(game:HttpGet("https://raw.githubusercontent.com/Gimkit0/Gim-Test/refs/heads/main/main/deps/egp.lua"))()
+
 local localPlayer = Players.LocalPlayer
 
 local function validateConfig(defaults, options)
@@ -167,7 +170,7 @@ function UniversalPlayerESP:CreateESP(player)
 	if not RunService:IsStudio() then
 		if player == localPlayer then return end
 	end
-	local character = player.Character
+	local character = ExploitGetPlayers:GetCharacterFromPlayer(player)
 	if not character then return end
 	
 	if self.ActivePlayers[player] then return end
@@ -175,7 +178,7 @@ function UniversalPlayerESP:CreateESP(player)
 	self.ActivePlayerConnections[player] = safeCharacterAdded(player, function(character)
 		self:RemoveESP(player)
 		
-		local primaryPart = getPrimaryPart(player.Character)
+		--[[
 		local fakePart = Instance.new("Part", CoreGui)
 		fakePart.Transparency = 1
 		fakePart.Anchored = true
@@ -183,6 +186,7 @@ function UniversalPlayerESP:CreateESP(player)
 		fakePart.CanTouch = false
 		fakePart.CanQuery = false
 		fakePart.Size = Vector3.new(1, 1, 1)
+		]]
 		
 		local charInfo = createInfo()
 		charInfo.Info.DisplayName.Text = player.DisplayName
@@ -192,12 +196,16 @@ function UniversalPlayerESP:CreateESP(player)
 		highlight.FillTransparency = 1
 		highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
 		highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+		
+		charInfo.Adornee = character
+		highlight.Adornee = character
 
 		self.ActivePlayers[player] = {
 			Info = charInfo,
 			Highlight = highlight,
 
 			Player = player,
+			--Part = fakePart,
 
 			TeamColorChanged = safePropertyChanged(player, "TeamColor", function()
 				if self.Config.SHOW_TEAM_COLORS then
@@ -209,11 +217,9 @@ function UniversalPlayerESP:CreateESP(player)
 			end),
 			PositionChanged = task.spawn(function()
 				while true do
-					fakePart.Position = character:GetPivot().Position
-					charInfo.Adornee = fakePart
-					highlight.Adornee = character
+					--fakePart.Position = character:GetPivot().Position
 					charInfo.Size = UDim2.new(getSize(player.Character).X, 0, getSize(player.Character).Y, 0)
-					task.wait(0.1)
+					task.wait(10)
 				end
 			end)
 		}
@@ -228,6 +234,7 @@ function UniversalPlayerESP:RemoveESP(player)
 	if self.ActivePlayers[player] then
 		self.ActivePlayers[player].Info:Destroy()
 		self.ActivePlayers[player].Highlight:Destroy()
+		--self.ActivePlayers[player].Part:Destroy()
 		self.ActivePlayers[player].TeamColorChanged:Disconnect()
 		task.cancel(self.ActivePlayers[player].PositionChanged)
 		self.ActivePlayers[player] = nil
@@ -240,12 +247,6 @@ function UniversalPlayerESP:Enable()
 	end)
 	self.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
 		self:RemoveESP(player)
-	end)
-	self.WorkspaceDescendantAdded = safeDescendantAdded(workspace, function(object)
-		local player = Players:GetPlayerFromCharacter(object.Parent)
-		if player then
-			self:CreateESP(player)
-		end
 	end)
 end
 
