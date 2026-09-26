@@ -24,46 +24,17 @@ local function safePlayerAdded(callback)
 	return Players.PlayerAdded:Connect(callback)
 end
 
+local function safeCharacterAdded(player, callback)
+	if player.Character then
+		callback(player.Character)
+	end
+	return player.CharacterAdded:Connect(callback)
+end
+
 local function safePropertyChanged(object, property, callback)
 	local value = object[property]
 	task.spawn(callback, value)
 	return object:GetPropertyChangedSignal(property):Connect(callback)
-end
-
-local function getBonePositions(character)
-	if not character then return nil end
-
-	local bones = {
-		Head = character:FindFirstChild("Head"),
-		UpperTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso"),
-		LowerTorso = character:FindFirstChild("LowerTorso") or character:FindFirstChild("Torso"),
-		RootPart = character:FindFirstChild("HumanoidRootPart"),
-
-		-- Left Arm
-		LeftUpperArm = character:FindFirstChild("LeftUpperArm") or character:FindFirstChild("Left Arm"),
-		LeftLowerArm = character:FindFirstChild("LeftLowerArm") or character:FindFirstChild("Left Arm"),
-		LeftHand = character:FindFirstChild("LeftHand") or character:FindFirstChild("Left Arm"),
-
-		-- Right Arm
-		RightUpperArm = character:FindFirstChild("RightUpperArm") or character:FindFirstChild("Right Arm"),
-		RightLowerArm = character:FindFirstChild("RightLowerArm") or character:FindFirstChild("Right Arm"),
-		RightHand = character:FindFirstChild("RightHand") or character:FindFirstChild("Right Arm"),
-
-		-- Left Leg
-		LeftUpperLeg = character:FindFirstChild("LeftUpperLeg") or character:FindFirstChild("Left Leg"),
-		LeftLowerLeg = character:FindFirstChild("LeftLowerLeg") or character:FindFirstChild("Left Leg"),
-		LeftFoot = character:FindFirstChild("LeftFoot") or character:FindFirstChild("Left Leg"),
-
-		-- Right Leg
-		RightUpperLeg = character:FindFirstChild("RightUpperLeg") or character:FindFirstChild("Right Leg"),
-		RightLowerLeg = character:FindFirstChild("RightLowerLeg") or character:FindFirstChild("Right Leg"),
-		RightFoot = character:FindFirstChild("RightFoot") or character:FindFirstChild("Right Leg")
-	}
-
-	-- Verify we have the minimum required bones
-	if not (bones.Head and bones.UpperTorso) then return nil end
-
-	return bones
 end
 
 local function getSize(object)
@@ -72,6 +43,19 @@ local function getSize(object)
 	elseif object:IsA("BasePart") then
 		return object.Size
 	end
+end
+
+local function getPrimaryPart(model)
+	if not model then return end
+	if model.PrimaryPart then
+		return model.PrimaryPart
+	end
+	return model:FindFirstChild("HumanoidRootPart")
+		or model:FindFirstChild("Torso")
+		or model:FindFirstChild("UpperTorso")
+		or model:FindFirstChild("LowerTorso")
+		or model:FindFirstChild("Head")
+		or model:FindFirstChildWhichIsA("BasePart")
 end
 
 local function createInfo()
@@ -165,82 +149,84 @@ end
 function UniversalPlayerESP.new(options)
 	local self = setmetatable({}, UniversalPlayerESP)
 	self.Config = validateConfig({
-		REFRESH_RATE = 20,
-		
 		SHOW_TEAM_COLORS = true,
 	}, options)
 	self.ActivePlayers = {}
+	self.ActivePlayerConnections = {}
 	return self
 end
 
 function UniversalPlayerESP:CreateESP(player)
-	if not player.Character then return end
-	if player == localPlayer then return end
+	--if player == localPlayer then return end
+	local character = player.Character
+	if not character then return end
 	
-	local playerSize = getSize(player.Character)
-	if self.ActivePlayers[player] then
-		self.ActivePlayers[player].Info.Adornee = player.Character or player.CharacterAdded:Wait()
-		self.ActivePlayers[player].Info.Size = UDim2.new(playerSize.X, 0, playerSize.Y, 0)
-		self.ActivePlayers[player].Highlight.Adornee = player.Character or player.CharacterAdded:Wait()
-		return
-	end
+	if self.ActivePlayers[player] then return end
 	
-	local charInfo = createInfo()
-	charInfo.Info.DisplayName.Text = player.DisplayName
-	charInfo.Info.UserName.Text = player.Name
-	charInfo.Adornee = player.Character or player.CharacterAdded:Wait()
-	charInfo.Size = UDim2.new(playerSize.X, 0, playerSize.Y, 0)
-	
-	local highlight = Instance.new("Highlight", CoreGui)
-	highlight.FillTransparency = 1
-	highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-	highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-	highlight.Adornee = charInfo.Adornee
-	
-	local propConn = safePropertyChanged(player, "TeamColor", function()
-		if self.Config.SHOW_TEAM_COLORS then
-			charInfo.Info.DisplayName.TextColor3 = player.TeamColor.Color
-			charInfo.Info.UserName.TextColor3 = player.TeamColor.Color
-			charInfo.Outline.Stroke.Color = player.TeamColor.Color
-			highlight.OutlineColor = player.TeamColor.Color
-		end
-	end)
-	
-	self.ActivePlayers[player] = {
-		Info = charInfo,
-		Highlight = highlight,
+	self.ActivePlayerConnections[player] = safeCharacterAdded(player, function(character)
+		self:RemoveESP(player)
 		
-		PropertyChanged = propConn
-	}
+		local primaryPart = getPrimaryPart(player.Character)
+		local fakePart = Instance.new("Part", CoreGui)
+		fakePart.CanCollide = false
+		fakePart.Anchored = true
+		fakePart.Transparency = 1
+		fakePart.Size = Vector3.new(1, 1, 1)
+		
+		local charInfo = createInfo()
+		charInfo.Info.DisplayName.Text = player.DisplayName
+		charInfo.Info.UserName.Text = player.Name
+		charInfo.Size = UDim2.new(getSize(player.Character).X, 0, getSize(player.Character).Y, 0)
+
+		local highlight = Instance.new("Highlight", CoreGui)
+		highlight.FillTransparency = 1
+		highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+		highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+
+		self.ActivePlayers[player] = {
+			Info = charInfo,
+			Highlight = highlight,
+
+			TeamColorChanged = safePropertyChanged(player, "TeamColor", function()
+				if self.Config.SHOW_TEAM_COLORS then
+					charInfo.Info.DisplayName.TextColor3 = player.TeamColor.Color
+					charInfo.Info.UserName.TextColor3 = player.TeamColor.Color
+					charInfo.Outline.Stroke.Color = player.TeamColor.Color
+					highlight.OutlineColor = player.TeamColor.Color
+				end
+			end),
+			PositionChanged = task.spawn(function()
+				while task.wait(0.15) do
+					fakePart.Position = primaryPart.Position
+					charInfo.Adornee = fakePart
+					highlight.Adornee = character
+					charInfo.Size = UDim2.new(getSize(player.Character).X, 0, getSize(player.Character).Y, 0)
+				end
+			end)
+		}
+	end)
 end
 
 function UniversalPlayerESP:RemoveESP(player)
-	if not self.ActivePlayers[player] then return end
-	self.ActivePlayers[player].Info:Destroy()
-	self.ActivePlayers[player].Highlight:Destroy()
-	self.ActivePlayers[player].PropertyChanged:Disconnect()
-	self.ActivePlayers[player] = nil
+	if self.ActivePlayerConnections[player] then
+		self.ActivePlayerConnections[player]:Disconnect()
+		self.ActivePlayerConnections[player] = nil
+	end
+	if self.ActivePlayers[player] then
+		self.ActivePlayers[player].Info:Destroy()
+		self.ActivePlayers[player].Highlight:Destroy()
+		self.ActivePlayers[player].TeamColorChanged:Disconnect()
+		task.cancel(self.ActivePlayers[player].PositionChanged)
+		self.ActivePlayers[player] = nil
+	end
 end
 
 function UniversalPlayerESP:Enable()
-	local lastUpdate = 0
-	
 	self.PlayerAdded = safePlayerAdded(function(player)
 		self:CreateESP(player)
 	end)
 	self.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
 		self:RemoveESP(player)
-	end)
-	self.Render = task.spawn(function()
-		while task.wait(0.1) do
-			local currentTime = tick()
-			if currentTime - lastUpdate >= (1 / self.Config.REFRESH_RATE) then
-				for _, player in ipairs(Players:GetPlayers()) do
-					self:CreateESP(player)
-				end
-			end
-			lastUpdate = currentTime
-		end
 	end)
 end
 
@@ -252,10 +238,6 @@ function UniversalPlayerESP:Disable()
 	if self.PlayerRemoving then
 		self.PlayerRemoving:Disconnect()
 		self.PlayerRemoving = nil
-	end
-	if self.Render then
-		task.cancel(self.Render)
-		self.Render = nil
 	end
 	for _, player in ipairs(Players:GetPlayers()) do
 		self:RemoveESP(player)
